@@ -7,13 +7,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // DevicePreview.enable() initializes its own binding, so we call it first
+  // instead of WidgetsFlutterBinding.ensureInitialized()
+  DevicePreview.enable(); 
   
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  DevicePreview.enable(); // Enable DevicePreview (automatically respects kReleaseMode in v3)
   runApp(const ProviderScope(child: CryptoSimApp()));
 }
 
