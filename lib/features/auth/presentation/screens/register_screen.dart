@@ -1,43 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
 import '../providers/auth_provider.dart';
 
-class RegisterScreen extends ConsumerStatefulWidget {
+class RegisterScreen extends HookConsumerWidget {
   const RegisterScreen({super.key});
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _onRegister() {
-    if (_formKey.currentState!.validate()) {
-      ref.read(authControllerProvider.notifier).signUp(
-            _emailController.text.trim(),
-            _passwordController.text,
-            _nameController.text.trim(),
-          );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final nameController = useTextEditingController();
+    final emailController = useTextEditingController();
+    final passwordController = useTextEditingController();
+    
     final authState = ref.watch(authControllerProvider);
 
     // Listen for errors
@@ -54,6 +32,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
     });
 
+    void onRegister() {
+      if (formKey.currentState!.validate()) {
+        ref.read(authControllerProvider.notifier).signUp(
+              emailController.text.trim(),
+              passwordController.text,
+              nameController.text.trim(),
+            );
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -68,7 +56,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +81,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AppTextField(
                     label: 'Display Name',
                     hint: 'Enter your full name',
-                    controller: _nameController,
+                    controller: nameController,
                     prefixIcon: const Icon(Icons.person_outline, color: Colors.white54),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
@@ -106,7 +94,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AppTextField(
                     label: 'Email',
                     hint: 'Enter your email',
-                    controller: _emailController,
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: const Icon(Icons.email_outlined, color: Colors.white54),
                     validator: (val) {
@@ -123,7 +111,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AppTextField(
                     label: 'Password',
                     hint: 'Create a password',
-                    controller: _passwordController,
+                    controller: passwordController,
                     isPassword: true,
                     prefixIcon: const Icon(Icons.lock_outline, color: Colors.white54),
                     validator: (val) {
@@ -140,7 +128,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AppButton(
                     text: 'Sign Up',
                     isLoading: authState.isLoading,
-                    onPressed: _onRegister,
+                    onPressed: onRegister,
                   ),
                   const SizedBox(height: 24),
                   Row(

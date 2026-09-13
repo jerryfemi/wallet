@@ -1,40 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
 import '../providers/auth_provider.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends HookConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _onLogin() {
-    if (_formKey.currentState!.validate()) {
-      ref.read(authControllerProvider.notifier).signIn(
-            _emailController.text.trim(),
-            _passwordController.text,
-          );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final emailController = useTextEditingController();
+    final passwordController = useTextEditingController();
+    
     final authState = ref.watch(authControllerProvider);
 
     // Listen for errors
@@ -51,13 +31,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
     });
 
+    void onLogin() {
+      if (formKey.currentState!.validate()) {
+        ref.read(authControllerProvider.notifier).signIn(
+              emailController.text.trim(),
+              passwordController.text,
+            );
+      }
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   AppTextField(
                     label: 'Email',
                     hint: 'Enter your email',
-                    controller: _emailController,
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: const Icon(Icons.email_outlined, color: Colors.white54),
                     validator: (val) {
@@ -99,7 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   AppTextField(
                     label: 'Password',
                     hint: 'Enter your password',
-                    controller: _passwordController,
+                    controller: passwordController,
                     isPassword: true,
                     prefixIcon: const Icon(Icons.lock_outline, color: Colors.white54),
                     validator: (val) {
@@ -129,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   AppButton(
                     text: 'Log In',
                     isLoading: authState.isLoading,
-                    onPressed: _onLogin,
+                    onPressed: onLogin,
                   ),
                   const SizedBox(height: 24),
                   Row(
