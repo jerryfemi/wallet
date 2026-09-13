@@ -10,7 +10,7 @@ class AppTheme {
   static const _subThemesData = FlexSubThemesData(
     defaultRadius: 16.0,
     buttonMinSize: Size(88, 56),
-    inputDecoratorRadius: 18.0,
+    inputDecoratorRadius: 16.0,
     inputDecoratorUnfocusedHasBorder: false,
     bottomSheetRadius: 24.0,
     cardRadius: 16.0,
@@ -31,23 +31,23 @@ class AppTheme {
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     hintStyle: const TextStyle(color: Colors.white38),
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(18.0),
+      borderRadius: BorderRadius.circular(16.0),
       borderSide: BorderSide.none,
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(18.0),
+      borderRadius: BorderRadius.circular(16.0),
       borderSide: BorderSide.none,
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(18.0),
+      borderRadius: BorderRadius.circular(16.0),
       borderSide: const BorderSide(color: _primary, width: 2),
     ),
     errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(18.0),
+      borderRadius: BorderRadius.circular(16.0),
       borderSide: const BorderSide(color: Colors.redAccent, width: 1),
     ),
     focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(18.0),
+      borderRadius: BorderRadius.circular(16.0),
       borderSide: const BorderSide(color: Colors.redAccent, width: 2),
     ),
   );
