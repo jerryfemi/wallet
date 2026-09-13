@@ -1,21 +1,40 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'color_tokens.dart';
+import 'semantic_colors.dart';
 
 class AppTheme {
+  static const _primary = ColorTokens.accentPrimary;
+
+  static ThemeData get lightTheme {
+    return FlexThemeData.light(
+      colors: FlexSchemeColor.from(primary: _primary),
+      keyColors: const FlexKeyColors(
+        useKeyColors: true,
+      ),
+      surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
+      blendLevel: 10,
+      appBarStyle: FlexAppBarStyle.primary,
+      transparentStatusBar: true,
+      tabBarStyle: FlexTabBarStyle.forAppBar,
+      tooltipsMatchBackground: true,
+      swapColors: false,
+      useMaterial3: true,
+      visualDensity: FlexColorScheme.comfortablePlatformDensity,
+      fontFamily: 'Inter',
+    ).copyWith(
+      extensions: const [
+        AppSemanticColors.light,
+      ],
+    );
+  }
+
   static ThemeData get darkTheme {
     return FlexThemeData.dark(
-      colors: const FlexSchemeColor(
-        primary: ColorTokens.accentPrimary,
-        primaryContainer: ColorTokens.bgSurfaceLight,
-        secondary: ColorTokens.accentSecondary,
-        secondaryContainer: ColorTokens.bgSurface,
-        tertiary: ColorTokens.positive,
-        tertiaryContainer: ColorTokens.negative,
-        appBarColor: ColorTokens.bgPrimary,
-        error: ColorTokens.negative,
+      colors: FlexSchemeColor.from(primary: _primary),
+      keyColors: const FlexKeyColors(
+        useKeyColors: true,
       ),
-      scaffoldBackground: ColorTokens.bgPrimary,
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
       blendLevel: 15,
       appBarStyle: FlexAppBarStyle.background,
@@ -28,6 +47,10 @@ class AppTheme {
       useMaterial3: true,
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       fontFamily: 'Inter',
+    ).copyWith(
+      extensions: const [
+        AppSemanticColors.dark,
+      ],
     );
   }
 }
