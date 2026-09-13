@@ -55,9 +55,9 @@ class AppButton extends StatelessWidget {
 
     switch (type) {
       case AppButtonType.primary:
-        button = ElevatedButton(
+        button = FilledButton(
           onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
+          style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
