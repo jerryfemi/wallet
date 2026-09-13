@@ -15,14 +15,17 @@ final authStateProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges();
 });
 
-final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<void>>((ref) {
-  return AuthController(ref.watch(authRepositoryProvider));
-});
+final authControllerProvider = AsyncNotifierProvider<AuthController, void>(
+  AuthController.new,
+);
 
-class AuthController extends StateNotifier<AsyncValue<void>> {
-  final AuthRepository _repository;
+class AuthController extends AsyncNotifier<void> {
+  late final AuthRepository _repository;
 
-  AuthController(this._repository) : super(const AsyncData(null));
+  @override
+  Future<void> build() async {
+    _repository = ref.watch(authRepositoryProvider);
+  }
 
   Future<void> signIn(String email, String password) async {
     state = const AsyncLoading();

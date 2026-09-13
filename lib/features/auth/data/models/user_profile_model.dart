@@ -5,7 +5,7 @@ part 'user_profile_model.freezed.dart';
 part 'user_profile_model.g.dart';
 
 @freezed
-class UserProfileModel with _$UserProfileModel {
+abstract class UserProfileModel with _$UserProfileModel {
   const UserProfileModel._();
 
   const factory UserProfileModel({
