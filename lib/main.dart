@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:device_preview/device_preview.dart';
 import 'app/router/app_router.dart';
 import 'app/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,6 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  DevicePreview.enable(); // Enable DevicePreview (automatically respects kReleaseMode in v3)
   runApp(const ProviderScope(child: CryptoSimApp()));
 }
 
