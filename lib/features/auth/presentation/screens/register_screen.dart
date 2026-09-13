@@ -4,6 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
+import '../../../../shared/widgets/premium_error_sheet.dart';
+import '../../domain/utils/auth_exception_mapper.dart';
 import '../providers/auth_provider.dart';
 
 class RegisterScreen extends HookConsumerWidget {
@@ -22,11 +24,11 @@ class RegisterScreen extends HookConsumerWidget {
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          final message = AuthExceptionMapper.mapException(error);
+          PremiumErrorSheet.show(
+            context,
+            title: 'Registration Failed',
+            message: message,
           );
         },
       );
@@ -118,10 +120,37 @@ class RegisterScreen extends HookConsumerWidget {
                       if (val == null || val.isEmpty) {
                         return 'Please enter a password';
                       }
-                      if (val.length < 6) {
-                        return 'Password must be at least 6 characters';
+                      if (val.length < 8) {
+                        return 'Password must be at least 8 characters';
+                      }
+                      if (!val.contains(RegExp(r'[A-Z]')) || !val.contains(RegExp(r'[a-z]'))) {
+                        return 'Must contain upper and lowercase letters';
+                      }
+                      if (!val.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+                        return 'Must contain a special character';
                       }
                       return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // Real-time Password Validation UI
+                  HookBuilder(
+                    builder: (context) {
+                      final passwordText = useValueListenable(passwordController).text;
+                      final hasMinLength = passwordText.length >= 8;
+                      final hasUpperAndLower = passwordText.contains(RegExp(r'[A-Z]')) && passwordText.contains(RegExp(r'[a-z]'));
+                      final hasSpecialChar = passwordText.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _PasswordRequirement(text: 'At least 8 characters', isMet: hasMinLength),
+                          const SizedBox(height: 8),
+                          _PasswordRequirement(text: 'Upper and lowercase letters', isMet: hasUpperAndLower),
+                          const SizedBox(height: 8),
+                          _PasswordRequirement(text: 'Special character (e.g. @, #, !)', isMet: hasSpecialChar),
+                        ],
+                      );
                     },
                   ),
                   const SizedBox(height: 40),
@@ -158,6 +187,34 @@ class RegisterScreen extends HookConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PasswordRequirement extends StatelessWidget {
+  final String text;
+  final bool isMet;
+
+  const _PasswordRequirement({required this.text, required this.isMet});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          isMet ? Icons.check_circle : Icons.radio_button_unchecked,
+          color: isMet ? Colors.green : Colors.white38,
+          size: 16,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: TextStyle(
+            color: isMet ? Colors.green : Colors.white38,
+            decoration: isMet ? TextDecoration.lineThrough : null,
+          ),
+        ),
+      ],
     );
   }
 }

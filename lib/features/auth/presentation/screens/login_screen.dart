@@ -4,6 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
+import '../../../../shared/widgets/premium_error_sheet.dart';
+import '../../domain/utils/auth_exception_mapper.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends HookConsumerWidget {
@@ -21,11 +23,11 @@ class LoginScreen extends HookConsumerWidget {
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          final message = AuthExceptionMapper.mapException(error);
+          PremiumErrorSheet.show(
+            context,
+            title: 'Sign In Failed',
+            message: message,
           );
         },
       );
