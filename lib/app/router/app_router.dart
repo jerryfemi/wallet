@@ -128,7 +128,7 @@ final routerNotifierProvider = NotifierProvider<RouterNotifier, void>(
 );
 
 class RouterNotifier extends Notifier<void> implements ChangeNotifier {
-  bool _isAuthenticated = true; // Set to true temporarily for UI development
+  bool _isAuthenticated = false; 
   bool _authStateKnown = false;
 
   bool get isAuthenticated => _isAuthenticated;

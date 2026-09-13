@@ -22,6 +22,7 @@ class RegisterScreen extends HookConsumerWidget {
 
     // Listen for errors
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
+      if (ModalRoute.of(context)?.isCurrent != true) return;
       next.whenOrNull(
         error: (error, stackTrace) {
           final message = AuthExceptionMapper.mapException(error);
