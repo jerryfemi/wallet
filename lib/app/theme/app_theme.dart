@@ -11,7 +11,7 @@ class AppTheme {
       colors: FlexSchemeColor.from(primary: _primary),
       keyColors: const FlexKeyColors(useKeyColors: false),
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
-      blendLevel: 8,
+      blendLevel: 0,
       appBarStyle: FlexAppBarStyle.primary,
       transparentStatusBar: true,
       tabBarStyle: FlexTabBarStyle.forAppBar,
@@ -27,7 +27,7 @@ class AppTheme {
     return FlexThemeData.dark(
       colors: FlexSchemeColor.from(primary: _primary),
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
-      blendLevel: 8, // A very subtle, premium purple tint on the dark greys
+      blendLevel: 0,
       appBarStyle: FlexAppBarStyle.background,
       transparentStatusBar: true,
       tabBarStyle: FlexTabBarStyle.forAppBar,
@@ -36,8 +36,6 @@ class AppTheme {
       useMaterial3: true,
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       fontFamily: 'Inter',
-    ).copyWith(
-      extensions: const [AppSemanticColors.dark],
-    );
+    ).copyWith(extensions: const [AppSemanticColors.dark]);
   }
 }
