@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -29,15 +30,22 @@ class CoinListTile extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: Skeleton.keep(
-              child: CachedNetworkImage(
-                imageUrl: coin.imageUrl,
-                width: 48,
-                height: 48,
-                placeholder: (context, url) => const Skeleton.replace(
-                  child: SizedBox(width: 48, height: 48),
-                ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
+              child: kIsWeb 
+                  ? Image.network(
+                      coin.imageUrl,
+                      width: 48,
+                      height: 48,
+                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: coin.imageUrl,
+                      width: 48,
+                      height: 48,
+                      placeholder: (context, url) => const Skeleton.replace(
+                        child: SizedBox(width: 48, height: 48),
+                      ),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                    ),
             ),
           ),
           const SizedBox(width: 16),
