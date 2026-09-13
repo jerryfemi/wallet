@@ -1,4 +1,4 @@
-import '../entities/user_profile.dart';
+import 'package:wallet/features/auth/domain/entities/user_profile.dart';
 
 abstract class AuthRepository {
   /// Stream of the currently authenticated user's profile
