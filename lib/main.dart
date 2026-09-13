@@ -15,16 +15,19 @@ void main() async {
   runApp(const ProviderScope(child: CryptoSimApp()));
 }
 
-class CryptoSimApp extends StatelessWidget {
+class CryptoSimApp extends ConsumerWidget {
   const CryptoSimApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return MaterialApp.router(
       title: 'CryptoSim',
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark, // Enforce dark theme based on the prototype
-      routerConfig: appRouter,
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }
