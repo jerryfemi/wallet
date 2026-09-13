@@ -9,8 +9,8 @@ class AppTheme {
 
   static const _subThemesData = FlexSubThemesData(
     defaultRadius: 16.0,
-    buttonMinSize: Size(88, 56), // Removed double.infinity to fix rendering assertion errors
-    inputDecoratorRadius: 12.0,
+    buttonMinSize: Size(88, 56),
+    inputDecoratorRadius: 18.0,
     inputDecoratorUnfocusedHasBorder: false,
     bottomSheetRadius: 24.0,
     cardRadius: 16.0,
@@ -23,6 +23,33 @@ class AppTheme {
     bodyLarge: AppTextStyles.body,
     bodyMedium: AppTextStyles.body,
     labelSmall: AppTextStyles.caption,
+  );
+
+  static final _inputDecorationTheme = InputDecorationTheme(
+    filled: true,
+    fillColor: const Color(0xFF1E2530),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    hintStyle: const TextStyle(color: Colors.white38),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18.0),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18.0),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18.0),
+      borderSide: const BorderSide(color: _primary, width: 2),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18.0),
+      borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18.0),
+      borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+    ),
   );
 
   static ThemeData get lightTheme {
@@ -41,7 +68,10 @@ class AppTheme {
       fontFamily: 'Inter',
       subThemesData: _subThemesData,
       textTheme: _textTheme,
-    ).copyWith(extensions: const [AppSemanticColors.light]);
+    ).copyWith(
+      extensions: const [AppSemanticColors.light],
+      inputDecorationTheme: _inputDecorationTheme,
+    );
   }
 
   static ThemeData get darkTheme {
@@ -59,6 +89,9 @@ class AppTheme {
       fontFamily: 'Inter',
       subThemesData: _subThemesData,
       textTheme: _textTheme,
-    ).copyWith(extensions: const [AppSemanticColors.dark]);
+    ).copyWith(
+      extensions: const [AppSemanticColors.dark],
+      inputDecorationTheme: _inputDecorationTheme,
+    );
   }
 }
