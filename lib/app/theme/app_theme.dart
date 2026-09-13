@@ -9,7 +9,7 @@ class AppTheme {
 
   static const _subThemesData = FlexSubThemesData(
     defaultRadius: 16.0,
-    buttonMinSize: Size(double.infinity, 56),
+    buttonMinSize: Size(88, 56), // Removed double.infinity to fix rendering assertion errors
     inputDecoratorRadius: 12.0,
     inputDecoratorUnfocusedHasBorder: false,
     bottomSheetRadius: 24.0,
