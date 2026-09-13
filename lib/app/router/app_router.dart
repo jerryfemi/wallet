@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -17,8 +17,11 @@ import 'routes.dart';
 
 
 
-final routerProvider = Provider<GoRouter>((ref) {
-  final notifier = ref.watch(routerNotifierProvider.notifier);
+part 'app_router.g.dart';
+
+@riverpod
+GoRouter goRouter(Ref ref) {
+  final notifier = ref.watch(authGateProvider.notifier);
 
   return GoRouter(
     initialLocation: Routes.home,
@@ -117,17 +120,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
   );
-});
+}
 
 // ---------------------------------------------------------------------------
 // RouterNotifier
 // ---------------------------------------------------------------------------
 
-final routerNotifierProvider = NotifierProvider<RouterNotifier, void>(
-  RouterNotifier.new,
-);
-
-class RouterNotifier extends Notifier<void> implements ChangeNotifier {
+@Riverpod(keepAlive: true)
+class AuthGate extends _$AuthGate implements ChangeNotifier {
   bool _isAuthenticated = false; 
   bool _authStateKnown = false;
 
