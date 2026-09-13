@@ -56,18 +56,18 @@ class PremiumErrorSheet extends StatelessWidget {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: Theme.of(context).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     message,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
-                          height: 1.5,
-                        ),
+                      color: Theme.of(context).textTheme.bodyLarge?.color
+                          ?.withValues(alpha: 0.7),
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 32),
                   AppButton(
