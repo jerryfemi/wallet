@@ -4,8 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
-import '../../../../shared/widgets/premium_error_sheet.dart';
-import '../../../../shared/widgets/premium_success_sheet.dart';
+import '../../../../shared/widgets/custom_sheet.dart';
 import '../../domain/utils/auth_exception_mapper.dart';
 import '../providers/auth_provider.dart';
 
@@ -26,18 +25,20 @@ class LoginScreen extends HookConsumerWidget {
       next.whenOrNull(
         error: (error, stackTrace) {
           final message = AuthExceptionMapper.mapException(error);
-          PremiumErrorSheet.show(
+          CustomSheet.show(
             context,
             title: 'Sign In Failed',
             message: message,
+            type: CustomSheetType.error,
           );
         },
         data: (_) {
           if (previous?.isLoading == true) {
-            PremiumSuccessSheet.show(
+            CustomSheet.show(
               context,
               title: 'Welcome Back!',
               message: 'You have successfully logged in.',
+              type: CustomSheetType.success,
             );
           }
         },
