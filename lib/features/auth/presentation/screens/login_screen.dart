@@ -16,14 +16,18 @@ class LoginScreen extends HookConsumerWidget {
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
+    final hasSubmitted = useState(false);
     
     final authState = ref.watch(authControllerProvider);
 
     // Listen for errors
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       if (ModalRoute.of(context)?.isCurrent != true) return;
+      if (!hasSubmitted.value) return;
+
       next.whenOrNull(
         error: (error, stackTrace) {
+          hasSubmitted.value = false; // Reset on error
           final message = AuthExceptionMapper.mapException(error);
           CustomSheet.show(
             context,
@@ -32,21 +36,12 @@ class LoginScreen extends HookConsumerWidget {
             type: CustomSheetType.error,
           );
         },
-        data: (_) {
-          if (previous?.isLoading == true) {
-            CustomSheet.show(
-              context,
-              title: 'Welcome Back!',
-              message: 'You have successfully logged in.',
-              type: CustomSheetType.success,
-            );
-          }
-        },
       );
     });
 
     void onLogin() {
       if (formKey.currentState!.validate()) {
+        hasSubmitted.value = true;
         ref.read(authControllerProvider.notifier).signIn(
               emailController.text.trim(),
               passwordController.text,
