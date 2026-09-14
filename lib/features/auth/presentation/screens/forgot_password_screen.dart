@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
 import '../../../../shared/widgets/custom_sheet.dart';
@@ -9,30 +10,34 @@ import '../../domain/utils/auth_exception_mapper.dart';
 import '../providers/auth_provider.dart';
 
 class ForgotPasswordScreen extends HookConsumerWidget {
-  const ForgotPasswordScreen({super.key});
+  final String? initialEmail;
+  const ForgotPasswordScreen({super.key, required this.initialEmail});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final emailController = useTextEditingController();
+    final emailController = useTextEditingController(text: initialEmail);
     final isLoading = useState(false);
 
     Future<void> onResetPassword() async {
       if (formKey.currentState!.validate()) {
         isLoading.value = true;
-        
+
         try {
           final authRepo = ref.read(authRepositoryProvider);
           await authRepo.sendPasswordResetEmail(emailController.text.trim());
-          
+
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Password reset email sent! Check your inbox.'),
-                backgroundColor: Colors.green,
-              ),
+            await CustomSheet.show(
+              context,
+              title: 'Check Your Inbox',
+              message: 'We\'ve sent a password reset link to ${emailController.text.trim()}.\nPlease check your spam folder if you don\'t see it.',
+              type: CustomSheetType.success,
             );
-            context.pop();
+            
+            if (context.mounted) {
+              context.pop();
+            }
           }
         } catch (e) {
           if (context.mounted) {
@@ -82,10 +87,7 @@ class ForgotPasswordScreen extends HookConsumerWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Enter your email address and we will send you a link to reset your password.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                   const SizedBox(height: 40),
                   AppTextField(
@@ -93,7 +95,10 @@ class ForgotPasswordScreen extends HookConsumerWidget {
                     hint: 'Enter your email',
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(Icons.email_outlined, color: Colors.white54),
+                    prefixIcon: const Icon(
+                      Icons.email_outlined,
+                      color: Colors.white54,
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter your email';
