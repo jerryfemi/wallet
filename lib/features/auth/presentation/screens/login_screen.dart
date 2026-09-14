@@ -81,7 +81,6 @@ class LoginScreen extends HookConsumerWidget {
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: const Icon(
                       Icons.email_outlined,
-                      color: Colors.white54,
                     ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
@@ -101,7 +100,6 @@ class LoginScreen extends HookConsumerWidget {
                     isPassword: true,
                     prefixIcon: const Icon(
                       Icons.lock_outline,
-                      color: Colors.white54,
                     ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
