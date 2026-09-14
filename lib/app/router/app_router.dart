@@ -15,8 +15,6 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../shared/widgets/app_shell.dart';
 import 'routes.dart';
 
-
-
 part 'app_router.g.dart';
 
 @riverpod
@@ -39,7 +37,8 @@ GoRouter goRouter(Ref ref) {
       ),
       GoRoute(
         path: Routes.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
+        builder: (context, state) =>
+            ForgotPasswordScreen(initialEmail: state.extra as String? ?? ""),
       ),
 
       // ── Main Shell ───────────────────────────────────────────────────────
@@ -93,7 +92,7 @@ GoRouter goRouter(Ref ref) {
     // ── Redirect logic ──────────────────────────────────────────────────────
     redirect: (context, state) {
       final location = state.matchedLocation;
-      
+
       // If we are waiting for the very first auth state emission, stay where we are or go to a splash screen.
       // For now, we bypass the gate until Firebase is fully hooked up.
       /*
@@ -103,9 +102,10 @@ GoRouter goRouter(Ref ref) {
       */
 
       final isLoggedIn = notifier.isAuthenticated;
-      final isAuthRoute = location == Routes.login || 
-                          location == Routes.register || 
-                          location == Routes.forgotPassword;
+      final isAuthRoute =
+          location == Routes.login ||
+          location == Routes.register ||
+          location == Routes.forgotPassword;
 
       // 1. Not logged in -> Redirect to login
       if (!isLoggedIn) {
@@ -128,7 +128,7 @@ GoRouter goRouter(Ref ref) {
 
 @Riverpod(keepAlive: true)
 class AuthGate extends _$AuthGate implements ChangeNotifier {
-  bool _isAuthenticated = false; 
+  bool _isAuthenticated = false;
   bool _authStateKnown = false;
 
   bool get isAuthenticated => _isAuthenticated;

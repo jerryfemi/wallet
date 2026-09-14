@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
 import '../../../../shared/widgets/custom_sheet.dart';
@@ -17,7 +18,7 @@ class LoginScreen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final hasSubmitted = useState(false);
-    
+
     final authState = ref.watch(authControllerProvider);
 
     // Listen for errors
@@ -42,10 +43,9 @@ class LoginScreen extends HookConsumerWidget {
     void onLogin() {
       if (formKey.currentState!.validate()) {
         hasSubmitted.value = true;
-        ref.read(authControllerProvider.notifier).signIn(
-              emailController.text.trim(),
-              passwordController.text,
-            );
+        ref
+            .read(authControllerProvider.notifier)
+            .signIn(emailController.text.trim(), passwordController.text);
       }
     }
 
@@ -71,10 +71,7 @@ class LoginScreen extends HookConsumerWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Log in to continue to CryptoSim',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                   const SizedBox(height: 40),
                   AppTextField(
@@ -82,7 +79,10 @@ class LoginScreen extends HookConsumerWidget {
                     hint: 'Enter your email',
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(Icons.email_outlined, color: Colors.white54),
+                    prefixIcon: const Icon(
+                      Icons.email_outlined,
+                      color: Colors.white54,
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter your email';
@@ -99,7 +99,10 @@ class LoginScreen extends HookConsumerWidget {
                     hint: 'Enter your password',
                     controller: passwordController,
                     isPassword: true,
-                    prefixIcon: const Icon(Icons.lock_outline, color: Colors.white54),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline,
+                      color: Colors.white54,
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter your password';
@@ -112,7 +115,10 @@ class LoginScreen extends HookConsumerWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        context.push('/forgot-password');
+                        context.push(
+                          '/forgot-password',
+                          extra: emailController.text.trim(),
+                        );
                       },
                       child: Text(
                         'Forgot Password?',
