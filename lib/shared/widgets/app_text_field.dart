@@ -29,11 +29,10 @@ class AppTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.white70,
-          ),
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+              ),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -42,17 +41,9 @@ class AppTextField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           onChanged: onChanged,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Colors.white38),
             prefixIcon: prefixIcon,
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
-            ),
           ),
         ),
       ],
