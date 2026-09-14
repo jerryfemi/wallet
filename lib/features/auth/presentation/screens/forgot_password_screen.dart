@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
-import '../../../../shared/widgets/premium_error_sheet.dart';
+import '../../../../shared/widgets/custom_sheet.dart';
 import '../../domain/utils/auth_exception_mapper.dart';
 import '../providers/auth_provider.dart';
 
@@ -37,10 +37,11 @@ class ForgotPasswordScreen extends HookConsumerWidget {
         } catch (e) {
           if (context.mounted) {
             final message = AuthExceptionMapper.mapException(e);
-            PremiumErrorSheet.show(
+            CustomSheet.show(
               context,
               title: 'Reset Failed',
               message: message,
+              type: CustomSheetType.error,
             );
           }
         } finally {
