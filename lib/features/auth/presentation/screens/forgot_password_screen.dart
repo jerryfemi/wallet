@@ -97,7 +97,6 @@ class ForgotPasswordScreen extends HookConsumerWidget {
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: const Icon(
                       Icons.email_outlined,
-                      color: Colors.white54,
                     ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
