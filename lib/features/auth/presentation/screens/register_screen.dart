@@ -91,7 +91,7 @@ class RegisterScreen extends HookConsumerWidget {
                     label: 'Display Name',
                     hint: 'Enter your full name',
                     controller: nameController,
-                    prefixIcon: const Icon(Icons.person_outline, color: Colors.white54),
+                    prefixIcon: const Icon(Icons.person_outline),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
                         return 'Please enter your name';
@@ -105,7 +105,7 @@ class RegisterScreen extends HookConsumerWidget {
                     hint: 'Enter your email',
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(Icons.email_outlined, color: Colors.white54),
+                    prefixIcon: const Icon(Icons.email_outlined),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter your email';
@@ -122,7 +122,7 @@ class RegisterScreen extends HookConsumerWidget {
                     hint: 'Create a password',
                     controller: passwordController,
                     isPassword: true,
-                    prefixIcon: const Icon(Icons.lock_outline, color: Colors.white54),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter a password';
