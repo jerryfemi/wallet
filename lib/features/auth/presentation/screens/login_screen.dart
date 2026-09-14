@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_text_field.dart';
 import '../../../../shared/widgets/premium_error_sheet.dart';
+import '../../../../shared/widgets/premium_success_sheet.dart';
 import '../../domain/utils/auth_exception_mapper.dart';
 import '../providers/auth_provider.dart';
 
@@ -30,6 +31,15 @@ class LoginScreen extends HookConsumerWidget {
             title: 'Sign In Failed',
             message: message,
           );
+        },
+        data: (_) {
+          if (previous?.isLoading == true) {
+            PremiumSuccessSheet.show(
+              context,
+              title: 'Welcome Back!',
+              message: 'You have successfully logged in.',
+            );
+          }
         },
       );
     });
