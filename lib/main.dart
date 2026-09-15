@@ -38,22 +38,25 @@ class CryptoSimApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
 
-    return SkeletonizerConfig(
-      data: SkeletonizerConfigData(
-        effectResolver: (Brightness _) => const ShimmerEffect(
-          baseColor: Color(0xFF1E2530),
-          highlightColor: Color(0xFF2A2D3E),
-          duration: Duration(seconds: 2),
-        ),
-      ),
-      child: MaterialApp.router(
-        title: 'CryptoSim',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark, // Enforce dark theme based on the prototype
-        routerConfig: router,
-        debugShowCheckedModeBanner: false,
-      ),
+    return MaterialApp.router(
+      title: 'CryptoSim',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark, // Enforce dark theme based on the prototype
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return SkeletonizerConfig(
+          data: SkeletonizerConfigData(
+            effectResolver: (brightness) => switch (brightness) {
+              Brightness.light => const ShimmerEffect(),
+              Brightness.dark => const ShimmerEffect.dark(),
+            },
+            brightness: Theme.of(context).brightness,
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }
