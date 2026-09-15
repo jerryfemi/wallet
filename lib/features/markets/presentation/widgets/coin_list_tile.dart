@@ -21,7 +21,7 @@ class CoinListTile extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: Theme.of(context).dividerColor,
           ),
         ),
       ),
@@ -68,7 +68,7 @@ class CoinListTile extends StatelessWidget {
                 Text(
                   coin.symbol,
                   style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: Colors.white54),
+                      ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
