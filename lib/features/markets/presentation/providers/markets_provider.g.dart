@@ -188,3 +188,185 @@ abstract class _$Markets extends $AsyncNotifier<List<CoinEntity>> {
     return element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(SearchQuery)
+final searchQueryProvider = SearchQueryProvider._();
+
+final class SearchQueryProvider extends $NotifierProvider<SearchQuery, String> {
+  SearchQueryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'searchQueryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchQueryHash();
+
+  @$internal
+  @override
+  SearchQuery create() => SearchQuery();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$searchQueryHash() => r'c20c8b67cdf9a8c8820d422de83c580e88655dcd';
+
+abstract class _$SearchQuery extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(ActiveMarketFilter)
+final activeMarketFilterProvider = ActiveMarketFilterProvider._();
+
+final class ActiveMarketFilterProvider
+    extends $NotifierProvider<ActiveMarketFilter, MarketFilter> {
+  ActiveMarketFilterProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activeMarketFilterProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activeMarketFilterHash();
+
+  @$internal
+  @override
+  ActiveMarketFilter create() => ActiveMarketFilter();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MarketFilter value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MarketFilter>(value),
+    );
+  }
+}
+
+String _$activeMarketFilterHash() =>
+    r'0df9b98b1159583a49d72fd287409e29420c9394';
+
+abstract class _$ActiveMarketFilter extends $Notifier<MarketFilter> {
+  MarketFilter build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<MarketFilter, MarketFilter>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<MarketFilter, MarketFilter>,
+              MarketFilter,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(filteredMarkets)
+final filteredMarketsProvider = FilteredMarketsProvider._();
+
+final class FilteredMarketsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CoinEntity>>,
+          List<CoinEntity>,
+          FutureOr<List<CoinEntity>>
+        >
+    with $FutureModifier<List<CoinEntity>>, $FutureProvider<List<CoinEntity>> {
+  FilteredMarketsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'filteredMarketsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$filteredMarketsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CoinEntity>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CoinEntity>> create(Ref ref) {
+    return filteredMarkets(ref);
+  }
+}
+
+String _$filteredMarketsHash() => r'954ff632a0b403c6356cb4fc093f4f5588b82a45';
+
+@ProviderFor(topMovers)
+final topMoversProvider = TopMoversProvider._();
+
+final class TopMoversProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CoinEntity>>,
+          List<CoinEntity>,
+          FutureOr<List<CoinEntity>>
+        >
+    with $FutureModifier<List<CoinEntity>>, $FutureProvider<List<CoinEntity>> {
+  TopMoversProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'topMoversProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$topMoversHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CoinEntity>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CoinEntity>> create(Ref ref) {
+    return topMovers(ref);
+  }
+}
+
+String _$topMoversHash() => r'374fab5adac02bb05ab790675758d8a932c80db7';
