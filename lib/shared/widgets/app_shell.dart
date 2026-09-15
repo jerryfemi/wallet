@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -35,36 +36,31 @@ class AppShell extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _NavBarItem(
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home,
+                  svgAsset: 'assets/icons/home.svg',
                   label: 'Home',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
                 ),
                 _NavBarItem(
-                  icon: Icons.show_chart_outlined,
-                  activeIcon: Icons.show_chart,
+                  svgAsset: 'assets/icons/markets.svg',
                   label: 'Markets',
                   isSelected: navigationShell.currentIndex == 1,
                   onTap: () => _onTap(1),
                 ),
                 _NavBarItem(
-                  icon: Icons.account_balance_wallet_outlined,
-                  activeIcon: Icons.account_balance_wallet,
+                  svgAsset: 'assets/icons/wallet.svg',
                   label: 'Wallet',
                   isSelected: navigationShell.currentIndex == 2,
                   onTap: () => _onTap(2),
                 ),
                 _NavBarItem(
-                  icon: Icons.history_outlined,
-                  activeIcon: Icons.history,
+                  svgAsset: 'assets/icons/activity.svg',
                   label: 'Activity',
                   isSelected: navigationShell.currentIndex == 3,
                   onTap: () => _onTap(3),
                 ),
                 _NavBarItem(
-                  icon: Icons.person_outline,
-                  activeIcon: Icons.person,
+                  svgAsset: 'assets/icons/profile.svg',
                   label: 'Profile',
                   isSelected: navigationShell.currentIndex == 4,
                   onTap: () => _onTap(4),
@@ -86,15 +82,13 @@ class AppShell extends StatelessWidget {
 }
 
 class _NavBarItem extends StatelessWidget {
-  final IconData icon;
-  final IconData activeIcon;
+  final String svgAsset;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _NavBarItem({
-    required this.icon,
-    required this.activeIcon,
+    required this.svgAsset,
     required this.label,
     required this.isSelected,
     required this.onTap,
@@ -123,7 +117,12 @@ class _NavBarItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(isSelected ? activeIcon : icon, color: color, size: 24),
+            SvgPicture.asset(
+              svgAsset,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
             const SizedBox(height: 4),
             Text(
               label,
