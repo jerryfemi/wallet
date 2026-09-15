@@ -13,9 +13,12 @@ class AppShell extends StatelessWidget {
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(left: 12, right: 12, bottom: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E2530).withValues(alpha: 0.65),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest
+              .withValues(alpha: 1.5),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.35),
@@ -96,7 +99,11 @@ class _NavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isSelected ? const Color(0xFF6C5CE7) : Colors.white54;
+    final theme = Theme.of(context);
+    final color = isSelected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -106,9 +113,9 @@ class _NavBarItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF1E2530).withValues(alpha: 0.3)
+              ? theme.colorScheme.onSurface.withValues(alpha: 0.1)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
