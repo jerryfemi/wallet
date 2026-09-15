@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:decimal/decimal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../providers/markets_provider.dart';
@@ -74,11 +75,11 @@ class MarketsScreen extends HookConsumerWidget {
         symbol: 'DUMMY',
         name: 'Loading Coin',
         imageUrl: '',
-        currentPrice: 99999.99,
-        marketCap: 0,
-        marketCapRank: index,
-        totalVolume: 0,
-        priceChangePercentage24h: 5.5,
+        currentPrice: Decimal.parse('99999.99'),
+        marketCap: Decimal.parse('1000000.0'),
+        marketCapRank: 1,
+        totalVolume: Decimal.parse('10000.0'),
+        priceChangePercentage24h: Decimal.parse('5.0'),
         sparkline: [1, 2, 1, 3, 2, 4, 3, 5],
       ),
     );

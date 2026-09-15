@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:decimal/decimal.dart';
 
 import '../../domain/entities/coin_entity.dart';
 
@@ -13,7 +14,7 @@ class CoinListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPositive = coin.priceChangePercentage24h >= 0;
+    final isPositive = coin.priceChangePercentage24h >= Decimal.zero;
     final color = isPositive ? Colors.greenAccent : Colors.redAccent;
 
     return Container(

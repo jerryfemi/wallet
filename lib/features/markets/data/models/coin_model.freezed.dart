@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CoinModel {
 
- String get id; String get symbol; String get name; String get image;@JsonKey(name: 'current_price') double? get currentPrice;@JsonKey(name: 'market_cap') double? get marketCap;@JsonKey(name: 'market_cap_rank') int? get marketCapRank;@JsonKey(name: 'total_volume') double? get totalVolume;@JsonKey(name: 'price_change_percentage_24h') double? get priceChangePercentage24h;@JsonKey(name: 'sparkline_in_7d') SparklineModel? get sparklineIn7d;
+ String get id; String get symbol; String get name; String get image;@DecimalConverter()@JsonKey(name: 'current_price') Decimal get currentPrice;@DecimalConverter()@JsonKey(name: 'market_cap') Decimal get marketCap;@JsonKey(name: 'market_cap_rank') int get marketCapRank;@DecimalConverter()@JsonKey(name: 'total_volume') Decimal get totalVolume;@DecimalConverter()@JsonKey(name: 'price_change_percentage_24h') Decimal get priceChangePercentage24h;@JsonKey(name: 'sparkline_in_7d') SparklineModel? get sparklineIn7d;
 /// Create a copy of CoinModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $CoinModelCopyWith<$Res>  {
   factory $CoinModelCopyWith(CoinModel value, $Res Function(CoinModel) _then) = _$CoinModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String symbol, String name, String image,@JsonKey(name: 'current_price') double? currentPrice,@JsonKey(name: 'market_cap') double? marketCap,@JsonKey(name: 'market_cap_rank') int? marketCapRank,@JsonKey(name: 'total_volume') double? totalVolume,@JsonKey(name: 'price_change_percentage_24h') double? priceChangePercentage24h,@JsonKey(name: 'sparkline_in_7d') SparklineModel? sparklineIn7d
+ String id, String symbol, String name, String image,@DecimalConverter()@JsonKey(name: 'current_price') Decimal currentPrice,@DecimalConverter()@JsonKey(name: 'market_cap') Decimal marketCap,@JsonKey(name: 'market_cap_rank') int marketCapRank,@DecimalConverter()@JsonKey(name: 'total_volume') Decimal totalVolume,@DecimalConverter()@JsonKey(name: 'price_change_percentage_24h') Decimal priceChangePercentage24h,@JsonKey(name: 'sparkline_in_7d') SparklineModel? sparklineIn7d
 });
 
 
@@ -71,18 +71,18 @@ class _$CoinModelCopyWithImpl<$Res>
 
 /// Create a copy of CoinModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = freezed,Object? marketCap = freezed,Object? marketCapRank = freezed,Object? totalVolume = freezed,Object? priceChangePercentage24h = freezed,Object? sparklineIn7d = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = null,Object? marketCap = null,Object? marketCapRank = null,Object? totalVolume = null,Object? priceChangePercentage24h = null,Object? sparklineIn7d = freezed,}) {
   return _then(CoinModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,symbol: null == symbol ? _self.symbol : symbol // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
-as String,currentPrice: freezed == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
-as double?,marketCap: freezed == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
-as double?,marketCapRank: freezed == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
-as int?,totalVolume: freezed == totalVolume ? _self.totalVolume : totalVolume // ignore: cast_nullable_to_non_nullable
-as double?,priceChangePercentage24h: freezed == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
-as double?,sparklineIn7d: freezed == sparklineIn7d ? _self.sparklineIn7d : sparklineIn7d // ignore: cast_nullable_to_non_nullable
+as String,currentPrice: null == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
+as int,totalVolume: null == totalVolume ? _self.totalVolume : totalVolume // ignore: cast_nullable_to_non_nullable
+as Decimal,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
+as Decimal,sparklineIn7d: freezed == sparklineIn7d ? _self.sparklineIn7d : sparklineIn7d // ignore: cast_nullable_to_non_nullable
 as SparklineModel?,
   ));
 }
@@ -180,7 +180,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String image, @JsonKey(name: 'current_price')  double? currentPrice, @JsonKey(name: 'market_cap')  double? marketCap, @JsonKey(name: 'market_cap_rank')  int? marketCapRank, @JsonKey(name: 'total_volume')  double? totalVolume, @JsonKey(name: 'price_change_percentage_24h')  double? priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d')  SparklineModel? sparklineIn7d)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String image, @DecimalConverter()@JsonKey(name: 'current_price')  Decimal currentPrice, @DecimalConverter()@JsonKey(name: 'market_cap')  Decimal marketCap, @JsonKey(name: 'market_cap_rank')  int marketCapRank, @DecimalConverter()@JsonKey(name: 'total_volume')  Decimal totalVolume, @DecimalConverter()@JsonKey(name: 'price_change_percentage_24h')  Decimal priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d')  SparklineModel? sparklineIn7d)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CoinModel() when $default != null:
 return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.totalVolume,_that.priceChangePercentage24h,_that.sparklineIn7d);case _:
@@ -201,7 +201,7 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String image, @JsonKey(name: 'current_price')  double? currentPrice, @JsonKey(name: 'market_cap')  double? marketCap, @JsonKey(name: 'market_cap_rank')  int? marketCapRank, @JsonKey(name: 'total_volume')  double? totalVolume, @JsonKey(name: 'price_change_percentage_24h')  double? priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d')  SparklineModel? sparklineIn7d)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String image, @DecimalConverter()@JsonKey(name: 'current_price')  Decimal currentPrice, @DecimalConverter()@JsonKey(name: 'market_cap')  Decimal marketCap, @JsonKey(name: 'market_cap_rank')  int marketCapRank, @DecimalConverter()@JsonKey(name: 'total_volume')  Decimal totalVolume, @DecimalConverter()@JsonKey(name: 'price_change_percentage_24h')  Decimal priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d')  SparklineModel? sparklineIn7d)  $default,) {final _that = this;
 switch (_that) {
 case _CoinModel():
 return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.totalVolume,_that.priceChangePercentage24h,_that.sparklineIn7d);case _:
@@ -221,7 +221,7 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String symbol,  String name,  String image, @JsonKey(name: 'current_price')  double? currentPrice, @JsonKey(name: 'market_cap')  double? marketCap, @JsonKey(name: 'market_cap_rank')  int? marketCapRank, @JsonKey(name: 'total_volume')  double? totalVolume, @JsonKey(name: 'price_change_percentage_24h')  double? priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d')  SparklineModel? sparklineIn7d)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String symbol,  String name,  String image, @DecimalConverter()@JsonKey(name: 'current_price')  Decimal currentPrice, @DecimalConverter()@JsonKey(name: 'market_cap')  Decimal marketCap, @JsonKey(name: 'market_cap_rank')  int marketCapRank, @DecimalConverter()@JsonKey(name: 'total_volume')  Decimal totalVolume, @DecimalConverter()@JsonKey(name: 'price_change_percentage_24h')  Decimal priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d')  SparklineModel? sparklineIn7d)?  $default,) {final _that = this;
 switch (_that) {
 case _CoinModel() when $default != null:
 return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.totalVolume,_that.priceChangePercentage24h,_that.sparklineIn7d);case _:
@@ -236,18 +236,18 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 @JsonSerializable()
 
 class _CoinModel implements CoinModel {
-  const _CoinModel({required this.id, required this.symbol, required this.name, required this.image, @JsonKey(name: 'current_price') this.currentPrice, @JsonKey(name: 'market_cap') this.marketCap, @JsonKey(name: 'market_cap_rank') this.marketCapRank, @JsonKey(name: 'total_volume') this.totalVolume, @JsonKey(name: 'price_change_percentage_24h') this.priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d') this.sparklineIn7d});
+  const _CoinModel({required this.id, required this.symbol, required this.name, required this.image, @DecimalConverter()@JsonKey(name: 'current_price') required this.currentPrice, @DecimalConverter()@JsonKey(name: 'market_cap') required this.marketCap, @JsonKey(name: 'market_cap_rank') required this.marketCapRank, @DecimalConverter()@JsonKey(name: 'total_volume') required this.totalVolume, @DecimalConverter()@JsonKey(name: 'price_change_percentage_24h') required this.priceChangePercentage24h, @JsonKey(name: 'sparkline_in_7d') this.sparklineIn7d});
   factory _CoinModel.fromJson(Map<String, dynamic> json) => _$CoinModelFromJson(json);
 
 @override final  String id;
 @override final  String symbol;
 @override final  String name;
 @override final  String image;
-@override@JsonKey(name: 'current_price') final  double? currentPrice;
-@override@JsonKey(name: 'market_cap') final  double? marketCap;
-@override@JsonKey(name: 'market_cap_rank') final  int? marketCapRank;
-@override@JsonKey(name: 'total_volume') final  double? totalVolume;
-@override@JsonKey(name: 'price_change_percentage_24h') final  double? priceChangePercentage24h;
+@override@DecimalConverter()@JsonKey(name: 'current_price') final  Decimal currentPrice;
+@override@DecimalConverter()@JsonKey(name: 'market_cap') final  Decimal marketCap;
+@override@JsonKey(name: 'market_cap_rank') final  int marketCapRank;
+@override@DecimalConverter()@JsonKey(name: 'total_volume') final  Decimal totalVolume;
+@override@DecimalConverter()@JsonKey(name: 'price_change_percentage_24h') final  Decimal priceChangePercentage24h;
 @override@JsonKey(name: 'sparkline_in_7d') final  SparklineModel? sparklineIn7d;
 
 /// Create a copy of CoinModel
@@ -285,7 +285,7 @@ abstract mixin class _$CoinModelCopyWith<$Res> implements $CoinModelCopyWith<$Re
   factory _$CoinModelCopyWith(_CoinModel value, $Res Function(_CoinModel) _then) = __$CoinModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String symbol, String name, String image,@JsonKey(name: 'current_price') double? currentPrice,@JsonKey(name: 'market_cap') double? marketCap,@JsonKey(name: 'market_cap_rank') int? marketCapRank,@JsonKey(name: 'total_volume') double? totalVolume,@JsonKey(name: 'price_change_percentage_24h') double? priceChangePercentage24h,@JsonKey(name: 'sparkline_in_7d') SparklineModel? sparklineIn7d
+ String id, String symbol, String name, String image,@DecimalConverter()@JsonKey(name: 'current_price') Decimal currentPrice,@DecimalConverter()@JsonKey(name: 'market_cap') Decimal marketCap,@JsonKey(name: 'market_cap_rank') int marketCapRank,@DecimalConverter()@JsonKey(name: 'total_volume') Decimal totalVolume,@DecimalConverter()@JsonKey(name: 'price_change_percentage_24h') Decimal priceChangePercentage24h,@JsonKey(name: 'sparkline_in_7d') SparklineModel? sparklineIn7d
 });
 
 
@@ -302,18 +302,18 @@ class __$CoinModelCopyWithImpl<$Res>
 
 /// Create a copy of CoinModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = freezed,Object? marketCap = freezed,Object? marketCapRank = freezed,Object? totalVolume = freezed,Object? priceChangePercentage24h = freezed,Object? sparklineIn7d = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = null,Object? marketCap = null,Object? marketCapRank = null,Object? totalVolume = null,Object? priceChangePercentage24h = null,Object? sparklineIn7d = freezed,}) {
   return _then(_CoinModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,symbol: null == symbol ? _self.symbol : symbol // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
-as String,currentPrice: freezed == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
-as double?,marketCap: freezed == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
-as double?,marketCapRank: freezed == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
-as int?,totalVolume: freezed == totalVolume ? _self.totalVolume : totalVolume // ignore: cast_nullable_to_non_nullable
-as double?,priceChangePercentage24h: freezed == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
-as double?,sparklineIn7d: freezed == sparklineIn7d ? _self.sparklineIn7d : sparklineIn7d // ignore: cast_nullable_to_non_nullable
+as String,currentPrice: null == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
+as int,totalVolume: null == totalVolume ? _self.totalVolume : totalVolume // ignore: cast_nullable_to_non_nullable
+as Decimal,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
+as Decimal,sparklineIn7d: freezed == sparklineIn7d ? _self.sparklineIn7d : sparklineIn7d // ignore: cast_nullable_to_non_nullable
 as SparklineModel?,
   ));
 }

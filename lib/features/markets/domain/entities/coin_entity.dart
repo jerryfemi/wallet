@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:decimal/decimal.dart';
 
 part 'coin_entity.freezed.dart';
 
@@ -9,11 +10,11 @@ abstract class CoinEntity with _$CoinEntity {
     required String symbol,
     required String name,
     required String imageUrl,
-    required double currentPrice,
-    required double marketCap,
+    required Decimal currentPrice,
+    required Decimal marketCap,
     required int marketCapRank,
-    required double totalVolume,
-    required double priceChangePercentage24h,
+    required Decimal totalVolume,
+    required Decimal priceChangePercentage24h,
     required List<double> sparkline, // Empty list if no sparkline data
   }) = _CoinEntity;
 }

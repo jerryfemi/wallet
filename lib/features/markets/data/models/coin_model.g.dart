@@ -11,12 +11,13 @@ _CoinModel _$CoinModelFromJson(Map<String, dynamic> json) => _CoinModel(
   symbol: json['symbol'] as String,
   name: json['name'] as String,
   image: json['image'] as String,
-  currentPrice: (json['current_price'] as num?)?.toDouble(),
-  marketCap: (json['market_cap'] as num?)?.toDouble(),
-  marketCapRank: (json['market_cap_rank'] as num?)?.toInt(),
-  totalVolume: (json['total_volume'] as num?)?.toDouble(),
-  priceChangePercentage24h: (json['price_change_percentage_24h'] as num?)
-      ?.toDouble(),
+  currentPrice: const DecimalConverter().fromJson(json['current_price']),
+  marketCap: const DecimalConverter().fromJson(json['market_cap']),
+  marketCapRank: (json['market_cap_rank'] as num).toInt(),
+  totalVolume: const DecimalConverter().fromJson(json['total_volume']),
+  priceChangePercentage24h: const DecimalConverter().fromJson(
+    json['price_change_percentage_24h'],
+  ),
   sparklineIn7d: json['sparkline_in_7d'] == null
       ? null
       : SparklineModel.fromJson(
@@ -30,11 +31,13 @@ Map<String, dynamic> _$CoinModelToJson(_CoinModel instance) =>
       'symbol': instance.symbol,
       'name': instance.name,
       'image': instance.image,
-      'current_price': instance.currentPrice,
-      'market_cap': instance.marketCap,
+      'current_price': const DecimalConverter().toJson(instance.currentPrice),
+      'market_cap': const DecimalConverter().toJson(instance.marketCap),
       'market_cap_rank': instance.marketCapRank,
-      'total_volume': instance.totalVolume,
-      'price_change_percentage_24h': instance.priceChangePercentage24h,
+      'total_volume': const DecimalConverter().toJson(instance.totalVolume),
+      'price_change_percentage_24h': const DecimalConverter().toJson(
+        instance.priceChangePercentage24h,
+      ),
       'sparkline_in_7d': instance.sparklineIn7d,
     };
 

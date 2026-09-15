@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CoinEntity {
 
- String get id; String get symbol; String get name; String get imageUrl; double get currentPrice; double get marketCap; int get marketCapRank; double get totalVolume; double get priceChangePercentage24h; List<double> get sparkline;
+ String get id; String get symbol; String get name; String get imageUrl; Decimal get currentPrice; Decimal get marketCap; int get marketCapRank; Decimal get totalVolume; Decimal get priceChangePercentage24h; List<double> get sparkline;
 /// Create a copy of CoinEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -51,7 +51,7 @@ abstract mixin class $CoinEntityCopyWith<$Res>  {
   factory $CoinEntityCopyWith(CoinEntity value, $Res Function(CoinEntity) _then) = _$CoinEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String symbol, String name, String imageUrl, double currentPrice, double marketCap, int marketCapRank, double totalVolume, double priceChangePercentage24h, List<double> sparkline
+ String id, String symbol, String name, String imageUrl, Decimal currentPrice, Decimal marketCap, int marketCapRank, Decimal totalVolume, Decimal priceChangePercentage24h, List<double> sparkline
 });
 
 
@@ -75,11 +75,11 @@ as String,symbol: null == symbol ? _self.symbol : symbol // ignore: cast_nullabl
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,currentPrice: null == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
-as double,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
-as double,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
 as int,totalVolume: null == totalVolume ? _self.totalVolume : totalVolume // ignore: cast_nullable_to_non_nullable
-as double,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
-as double,sparkline: null == sparkline ? _self.sparkline : sparkline // ignore: cast_nullable_to_non_nullable
+as Decimal,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
+as Decimal,sparkline: null == sparkline ? _self.sparkline : sparkline // ignore: cast_nullable_to_non_nullable
 as List<double>,
   ));
 }
@@ -165,7 +165,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String imageUrl,  double currentPrice,  double marketCap,  int marketCapRank,  double totalVolume,  double priceChangePercentage24h,  List<double> sparkline)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String imageUrl,  Decimal currentPrice,  Decimal marketCap,  int marketCapRank,  Decimal totalVolume,  Decimal priceChangePercentage24h,  List<double> sparkline)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CoinEntity() when $default != null:
 return $default(_that.id,_that.symbol,_that.name,_that.imageUrl,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.totalVolume,_that.priceChangePercentage24h,_that.sparkline);case _:
@@ -186,7 +186,7 @@ return $default(_that.id,_that.symbol,_that.name,_that.imageUrl,_that.currentPri
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String imageUrl,  double currentPrice,  double marketCap,  int marketCapRank,  double totalVolume,  double priceChangePercentage24h,  List<double> sparkline)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String symbol,  String name,  String imageUrl,  Decimal currentPrice,  Decimal marketCap,  int marketCapRank,  Decimal totalVolume,  Decimal priceChangePercentage24h,  List<double> sparkline)  $default,) {final _that = this;
 switch (_that) {
 case _CoinEntity():
 return $default(_that.id,_that.symbol,_that.name,_that.imageUrl,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.totalVolume,_that.priceChangePercentage24h,_that.sparkline);case _:
@@ -206,7 +206,7 @@ return $default(_that.id,_that.symbol,_that.name,_that.imageUrl,_that.currentPri
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String symbol,  String name,  String imageUrl,  double currentPrice,  double marketCap,  int marketCapRank,  double totalVolume,  double priceChangePercentage24h,  List<double> sparkline)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String symbol,  String name,  String imageUrl,  Decimal currentPrice,  Decimal marketCap,  int marketCapRank,  Decimal totalVolume,  Decimal priceChangePercentage24h,  List<double> sparkline)?  $default,) {final _that = this;
 switch (_that) {
 case _CoinEntity() when $default != null:
 return $default(_that.id,_that.symbol,_that.name,_that.imageUrl,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.totalVolume,_that.priceChangePercentage24h,_that.sparkline);case _:
@@ -228,11 +228,11 @@ class _CoinEntity implements CoinEntity {
 @override final  String symbol;
 @override final  String name;
 @override final  String imageUrl;
-@override final  double currentPrice;
-@override final  double marketCap;
+@override final  Decimal currentPrice;
+@override final  Decimal marketCap;
 @override final  int marketCapRank;
-@override final  double totalVolume;
-@override final  double priceChangePercentage24h;
+@override final  Decimal totalVolume;
+@override final  Decimal priceChangePercentage24h;
  final  List<double> _sparkline;
 @override List<double> get sparkline {
   if (_sparkline is EqualUnmodifiableListView) return _sparkline;
@@ -273,7 +273,7 @@ abstract mixin class _$CoinEntityCopyWith<$Res> implements $CoinEntityCopyWith<$
   factory _$CoinEntityCopyWith(_CoinEntity value, $Res Function(_CoinEntity) _then) = __$CoinEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String symbol, String name, String imageUrl, double currentPrice, double marketCap, int marketCapRank, double totalVolume, double priceChangePercentage24h, List<double> sparkline
+ String id, String symbol, String name, String imageUrl, Decimal currentPrice, Decimal marketCap, int marketCapRank, Decimal totalVolume, Decimal priceChangePercentage24h, List<double> sparkline
 });
 
 
@@ -297,11 +297,11 @@ as String,symbol: null == symbol ? _self.symbol : symbol // ignore: cast_nullabl
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,currentPrice: null == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
-as double,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
-as double,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as Decimal,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
 as int,totalVolume: null == totalVolume ? _self.totalVolume : totalVolume // ignore: cast_nullable_to_non_nullable
-as double,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
-as double,sparkline: null == sparkline ? _self._sparkline : sparkline // ignore: cast_nullable_to_non_nullable
+as Decimal,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
+as Decimal,sparkline: null == sparkline ? _self._sparkline : sparkline // ignore: cast_nullable_to_non_nullable
 as List<double>,
   ));
 }
