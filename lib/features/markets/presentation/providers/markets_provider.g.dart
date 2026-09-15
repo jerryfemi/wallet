@@ -48,7 +48,7 @@ final class DioClientProvider
   }
 }
 
-String _$dioClientHash() => r'8b2f86db76ff702eaf0eb16fd9c186e5d62db83e';
+String _$dioClientHash() => r'e6a9dcce6804aa95cb3ea31bbb6d28ca56890385';
 
 @ProviderFor(coinGeckoApiService)
 final coinGeckoApiServiceProvider = CoinGeckoApiServiceProvider._();
@@ -96,7 +96,7 @@ final class CoinGeckoApiServiceProvider
 }
 
 String _$coinGeckoApiServiceHash() =>
-    r'f5a1760a65eaeff0a45abf73532c0788afeea0bf';
+    r'8526d98bf0c2a78dadf0c27ab962a40a0e8fa556';
 
 @ProviderFor(marketRepository)
 final marketRepositoryProvider = MarketRepositoryProvider._();
@@ -142,7 +142,7 @@ final class MarketRepositoryProvider
   }
 }
 
-String _$marketRepositoryHash() => r'8242e3c0cfcccc46cc819f3804ae05fb20e8ab1a';
+String _$marketRepositoryHash() => r'6d5b0ae6f61ad1b139f581f31c466d72f64efcc0';
 
 @ProviderFor(Markets)
 final marketsProvider = MarketsProvider._();

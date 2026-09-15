@@ -11,12 +11,12 @@ _CoinModel _$CoinModelFromJson(Map<String, dynamic> json) => _CoinModel(
   symbol: json['symbol'] as String,
   name: json['name'] as String,
   image: json['image'] as String,
-  currentPrice: (json['current_price'] as num).toDouble(),
-  marketCap: (json['market_cap'] as num).toDouble(),
-  marketCapRank: (json['market_cap_rank'] as num).toInt(),
-  totalVolume: (json['total_volume'] as num).toDouble(),
-  priceChangePercentage24h: (json['price_change_percentage_24h'] as num)
-      .toDouble(),
+  currentPrice: (json['current_price'] as num?)?.toDouble(),
+  marketCap: (json['market_cap'] as num?)?.toDouble(),
+  marketCapRank: (json['market_cap_rank'] as num?)?.toInt(),
+  totalVolume: (json['total_volume'] as num?)?.toDouble(),
+  priceChangePercentage24h: (json['price_change_percentage_24h'] as num?)
+      ?.toDouble(),
   sparklineIn7d: json['sparkline_in_7d'] == null
       ? null
       : SparklineModel.fromJson(

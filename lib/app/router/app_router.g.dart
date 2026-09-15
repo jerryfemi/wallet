@@ -48,7 +48,7 @@ final class GoRouterProvider
   }
 }
 
-String _$goRouterHash() => r'6748a3e4c85cca63d4f80f4b85720eabb8cf8a28';
+String _$goRouterHash() => r'cdf82fa892537cb0884d860b573e2dabd2839662';
 
 @ProviderFor(AuthGate)
 final authGateProvider = AuthGateProvider._();
