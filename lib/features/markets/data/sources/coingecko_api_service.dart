@@ -29,13 +29,11 @@ class CoinGeckoApiService {
 
       final List<dynamic> data = response.data;
       return data.map((json) => CoinModel.fromJson(json)).toList();
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 429) {
-        // Fallback to mock data for development when hitting free tier limits
+    } catch (e) {
+      if (e.toString().contains('429')) {
+        // Fallback to mock data when CoinGecko free tier limits are hit during dev
         return _getMockData();
       }
-      throw Exception('Failed to fetch market data: $e');
-    } catch (e) {
       throw Exception('Failed to fetch market data: $e');
     }
   }
