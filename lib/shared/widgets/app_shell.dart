@@ -26,46 +26,104 @@ class AppShell extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
-          child: NavigationBar(
-            selectedIndex: navigationShell.currentIndex,
-            onDestinationSelected: (index) {
-              navigationShell.goBranch(
-                index,
-                initialLocation: index == navigationShell.currentIndex,
-              );
-            },
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            indicatorColor: const Color(0xFF6C5CE7).withValues(alpha: 0.45),
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _NavBarItem(
+                icon: Icons.home_outlined,
+                activeIcon: Icons.home,
                 label: 'Home',
+                isSelected: navigationShell.currentIndex == 0,
+                onTap: () => _onTap(0),
               ),
-              NavigationDestination(
-                icon: Icon(Icons.show_chart_outlined),
-                selectedIcon: Icon(Icons.show_chart),
+              _NavBarItem(
+                icon: Icons.show_chart_outlined,
+                activeIcon: Icons.show_chart,
                 label: 'Markets',
+                isSelected: navigationShell.currentIndex == 1,
+                onTap: () => _onTap(1),
               ),
-              NavigationDestination(
-                icon: Icon(Icons.account_balance_wallet_outlined),
-                selectedIcon: Icon(Icons.account_balance_wallet),
+              _NavBarItem(
+                icon: Icons.account_balance_wallet_outlined,
+                activeIcon: Icons.account_balance_wallet,
                 label: 'Wallet',
+                isSelected: navigationShell.currentIndex == 2,
+                onTap: () => _onTap(2),
               ),
-              NavigationDestination(
-                icon: Icon(Icons.history_outlined),
-                selectedIcon: Icon(Icons.history),
+              _NavBarItem(
+                icon: Icons.history_outlined,
+                activeIcon: Icons.history,
                 label: 'Activity',
+                isSelected: navigationShell.currentIndex == 3,
+                onTap: () => _onTap(3),
               ),
-              NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
+              _NavBarItem(
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
                 label: 'Profile',
+                isSelected: navigationShell.currentIndex == 4,
+                onTap: () => _onTap(4),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _onTap(int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+}
+
+class _NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavBarItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? const Color(0xFF6C5CE7) : Colors.white54;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF1E2530).withValues(alpha: 0.3)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(isSelected ? activeIcon : icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );
