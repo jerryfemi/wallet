@@ -10,11 +10,11 @@ abstract class CoinModel with _$CoinModel {
     required String symbol,
     required String name,
     required String image,
-    @JsonKey(name: 'current_price') required double currentPrice,
-    @JsonKey(name: 'market_cap') required double marketCap,
-    @JsonKey(name: 'market_cap_rank') required int marketCapRank,
-    @JsonKey(name: 'total_volume') required double totalVolume,
-    @JsonKey(name: 'price_change_percentage_24h') required double priceChangePercentage24h,
+    @JsonKey(name: 'current_price') double? currentPrice,
+    @JsonKey(name: 'market_cap') double? marketCap,
+    @JsonKey(name: 'market_cap_rank') int? marketCapRank,
+    @JsonKey(name: 'total_volume') double? totalVolume,
+    @JsonKey(name: 'price_change_percentage_24h') double? priceChangePercentage24h,
     @JsonKey(name: 'sparkline_in_7d') SparklineModel? sparklineIn7d,
   }) = _CoinModel;
 
