@@ -17,34 +17,35 @@ class CoinListTile extends StatelessWidget {
     final color = isPositive ? Colors.greenAccent : Colors.redAccent;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest
-            .withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+          ),
+        ),
       ),
       child: Row(
         children: [
           // Coin Icon
           ClipRRect(
             borderRadius: BorderRadius.circular(24),
-            child: Skeleton.keep(
+            child: Skeleton.replace(
+              width: 48,
+              height: 48,
               child: kIsWeb 
                   ? Image.network(
                       coin.imageUrl,
                       width: 48,
                       height: 48,
-                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                      errorBuilder: (context, error, stackTrace) => const SizedBox(width: 48, height: 48, child: Icon(Icons.error)),
                     )
                   : CachedNetworkImage(
                       imageUrl: coin.imageUrl,
                       width: 48,
                       height: 48,
-                      placeholder: (context, url) => const Skeleton.replace(
-                        child: SizedBox(width: 48, height: 48),
-                      ),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      placeholder: (context, url) => const SizedBox(width: 48, height: 48),
+                      errorWidget: (context, url, error) => const SizedBox(width: 48, height: 48, child: Icon(Icons.error)),
                     ),
             ),
           ),
