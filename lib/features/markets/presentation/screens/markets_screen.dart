@@ -34,9 +34,8 @@ class MarketsScreen extends HookConsumerWidget {
                     children: [
                       Text(
                         'Markets',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const CircleAvatar(
                         radius: 20,
@@ -58,19 +57,27 @@ class MarketsScreen extends HookConsumerWidget {
                     },
                     decoration: InputDecoration(
                       hintText: 'Search coin...',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                       prefixIcon: Icon(
                         Icons.search,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      fillColor: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withValues(alpha: 0.5),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -94,7 +101,8 @@ class MarketsScreen extends HookConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       scrollDirection: Axis.horizontal,
                       itemCount: movers.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 10),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 10),
                       itemBuilder: (context, index) {
                         return TopMoverChip(
                           coin: movers[index],
@@ -104,7 +112,8 @@ class MarketsScreen extends HookConsumerWidget {
                         );
                       },
                     ),
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (error, stack) => const SizedBox(),
                   ),
                 ),
@@ -122,11 +131,20 @@ class MarketsScreen extends HookConsumerWidget {
                       children: [
                         _FilterPill(label: 'All', filter: MarketFilter.all),
                         const SizedBox(width: 8),
-                        _FilterPill(label: 'Gainers', filter: MarketFilter.gainers),
+                        _FilterPill(
+                          label: 'Gainers',
+                          filter: MarketFilter.gainers,
+                        ),
                         const SizedBox(width: 8),
-                        _FilterPill(label: 'Losers', filter: MarketFilter.losers),
+                        _FilterPill(
+                          label: 'Losers',
+                          filter: MarketFilter.losers,
+                        ),
                         const SizedBox(width: 8),
-                        _FilterPill(label: 'Volume', filter: MarketFilter.volume),
+                        _FilterPill(
+                          label: 'Volume',
+                          filter: MarketFilter.volume,
+                        ),
                       ],
                     ),
                   ),
@@ -157,9 +175,7 @@ class MarketsScreen extends HookConsumerWidget {
                   ),
                 ),
                 error: (error, stack) => SliverFillRemaining(
-                  child: Center(
-                    child: Text('Failed to load markets:\n$error'),
-                  ),
+                  child: Center(child: Text('Failed to load markets:\n$error')),
                 ),
               ),
             ],
@@ -207,16 +223,19 @@ class _FilterPill extends HookConsumerWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive 
-              ? Theme.of(context).colorScheme.primary 
-              : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          color: isActive
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Center(
           child: Text(
             label,
             style: TextStyle(
-              color: isActive ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
+              color: isActive
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
