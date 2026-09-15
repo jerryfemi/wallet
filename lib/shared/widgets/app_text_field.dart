@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AppTextField extends HookWidget {
   final String label;
@@ -52,10 +53,16 @@ class AppTextField extends HookWidget {
                     onPressed: () {
                       obscureText.value = !obscureText.value;
                     },
-                    icon: Icon(
+                    icon: SvgPicture.asset(
                       obscureText.value
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                          ? 'assets/icons/eye.svg'
+                          : 'assets/icons/eye_off.svg',
+                      width: 20,
+                      height: 20,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurfaceVariant,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   )
                 : null,

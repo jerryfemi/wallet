@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -95,8 +96,15 @@ class ForgotPasswordScreen extends HookConsumerWidget {
                     hint: 'Enter your email',
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(
-                      Icons.email_outlined,
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SvgPicture.asset(
+                        'assets/icons/email.svg',
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {

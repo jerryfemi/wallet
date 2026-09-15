@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -91,7 +92,16 @@ class RegisterScreen extends HookConsumerWidget {
                     label: 'Display Name',
                     hint: 'Enter your full name',
                     controller: nameController,
-                    prefixIcon: const Icon(Icons.person_outline),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SvgPicture.asset(
+                        'assets/icons/profile.svg',
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
                         return 'Please enter your name';
@@ -105,7 +115,16 @@ class RegisterScreen extends HookConsumerWidget {
                     hint: 'Enter your email',
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(Icons.email_outlined),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SvgPicture.asset(
+                        'assets/icons/email.svg',
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter your email';
@@ -122,7 +141,16 @@ class RegisterScreen extends HookConsumerWidget {
                     hint: 'Create a password',
                     controller: passwordController,
                     isPassword: true,
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SvgPicture.asset(
+                        'assets/icons/password.svg',
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
                     validator: (val) {
                       if (val == null || val.isEmpty) {
                         return 'Please enter a password';
