@@ -29,45 +29,48 @@ class AppShell extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _NavBarItem(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: 'Home',
-                isSelected: navigationShell.currentIndex == 0,
-                onTap: () => _onTap(0),
-              ),
-              _NavBarItem(
-                icon: Icons.show_chart_outlined,
-                activeIcon: Icons.show_chart,
-                label: 'Markets',
-                isSelected: navigationShell.currentIndex == 1,
-                onTap: () => _onTap(1),
-              ),
-              _NavBarItem(
-                icon: Icons.account_balance_wallet_outlined,
-                activeIcon: Icons.account_balance_wallet,
-                label: 'Wallet',
-                isSelected: navigationShell.currentIndex == 2,
-                onTap: () => _onTap(2),
-              ),
-              _NavBarItem(
-                icon: Icons.history_outlined,
-                activeIcon: Icons.history,
-                label: 'Activity',
-                isSelected: navigationShell.currentIndex == 3,
-                onTap: () => _onTap(3),
-              ),
-              _NavBarItem(
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: 'Profile',
-                isSelected: navigationShell.currentIndex == 4,
-                onTap: () => _onTap(4),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _NavBarItem(
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home,
+                  label: 'Home',
+                  isSelected: navigationShell.currentIndex == 0,
+                  onTap: () => _onTap(0),
+                ),
+                _NavBarItem(
+                  icon: Icons.show_chart_outlined,
+                  activeIcon: Icons.show_chart,
+                  label: 'Markets',
+                  isSelected: navigationShell.currentIndex == 1,
+                  onTap: () => _onTap(1),
+                ),
+                _NavBarItem(
+                  icon: Icons.account_balance_wallet_outlined,
+                  activeIcon: Icons.account_balance_wallet,
+                  label: 'Wallet',
+                  isSelected: navigationShell.currentIndex == 2,
+                  onTap: () => _onTap(2),
+                ),
+                _NavBarItem(
+                  icon: Icons.history_outlined,
+                  activeIcon: Icons.history,
+                  label: 'Activity',
+                  isSelected: navigationShell.currentIndex == 3,
+                  onTap: () => _onTap(3),
+                ),
+                _NavBarItem(
+                  icon: Icons.person_outline,
+                  activeIcon: Icons.person,
+                  label: 'Profile',
+                  isSelected: navigationShell.currentIndex == 4,
+                  onTap: () => _onTap(4),
+                ),
+              ],
+            ),
           ),
         ),
       ),
