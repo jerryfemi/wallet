@@ -31,6 +31,7 @@ class AppTheme {
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     hintStyle: const TextStyle(color: Colors.white38),
     prefixIconColor: Colors.white54,
+    suffixIconColor: Colors.white54,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16.0),
       borderSide: BorderSide.none,
