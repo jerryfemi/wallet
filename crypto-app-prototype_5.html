@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Crypto App — Interactive Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0B0E14; --bg-surface: #151A23; --bg-surface-raised: #1E2530;
+    --border: #262E3A; --text-primary: #FFFFFF; --text-secondary: #8B93A1; --text-tertiary: #5B6472;
+    --accent: #6C5CE7; --positive: #22C55E; --negative: #EF4444;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-full: 999px;
+    --btc:#F29A1D; --eth:#5F68D3; --usdt:#1B9683; --sol:#9945FF; --bnb:#F0B90B; --xrp:#4B5563; --ada:#2E5CE6; --doge:#C2A633;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; min-height:100vh; background:#05070A; font-family:'Inter',-apple-system,sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:40px 20px; }
+  .proto-label { color:#6B7280; font-size:13px; font-weight:600; letter-spacing:0.02em; text-transform:uppercase; }
+  .proto-hint { color:#4B5563; font-size:12px; max-width:390px; text-align:center; line-height:1.5; }
+
+  /* ---------- iOS device frame ---------- */
+  .device-frame {
+    width: 428px; padding: 16px;
+    background: linear-gradient(155deg,#3a3d44,#111214 60%);
+    border-radius: 62px;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.65), inset 0 0 0 1.5px rgba(255,255,255,0.08);
+    position: relative;
+  }
+  .device-btn { position:absolute; background:#0c0d0f; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+  .device-btn.power { right:-3px; top:180px; width:3px; height:80px; border-radius:0 3px 3px 0; }
+  .device-btn.vol-up { left:-3px; top:150px; width:3px; height:44px; border-radius:3px 0 0 3px; }
+  .device-btn.vol-down { left:-3px; top:204px; width:3px; height:44px; border-radius:3px 0 0 3px; }
+  .device-btn.mute { left:-3px; top:110px; width:3px; height:26px; border-radius:3px 0 0 3px; }
+
+  .app-shell { width:390px; height:844px; background:var(--bg-primary); border-radius:46px; overflow:hidden; position:relative; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.06); }
+
+  .dynamic-island {
+    position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:124px; height:36px; background:#000; border-radius:20px; z-index:60;
+  }
+  .status-bar {
+    position:absolute; top:0; left:0; right:0; height:54px;
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 26px 8px 26px; z-index:55; pointer-events:none;
+  }
+  .status-bar .time { color:#fff; font-size:15px; font-weight:600; }
+  .status-bar .icons { display:flex; align-items:center; gap:5px; color:#fff; font-size:13px; }
+  .home-indicator {
+    position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+    width:134px; height:5px; border-radius:3px; background:rgba(255,255,255,0.85);
+    z-index:70; pointer-events:none;
+  }
+
+  .app-screen {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    opacity:0; pointer-events:none; transform:translateX(0); z-index:1;
+    padding-top:54px; background:var(--bg-primary);
+    transition: transform .36s cubic-bezier(.22,1,.36,1), opacity .3s ease;
+  }
+  .app-screen.active { opacity:1; pointer-events:auto; z-index:5; }
+  .screen-scroll { flex:1; overflow-y:auto; }
+  .screen-scroll::-webkit-scrollbar { display:none; }
+  .content { padding:20px; display:flex; flex-direction:column; gap:24px; min-height:100%; }
+  .content.with-nav { padding-bottom:112px; }
+  .auth-content { padding:28px 24px; display:flex; flex-direction:column; gap:22px; min-height:100%; }
+
+  /* ---------- shared ---------- */
+  .top-bar { display:flex; align-items:center; justify-content:space-between; }
+  .greet-small { color:var(--text-secondary); font-size:13px; margin:0 0 2px 0; }
+  .greet-title { color:var(--text-primary); font-size:22px; font-weight:700; margin:0; }
+  .avatar { width:40px; height:40px; border-radius:var(--radius-full); background:var(--bg-surface); border:1px solid var(--border); cursor:pointer; transition:transform .15s; }
+  .avatar:active { transform:scale(0.92); }
+  .bell-btn { position:relative; width:40px; height:40px; border-radius:var(--radius-full); background:var(--bg-surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-secondary); cursor:pointer; transition:transform .15s; }
+  .bell-btn:active { transform:scale(0.92); }
+  .bell-dot { position:absolute; top:9px; right:10px; width:8px; height:8px; border-radius:50%; background:var(--accent); border:2px solid var(--bg-primary); }
+
+  .notif-row { display:flex; align-items:flex-start; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer; transition:opacity .12s; }
+  .notif-row:active { opacity:0.7; }
+  .notif-row:last-child { border-bottom:none; }
+  .notif-icon { width:38px; height:38px; border-radius:11px; background:var(--bg-surface-raised); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .notif-info { flex:1; min-width:0; }
+  .notif-title-row { display:flex; align-items:center; gap:6px; }
+  .notif-title { color:var(--text-primary); font-size:13.5px; font-weight:600; }
+  .notif-unread-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+  .notif-sub { color:var(--text-secondary); font-size:12px; margin-top:2px; }
+  .notif-time { color:var(--text-tertiary); font-size:11px; flex-shrink:0; white-space:nowrap; margin-top:1px; }
+  .coin-icon { width:36px; height:36px; border-radius:var(--radius-full); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:15px; flex-shrink:0; }
+  .section-title { color:var(--text-primary); font-size:15px; font-weight:600; margin:0 0 12px 0; }
+
+  /* ---------- Dashboard ---------- */
+  .balance-card { background:var(--bg-surface); border-radius:var(--radius-lg); padding:24px 20px; display:flex; flex-direction:column; gap:10px; }
+  .balance-label { color:var(--text-secondary); font-size:13px; margin:0; }
+  .balance-value { color:var(--text-primary); font-size:34px; font-weight:700; margin:0; }
+  .change-badge { display:inline-flex; align-self:flex-start; padding:4px 10px; border-radius:var(--radius-full); background:rgba(34,197,94,0.15); color:var(--positive); font-size:12px; font-weight:600; }
+  .change-badge.down { background:rgba(239,68,68,0.15); color:var(--negative); }
+
+  .quick-actions { display:flex; gap:10px; }
+  .action-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 8px; border-radius:14px; background:var(--bg-surface-raised); cursor:pointer; user-select:none; transition:transform .12s; }
+  .action-btn:active { transform:scale(0.94); }
+  .action-btn.primary { background:var(--accent); }
+  .action-btn .icon { width:20px; height:20px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800; }
+  .action-btn.primary .icon { background:rgba(255,255,255,0.2); }
+  .action-btn span { color:var(--text-primary); font-size:12px; font-weight:600; }
+
+  .holding-row, .activity-row { display:flex; align-items:center; gap:12px; cursor:pointer; transition:transform .12s, opacity .12s; }
+  .holding-row { background:var(--bg-surface); border-radius:var(--radius-md); padding:12px 14px; }
+  .holding-row:active, .activity-row:active { transform:scale(0.98); opacity:0.8; }
+  .holding-row + .holding-row { margin-top:12px; }
+  .row-info { display:flex; flex-direction:column; gap:2px; flex:1; }
+  .row-info .name { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .row-info .sub { color:var(--text-secondary); font-size:12px; }
+  .row-value { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  .row-value .val { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .row-value .chg { font-size:12px; font-weight:500; }
+  .chg.up { color:var(--positive); } .chg.down { color:var(--negative); }
+
+  .activity-list { display:flex; flex-direction:column; gap:4px; }
+  .activity-row { padding:10px 0; }
+  .activity-badge { width:36px; height:36px; border-radius:10px; background:var(--bg-surface-raised); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+  .activity-badge.up { color:var(--positive); } .activity-badge.down { color:var(--negative); }
+  .activity-info { flex:1; display:flex; flex-direction:column; gap:2px; }
+  .activity-info .line1 { color:var(--text-primary); font-size:13px; font-weight:500; }
+  .activity-info .line2 { color:var(--text-secondary); font-size:11px; }
+  .activity-value { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  .activity-value .amt { color:var(--text-primary); font-size:13px; font-weight:500; }
+  .activity-value .fiat { color:var(--text-secondary); font-size:11px; }
+
+  /* ---------- Markets ---------- */
+  .search-bar { display:flex; align-items:center; gap:8px; background:var(--bg-surface); border:1px solid transparent; border-radius:var(--radius-md); padding:12px 14px; color:var(--text-tertiary); font-size:14px; cursor:text; transition:border-color .15s; }
+  .search-bar.focused { border-color:var(--accent); color:var(--text-secondary); }
+  .filter-pills { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
+  .filter-pills::-webkit-scrollbar { display:none; }
+  .pill { padding:8px 14px; border-radius:var(--radius-full); background:var(--bg-surface-raised); color:var(--text-secondary); font-size:13px; font-weight:600; white-space:nowrap; cursor:pointer; transition:transform .1s; }
+  .pill:active { transform:scale(0.94); }
+  .pill.active { background:var(--accent); color:#fff; }
+  .market-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); cursor:pointer; transition:transform .12s, opacity .12s; }
+  .mini-spark { width:54px; height:24px; flex-shrink:0; }
+  .top-movers-row { display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; }
+  .top-movers-row::-webkit-scrollbar { display:none; }
+  .mover-chip { display:flex; align-items:center; gap:8px; background:var(--bg-surface); border-radius:14px; padding:10px 12px; flex-shrink:0; cursor:pointer; transition:transform .12s; }
+  .mover-chip:active { transform:scale(0.95); }
+  .mover-sym { color:var(--text-primary); font-size:12.5px; font-weight:700; }
+  .mover-chg { font-size:11px; font-weight:600; margin-top:1px; }
+  .mover-chg.up { color:var(--positive); } .mover-chg.down { color:var(--negative); }
+  .market-row:active { transform:scale(0.98); opacity:0.8; }
+  .market-row:last-child { border-bottom:none; }
+  .market-info { flex:1; display:flex; flex-direction:column; gap:2px; }
+  .market-info .name { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .market-info .symbol { color:var(--text-tertiary); font-size:12px; }
+  .market-price { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  .market-price .price { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .market-price .chg { font-size:12px; font-weight:500; }
+
+  /* ---------- Wallet ---------- */
+  .wallet-total { text-align:center; display:flex; flex-direction:column; gap:6px; padding:8px 0 4px 0; }
+  .wallet-total .label { color:var(--text-secondary); font-size:13px; }
+  .wallet-total .value { color:var(--text-primary); font-size:38px; font-weight:800; }
+  .wallet-actions { display:flex; gap:10px; }
+  .wallet-btn { flex:1; text-align:center; padding:13px; border-radius:var(--radius-md); color:#fff; font-size:14px; font-weight:600; cursor:pointer; transition:transform .12s; }
+  .wallet-btn:active { transform:scale(0.96); }
+  .wallet-btn.fill { background:var(--accent); }
+  .wallet-btn.outline { background:transparent; border:1px solid var(--border); color:var(--text-primary); }
+  .asset-row { display:flex; align-items:center; gap:12px; background:var(--bg-surface); border-radius:var(--radius-md); padding:14px; }
+  .asset-row + .asset-row { margin-top:10px; }
+  .allocation-card { display:flex; align-items:center; gap:20px; background:var(--bg-surface); border-radius:var(--radius-lg); padding:18px; }
+  .donut-chart { width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .donut-hole { width:60px; height:60px; border-radius:50%; background:var(--bg-surface); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-count { color:var(--text-primary); font-size:16px; font-weight:700; }
+  .donut-label { color:var(--text-tertiary); font-size:10px; }
+  .allocation-legend { flex:1; display:flex; flex-direction:column; gap:8px; }
+  .legend-row { display:flex; align-items:center; gap:8px; font-size:12px; }
+  .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .legend-name { color:var(--text-primary); font-weight:600; width:38px; }
+  .legend-pct { color:var(--text-secondary); width:44px; }
+  .legend-val { color:var(--text-secondary); margin-left:auto; }
+
+  /* ---------- Crypto Details ---------- */
+  .detail-header { display:flex; align-items:center; gap:12px; }
+  .back-btn { width:36px; height:36px; border-radius:50%; background:var(--bg-surface); display:flex; align-items:center; justify-content:center; color:var(--text-primary); font-size:16px; flex-shrink:0; cursor:pointer; transition:transform .12s; }
+  .back-btn:active { transform:scale(0.88); }
+  .detail-coin-title { display:flex; align-items:center; gap:8px; }
+  .detail-coin-title .coin-icon { width:24px; height:24px; font-size:12px; }
+  .detail-coin-title span { color:var(--text-primary); font-size:15px; font-weight:600; }
+  .detail-price-block { display:flex; flex-direction:column; gap:6px; }
+  .detail-price { color:var(--text-primary); font-size:36px; font-weight:800; margin:0; }
+  .detail-change-row { display:flex; align-items:center; gap:8px; }
+  .chart-box { background:var(--bg-surface); border-radius:var(--radius-lg); padding:16px 8px 8px 8px; }
+  .timeframe-tabs { display:flex; gap:6px; padding:0 8px 12px 8px; }
+  .tf-tab { padding:6px 12px; border-radius:var(--radius-full); font-size:12px; font-weight:600; color:var(--text-secondary); cursor:pointer; }
+  .tf-tab.active { background:var(--accent); color:#fff; }
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .stat-box { background:var(--bg-surface); border-radius:var(--radius-md); padding:14px; display:flex; flex-direction:column; gap:4px; }
+  .position-card { background:var(--bg-surface); border-radius:var(--radius-lg); padding:16px; border:1px solid var(--border); }
+  .stat-box .label { color:var(--text-tertiary); font-size:11px; text-transform:uppercase; letter-spacing:0.03em; }
+  .stat-box .val { color:var(--text-primary); font-size:15px; font-weight:600; }
+  .detail-actions { display:flex; gap:10px; margin-top:auto; }
+  .detail-btn { flex:1; text-align:center; padding:15px; border-radius:var(--radius-md); font-size:15px; font-weight:700; cursor:pointer; transition:transform .12s; }
+  .detail-btn:active { transform:scale(0.96); }
+  .detail-btn.buy { background:var(--positive); color:#06210f; }
+  .detail-btn.sell { background:var(--negative); color:#2b0808; }
+
+  /* ---------- Transactions ---------- */
+  .tx-group-label { color:var(--text-tertiary); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin:4px 0 8px 0; }
+  .tx-row { display:flex; align-items:center; gap:12px; padding:12px 0; cursor:pointer; transition:transform .12s, opacity .12s; }
+  .tx-row:active { transform:scale(0.98); opacity:0.8; }
+  .tx-badge { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
+  .tx-badge.buy { background:rgba(34,197,94,0.15); color:var(--positive); }
+  .tx-badge.sell { background:rgba(239,68,68,0.15); color:var(--negative); }
+  .tx-badge.deposit { background:rgba(108,92,231,0.15); color:var(--accent); }
+  .tx-badge.withdraw { background:var(--bg-surface-raised); color:var(--text-secondary); }
+  .tx-info { flex:1; display:flex; flex-direction:column; gap:2px; }
+  .tx-info .line1 { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .tx-info .line2 { color:var(--text-secondary); font-size:12px; }
+  .tx-value { display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  .tx-value .amt { font-size:14px; font-weight:600; }
+  .tx-value .fiat { color:var(--text-secondary); font-size:12px; }
+  .tx-value .amt.up { color:var(--positive); } .tx-value .amt.down { color:var(--text-primary); }
+
+  /* ---------- Sheet system (real slide-up) ---------- */
+  .sheet-overlay {
+    position:absolute; inset:0; display:flex; align-items:flex-end;
+    background:rgba(0,0,0,0); pointer-events:none; z-index:30;
+    transition: background .3s ease;
+  }
+  .sheet-overlay.stacked { z-index:40; }
+  .sheet-overlay.open { pointer-events:auto; background:rgba(0,0,0,0.5); }
+  .sheet-panel {
+    width:100%; background:var(--bg-surface); border-radius:24px 24px 0 0;
+    padding:10px 20px 24px 20px; display:flex; flex-direction:column; gap:16px;
+    box-shadow:0 -16px 40px rgba(0,0,0,0.5); max-height:100%; overflow-y:auto;
+    transform:translateY(100%);
+    transition: transform .38s cubic-bezier(.22,1,.36,1);
+  }
+  .sheet-overlay.open .sheet-panel { transform:translateY(0); }
+  .sheet-panel.expanded { height:100%; }
+  .drag-handle { width:36px; height:4px; border-radius:2px; background:var(--text-tertiary); opacity:0.5; margin:2px auto 0 auto; cursor:pointer; }
+  .sheet-header { display:flex; align-items:center; justify-content:space-between; }
+  .sheet-title-sm { color:var(--text-primary); font-size:16px; font-weight:700; margin:0; }
+  .sheet-close { width:28px; height:28px; border-radius:50%; background:var(--bg-surface-raised); display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:13px; cursor:pointer; flex-shrink:0; transition:transform .12s; }
+  .sheet-close:active { transform:scale(0.88); }
+
+  .asset-pill-row { display:flex; align-items:center; gap:10px; background:var(--bg-surface-raised); padding:10px 12px; border-radius:12px; }
+  .asset-pill-row .name { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .asset-pill-row .price { color:var(--text-secondary); font-size:12px; margin-left:auto; }
+  .asset-pill-row .change-link { color:var(--accent); font-size:12px; font-weight:700; margin-left:auto; cursor:pointer; }
+
+  .amount-input-block { text-align:center; padding:12px 0; }
+  .amount-input-block .amount { color:var(--text-primary); font-size:40px; font-weight:800; transition: color .15s; }
+  .amount-input-block .sub { color:var(--text-secondary); font-size:13px; margin-top:6px; }
+
+  .percent-row { display:flex; gap:8px; }
+  .percent-chip { flex:1; text-align:center; padding:8px; border-radius:10px; background:var(--bg-surface-raised); color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer; transition:transform .1s; }
+  .percent-chip:active { transform:scale(0.92); }
+  .percent-chip.active { background:var(--accent); color:#fff; }
+
+  .receive-row { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--bg-surface-raised); border-radius:12px; }
+  .receive-row .label { color:var(--text-secondary); font-size:13px; }
+  .receive-row .value { color:var(--text-primary); font-size:14px; font-weight:600; }
+
+  .sheet-primary-btn { text-align:center; padding:16px; border-radius:14px; background:var(--accent); color:#fff; font-size:15px; font-weight:700; margin-top:auto; cursor:pointer; transition:transform .12s; }
+  .sheet-primary-btn:active { transform:scale(0.97); }
+  .sheet-primary-btn.sell { background:var(--negative); }
+  .sheet-primary-btn.disabled { opacity:0.35; pointer-events:none; }
+  .sheet-outline-btn { text-align:center; padding:14px; border-radius:14px; border:1px solid var(--border); color:var(--text-primary); font-size:14px; font-weight:700; cursor:pointer; transition:transform .12s; }
+  .sheet-outline-btn:active { transform:scale(0.97); }
+
+  .hint-text { text-align:center; color:var(--text-tertiary); font-size:12px; margin:-8px 0 0 0; }
+
+  .summary-card { background:var(--bg-surface-raised); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .summary-line { display:flex; justify-content:space-between; font-size:13px; gap:12px; }
+  .summary-line .k { color:var(--text-secondary); flex-shrink:0; }
+  .summary-line .v { color:var(--text-primary); font-weight:600; text-align:right; word-break:break-all; }
+  .summary-line.total .k, .summary-line.total .v { color:var(--text-primary); font-weight:700; font-size:14px; }
+  .summary-divider { height:1px; background:var(--border); margin:2px 0; }
+  .dashed-divider { height:0; border-top:2px dashed var(--border); margin:2px 0; }
+
+  .payment-row { display:flex; align-items:center; gap:12px; background:var(--bg-surface-raised); border-radius:14px; padding:14px; }
+  .payment-row .p-icon { width:32px; height:32px; border-radius:8px; background:var(--bg-surface); display:flex; align-items:center; justify-content:center; color:var(--text-primary); font-weight:700; font-size:13px; }
+  .payment-row .p-label { flex:1; color:var(--text-primary); font-size:14px; font-weight:600; }
+  .payment-row .chevron { color:var(--text-tertiary); }
+
+  .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
+  .keypad-key { text-align:center; padding:14px 0; color:var(--text-primary); font-size:20px; font-weight:500; border-radius:10px; cursor:pointer; }
+  .keypad-key:active { background:var(--bg-surface-raised); }
+  .keypad-key.sub { color:var(--text-tertiary); font-size:14px; }
+
+  .success-icon { width:64px; height:64px; border-radius:50%; background:rgba(34,197,94,0.15); display:flex; align-items:center; justify-content:center; color:var(--positive); font-size:30px; margin:12px auto 0 auto; animation: pop-in .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes pop-in { 0%{ transform:scale(0); } 70%{ transform:scale(1.15); } 100%{ transform:scale(1); } }
+  .spinner { width:46px; height:46px; border-radius:50%; border:4px solid var(--bg-surface-raised); border-top-color:var(--accent); animation:spin .8s linear infinite; margin:8px auto 0 auto; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .success-title { text-align:center; color:var(--text-primary); font-size:18px; font-weight:700; margin:0; }
+  .success-sub { text-align:center; color:var(--text-secondary); font-size:13px; margin:0; }
+  .status-badge { display:inline-flex; align-self:center; padding:4px 12px; border-radius:var(--radius-full); background:rgba(34,197,94,0.15); color:var(--positive); font-size:12px; font-weight:700; }
+
+  .search-input-sheet { display:flex; align-items:center; gap:8px; background:var(--bg-surface-raised); border-radius:12px; padding:12px 14px; color:var(--text-tertiary); font-size:14px; }
+  .asset-pick-row { display:flex; align-items:center; gap:12px; padding:10px 0; cursor:pointer; transition:opacity .12s; }
+  .asset-pick-row:active { opacity:0.7; }
+  .asset-pick-row .info { flex:1; display:flex; flex-direction:column; gap:2px; }
+  .asset-pick-row .name { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .asset-pick-row .sub { color:var(--text-tertiary); font-size:12px; }
+  .asset-pick-row .bal { color:var(--text-secondary); font-size:13px; }
+
+  .quick-amount-row { display:flex; gap:8px; }
+  .quick-amount-chip { flex:1; text-align:center; padding:10px 4px; border-radius:10px; background:var(--bg-surface-raised); color:var(--text-secondary); font-size:13px; font-weight:600; cursor:pointer; transition:transform .1s; }
+  .quick-amount-chip:active { transform:scale(0.92); }
+  .quick-amount-chip.active { background:var(--accent); color:#fff; }
+
+  .field-label { color:var(--text-secondary); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin:0 0 8px 0; }
+  .field-block { display:flex; flex-direction:column; }
+  .address-input { display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--bg-surface-raised); border:1px solid var(--border); border-radius:12px; padding:13px 14px; cursor:pointer; transition:border-color .15s, background .15s; }
+  .address-input .placeholder, .address-input .filled { color:var(--text-tertiary); font-size:12.5px; font-family:monospace; }
+  .address-input .filled { color:var(--text-primary); }
+  .address-input .paste-btn { color:var(--accent); font-size:12px; font-weight:700; flex-shrink:0; }
+  .address-input.error { border-color:var(--negative); background:rgba(239,68,68,0.06); }
+  .address-input.valid { border-color:var(--positive); background:rgba(34,197,94,0.06); }
+  .field-error-text, .field-valid-text { display:none; align-items:center; gap:6px; font-size:12px; font-weight:500; margin-top:6px; }
+  .field-error-text { color:var(--negative); } .field-valid-text { color:var(--positive); }
+  .field-block.state-invalid .field-error-text { display:flex; }
+  .field-block.state-valid .field-valid-text { display:flex; }
+
+  .network-row { display:flex; align-items:center; justify-content:space-between; background:var(--bg-surface-raised); border-radius:12px; padding:12px 14px; }
+  .network-row .label { color:var(--text-secondary); font-size:13px; }
+  .network-row .value { display:flex; align-items:center; gap:6px; color:var(--text-primary); font-size:13px; font-weight:600; }
+
+  .warning-note { display:flex; gap:8px; align-items:flex-start; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:12px; padding:10px 12px; }
+  .warning-note .icon { color:var(--negative); font-size:13px; flex-shrink:0; }
+  .warning-note .text { color:var(--text-secondary); font-size:11.5px; line-height:1.5; }
+
+  /* ---------- Send / Receive ---------- */
+  .network-toggle { display:flex; gap:8px; }
+  .network-toggle .toggle-opt { display:flex; align-items:center; gap:6px; padding:9px 14px; border-radius:999px; background:var(--bg-surface-raised); color:var(--text-secondary); font-size:13px; font-weight:600; cursor:pointer; }
+  .network-toggle .toggle-opt.active { background:var(--text-primary); color:var(--bg-primary); }
+  .network-toggle .toggle-opt .dot { width:8px; height:8px; border-radius:50%; }
+
+  .qr-wrap { display:flex; align-items:center; justify-content:center; padding:20px 0 8px 0; }
+  .qr-frame { width:180px; height:180px; background:#fff; border-radius:18px; padding:14px; position:relative; display:flex; align-items:center; justify-content:center; }
+  .qr-grid { display:grid; width:100%; height:100%; }
+  .qr-cell { background:transparent; }
+  .qr-cell.on { background:#0B0E14; }
+  .qr-center-badge { position:absolute; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; box-shadow:0 0 0 4px #fff; }
+
+  .address-display { display:flex; align-items:center; gap:8px; justify-content:center; background:var(--bg-surface-raised); border-radius:12px; padding:10px 14px; }
+  .address-display span { color:var(--text-secondary); font-size:12.5px; font-family:monospace; }
+  .address-display .copy-icon { color:var(--accent); cursor:pointer; flex-shrink:0; }
+
+  .dual-btn-row { display:flex; gap:10px; }
+  .dual-btn-row .sheet-primary-btn, .dual-btn-row .sheet-outline-btn { margin-top:0; }
+  .dual-btn-row .sheet-outline-btn { flex:0 0 34%; }
+  .dual-btn-row .sheet-primary-btn { flex:1; }
+
+  /* ---------- Auth ---------- */
+  .auth-brand { display:flex; flex-direction:column; align-items:center; gap:10px; margin:12px 0 4px 0; }
+  .brand-mark { width:52px; height:52px; border-radius:15px; background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:20px; }
+  .brand-name { color:var(--text-primary); font-size:15px; font-weight:700; }
+  .auth-title { color:var(--text-primary); font-size:24px; font-weight:800; margin:0; }
+  .auth-subtitle { color:var(--text-secondary); font-size:14px; margin:4px 0 0 0; }
+  .input-group { display:flex; flex-direction:column; gap:14px; }
+  .input-field-block { display:flex; flex-direction:column; gap:6px; }
+  .input-label { color:var(--text-secondary); font-size:12px; font-weight:600; }
+  .text-input { background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:14px; display:flex; align-items:center; justify-content:space-between; }
+  .text-input .placeholder { color:var(--text-tertiary); font-size:14px; }
+  .text-input .filled { color:var(--text-primary); font-size:14px; }
+  .text-input .eye { color:var(--text-tertiary); font-size:13px; cursor:pointer; }
+  .real-input { width:100%; background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; padding:14px; color:var(--text-primary); font-size:14px; font-family:inherit; }
+  .real-input::placeholder { color:var(--text-tertiary); }
+  .real-input:focus { outline:none; border-color:var(--accent); }
+  .text-input.with-input { padding:0 14px; }
+  .text-input.with-input .real-input { border:none; background:transparent; padding:14px 0; flex:1; }
+  .auth-primary-btn.disabled { opacity:0.4; pointer-events:none; }
+  .btn-spinner { width:18px; height:18px; border-radius:50%; border:2.5px solid rgba(255,255,255,0.35); border-top-color:#fff; animation:spin .7s linear infinite; margin:0 auto; }
+  .forgot-link { align-self:flex-end; color:var(--accent); font-size:13px; font-weight:600; cursor:pointer; }
+  .auth-primary-btn { text-align:center; padding:16px; border-radius:14px; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; transition:transform .12s; }
+  .auth-primary-btn:active { transform:scale(0.97); }
+  .auth-footer-text { text-align:center; color:var(--text-secondary); font-size:13px; margin-top:auto; }
+  .auth-footer-text .link { color:var(--accent); font-weight:700; cursor:pointer; }
+  .checkbox-row { display:flex; align-items:flex-start; gap:10px; }
+  .checkbox-box { width:18px; height:18px; border-radius:5px; flex-shrink:0; margin-top:1px; background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; cursor:pointer; }
+  .checkbox-box.off { background:transparent; border:1px solid var(--border); }
+  .checkbox-text { color:var(--text-secondary); font-size:12px; line-height:1.5; }
+  .checkbox-text .link { color:var(--accent); font-weight:600; }
+  .auth-back-row { display:flex; }
+  .icon-circle-lg { width:64px; height:64px; border-radius:50%; background:rgba(108,92,231,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:26px; margin:8px auto 0 auto; }
+  .sent-state { display:none; flex-direction:column; gap:22px; align-items:stretch; text-align:center; }
+  .sent-state.active { display:flex; }
+  #forgotForm.hidden { display:none; }
+  .onboard-dot { width:7px; height:7px; border-radius:50%; background:var(--bg-surface-raised); transition:background .2s, width .2s; }
+  .onboard-dot.active { background:var(--accent); width:20px; border-radius:4px; }
+
+  /* ---------- Profile ---------- */
+  .profile-header { display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px 0 4px 0; }
+  .profile-avatar-lg { width:76px; height:76px; border-radius:50%; background:var(--bg-surface-raised); border:1px solid var(--border); }
+  .profile-name { color:var(--text-primary); font-size:18px; font-weight:700; margin:0; }
+  .profile-email { color:var(--text-secondary); font-size:13px; margin:0; }
+  .menu-card { background:var(--bg-surface); border-radius:var(--radius-lg); padding:4px 16px; }
+  .menu-row { display:flex; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer; transition:opacity .12s; }
+  .menu-row:active { opacity:0.7; }
+  .menu-row:last-child { border-bottom:none; }
+  .menu-row .m-icon { width:34px; height:34px; border-radius:10px; background:var(--bg-surface-raised); display:flex; align-items:center; justify-content:center; color:var(--text-primary); font-size:15px; }
+  .menu-row .m-label { flex:1; color:var(--text-primary); font-size:14px; font-weight:500; }
+  .menu-row .m-value { color:var(--text-secondary); font-size:13px; }
+  .menu-row .m-chevron { color:var(--text-tertiary); }
+  .logout-btn { text-align:center; padding:15px; border-radius:14px; border:1px solid rgba(239,68,68,0.3); color:var(--negative); font-size:14px; font-weight:700; cursor:pointer; transition:transform .12s; }
+  .logout-btn:active { transform:scale(0.97); }
+  .app-version { text-align:center; color:var(--text-tertiary); font-size:11px; margin-top:4px; }
+  .passcode-dot { width:16px; height:16px; border-radius:50%; border:2px solid var(--border); transition:background .15s, border-color .15s; }
+  .passcode-dot.filled { background:var(--accent); border-color:var(--accent); }
+
+  /* toggle switch */
+  .toggle-switch { width:44px; height:26px; border-radius:999px; background:var(--bg-surface-raised); position:relative; cursor:pointer; transition:background .2s; flex-shrink:0; }
+  .toggle-switch.on { background:var(--accent); }
+  .toggle-switch .knob { position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:left .2s; }
+  .toggle-switch.on .knob { left:21px; }
+  .toggle-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .toggle-row:last-child { border-bottom:none; }
+  .toggle-row .t-info { flex:1; display:flex; flex-direction:column; gap:2px; }
+  .toggle-row .t-label { color:var(--text-primary); font-size:14px; font-weight:600; }
+  .toggle-row .t-sub { color:var(--text-tertiary); font-size:11.5px; }
+
+  /* ---------- Bottom nav ---------- */
+  .bottom-nav {
+    position:absolute; left:12px; right:12px; bottom:16px; height:64px;
+    background: rgba(30,37,48,0.65);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+    display:none; align-items:center; justify-content:space-around; z-index:20;
+  }
+  .bottom-nav.visible { display:flex; }
+  .nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; color:rgba(235,237,242,0.55); font-size:10px; font-weight:600; cursor:pointer; width:58px; padding:6px 0; border-radius:16px; transition:transform .12s, background .15s, color .15s; }
+  .nav-item:active { transform:scale(0.9); }
+  .nav-item .nav-icon { font-size:19px; display:flex; align-items:center; justify-content:center; }
+  .nav-item .nav-icon svg { width:22px; height:22px; }
+  .nav-item.active { color:#fff; background: rgba(108,92,231,0.45); }
+
+  /* ---------- toast ---------- */
+  .toast { position:absolute; left:50%; bottom:100px; transform:translate(-50%,10px); background:rgba(30,37,48,0.96); color:#fff; padding:11px 18px; border-radius:12px; font-size:13px; font-weight:600; opacity:0; transition:opacity .25s, transform .25s; z-index:200; pointer-events:none; box-shadow:0 8px 24px rgba(0,0,0,0.4); text-align:center; max-width:80%; }
+  .toast.show { opacity:1; transform:translate(-50%,0); }
+
+  /* ---------- confetti ---------- */
+  .confetti-piece { position:absolute; top:-12px; width:8px; height:14px; opacity:0.95; z-index:100; pointer-events:none; border-radius:2px; animation: confettiFall 1.5s ease-in forwards; }
+  @keyframes confettiFall { 0% { transform:translateY(0) rotate(0deg); opacity:1; } 100% { transform:translateY(880px) rotate(480deg); opacity:0; } }
+</style>
+</head>
+<body>
+
+  <div class="proto-label">Interactive Prototype</div>
+  <div class="proto-hint">Real transitions this time — tabs crossfade, pushes slide in, sheets actually slide up. Tap the withdraw address field to cycle validation. Every profile tile does something.</div>
+
+  <div class="device-frame">
+    <div class="device-btn mute"></div>
+    <div class="device-btn vol-up"></div>
+    <div class="device-btn vol-down"></div>
+    <div class="device-btn power"></div>
+
+    <div class="app-shell" id="appShell">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time" id="statusTime">9:41</span>
+      <span class="icons">
+        <svg viewBox="0 0 18 12" width="16" height="12"><rect x="0" y="7" width="3" height="5" rx="0.6" fill="currentColor"/><rect x="5" y="5" width="3" height="7" rx="0.6" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.6" fill="currentColor"/><rect x="15" y="1" width="3" height="11" rx="0.6" fill="currentColor"/></svg>
+        <svg viewBox="0 0 18 14" width="16" height="13"><path d="M1.5 5.2a12 12 0 0115 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M4.3 8.3a7.6 7.6 0 019.4 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="9" cy="11.5" r="1.3" fill="currentColor"/></svg>
+        <svg viewBox="0 0 26 13" width="25" height="13"><rect x="0.5" y="0.5" width="21" height="12" rx="3.2" stroke="currentColor" stroke-width="1" fill="none" opacity="0.6"/><rect x="2" y="2" width="16.5" height="9" rx="1.8" fill="currentColor"/><rect x="22.3" y="4" width="1.8" height="5" rx="0.9" fill="currentColor" opacity="0.6"/></svg>
+      </span>
+    </div>
+    <div class="home-indicator"></div>
+
+    <!-- ============ ONBOARDING ============ -->
+    <div class="app-screen active" id="screen-onboarding" style="opacity:1;pointer-events:auto;z-index:5;">
+      <div class="screen-scroll"><div class="auth-content" style="justify-content:space-between;">
+        <div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <span id="onboardStepLabel" style="color:var(--text-tertiary); font-size:12.5px; font-weight:600;">Step 1 of 3</span>
+            <span class="link" style="color:var(--text-tertiary); font-size:13px; font-weight:600; cursor:pointer;" onclick="finishOnboarding()">Skip</span>
+          </div>
+          <div style="height:4px; background:var(--bg-surface-raised); border-radius:2px; overflow:hidden;">
+            <div id="onboardProgressFill" style="height:100%; width:33.33%; background:var(--accent); border-radius:2px; transition:width .3s ease;"></div>
+          </div>
+        </div>
+
+        <div class="onboard-slide active" data-slide="0" style="display:flex; flex-direction:column; align-items:center; gap:18px; text-align:center;">
+          <div class="icon-circle-lg" style="width:96px;height:96px;">
+            <svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5l5.5-5.5 4 4L21 6"/><path d="M15.5 6H21v5.5"/></svg>
+          </div>
+          <div><p class="auth-title">Trade with confidence</p><p class="auth-subtitle">Practice buying and selling crypto in a fully simulated market — real prices, zero real risk.</p></div>
+        </div>
+        <div class="onboard-slide" data-slide="1" style="display:none; flex-direction:column; align-items:center; gap:18px; text-align:center;">
+          <div class="icon-circle-lg" style="width:96px;height:96px;">
+            <svg viewBox="0 0 24 24" width="38" height="38" fill="currentColor"><path d="M13 2L4.5 14h6l-1 8L18 10h-6l1-8z"/></svg>
+          </div>
+          <div><p class="auth-title">Live market data</p><p class="auth-subtitle">Track real-time prices, charts, and trends across Bitcoin, Ethereum, and more.</p></div>
+        </div>
+        <div class="onboard-slide" data-slide="2" style="display:none; flex-direction:column; align-items:center; gap:18px; text-align:center;">
+          <div class="icon-circle-lg" style="width:96px;height:96px;">
+            <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+          </div>
+          <div><p class="auth-title">Your simulated wallet</p><p class="auth-subtitle">Every trade uses simulated funds. Nothing here touches real money — it's a safe space to learn.</p></div>
+        </div>
+
+        <div class="auth-primary-btn" id="onboardBtn" onclick="nextSlide()">Next</div>
+      </div></div>
+    </div>
+
+    <!-- ============ LOGIN ============ -->
+    <div class="app-screen" id="screen-login">
+      <div class="screen-scroll"><div class="auth-content">
+        <div class="auth-brand"><div class="brand-mark">₿</div><span class="brand-name">CryptoSim</span></div>
+        <div><p class="auth-title">Welcome back</p><p class="auth-subtitle">Log in to continue trading</p></div>
+        <div class="input-group">
+          <div class="input-field-block">
+            <span class="input-label">Email</span>
+            <input class="real-input" type="email" id="loginEmail" placeholder="you@example.com" oninput="checkLoginValid()" autocomplete="email">
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">Password</span>
+            <div class="text-input with-input">
+              <input class="real-input" type="password" id="loginPassword" placeholder="Enter password" oninput="checkLoginValid()" autocomplete="current-password">
+              <span class="eye" onclick="togglePwd('loginPassword', this)">👁</span>
+            </div>
+          </div>
+        </div>
+        <span class="forgot-link" onclick="showScreen('screen-forgot','push')">Forgot password?</span>
+        <div class="auth-primary-btn disabled" id="loginBtn" onclick="login()"><span id="loginBtnText">Log In</span></div>
+        <p class="auth-footer-text">Don't have an account? <span class="link" onclick="showScreen('screen-register','push')">Sign Up</span></p>
+      </div></div>
+    </div>
+
+    <!-- ============ REGISTER ============ -->
+    <div class="app-screen" id="screen-register">
+      <div class="screen-scroll"><div class="auth-content">
+        <div class="auth-back-row"><div class="back-btn" onclick="showScreen('screen-login','pop')">←</div></div>
+        <div><p class="auth-title">Create account</p><p class="auth-subtitle">Start trading in minutes</p></div>
+        <div class="input-group">
+          <div class="input-field-block">
+            <span class="input-label">Full Name</span>
+            <input class="real-input" type="text" id="regName" placeholder="Jane Doe" oninput="checkRegisterValid()" autocomplete="name">
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">Email</span>
+            <input class="real-input" type="email" id="regEmail" placeholder="you@example.com" oninput="checkRegisterValid()" autocomplete="email">
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">Password</span>
+            <div class="text-input with-input">
+              <input class="real-input" type="password" id="regPassword" placeholder="Min. 8 characters" oninput="checkRegisterValid()" autocomplete="new-password">
+              <span class="eye" onclick="togglePwd('regPassword', this)">👁</span>
+            </div>
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">Confirm Password</span>
+            <div class="text-input with-input">
+              <input class="real-input" type="password" id="regConfirm" placeholder="Re-enter password" oninput="checkRegisterValid()" autocomplete="new-password">
+              <span class="eye" onclick="togglePwd('regConfirm', this)">👁</span>
+            </div>
+          </div>
+        </div>
+        <div class="checkbox-row"><div class="checkbox-box" id="tosBox" onclick="this.classList.toggle('off'); checkRegisterValid();">✓</div><span class="checkbox-text">I agree to the <span class="link">Terms of Service</span> and <span class="link">Privacy Policy</span></span></div>
+        <div class="auth-primary-btn disabled" id="registerBtn" onclick="registerSubmit()"><span id="registerBtnText">Create Account</span></div>
+        <p class="auth-footer-text">Already have an account? <span class="link" onclick="showScreen('screen-login','pop')">Log In</span></p>
+      </div></div>
+    </div>
+
+    <!-- ============ CREATE PASSCODE ============ -->
+    <div class="app-screen" id="screen-passcode">
+      <div class="screen-scroll"><div class="auth-content" style="align-items:center;">
+        <div style="text-align:center;">
+          <p class="auth-title">Create passcode</p>
+          <p class="auth-subtitle">Unlocks the app for quick access. Must be 6 digits.</p>
+        </div>
+        <div id="passcodeDots" style="display:flex; gap:12px; margin:8px 0;">
+          <div class="passcode-dot"></div><div class="passcode-dot"></div><div class="passcode-dot"></div>
+          <div class="passcode-dot"></div><div class="passcode-dot"></div><div class="passcode-dot"></div>
+        </div>
+        <div class="keypad" style="width:100%; max-width:280px; margin-top:auto;">
+          <div class="keypad-key" onclick="pressDigit('1')">1</div><div class="keypad-key" onclick="pressDigit('2')">2</div><div class="keypad-key" onclick="pressDigit('3')">3</div>
+          <div class="keypad-key" onclick="pressDigit('4')">4</div><div class="keypad-key" onclick="pressDigit('5')">5</div><div class="keypad-key" onclick="pressDigit('6')">6</div>
+          <div class="keypad-key" onclick="pressDigit('7')">7</div><div class="keypad-key" onclick="pressDigit('8')">8</div><div class="keypad-key" onclick="pressDigit('9')">9</div>
+          <div class="keypad-key sub"></div><div class="keypad-key" onclick="pressDigit('0')">0</div><div class="keypad-key sub" onclick="pressBackspace()">⌫</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ ENABLE FACE ID ============ -->
+    <div class="app-screen" id="screen-faceid">
+      <div class="screen-scroll"><div class="auth-content">
+        <div class="icon-circle-lg" style="width:96px;height:96px; margin-top:20px;">
+          <svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4H5a1 1 0 00-1 1v2M17 4h2a1 1 0 011 1v2M7 20H5a1 1 0 01-1-1v-2M17 20h2a1 1 0 001-1v-2M9 10v2M15 10v2M9 16c.8.7 1.8 1 3 1s2.2-.3 3-1"/></svg>
+        </div>
+        <div style="text-align:center;"><p class="auth-title">Enable Face ID</p><p class="auth-subtitle">Skip the passcode for quick unlocks. Large actions still require confirmation.</p></div>
+        <div class="input-group" style="gap:12px;">
+          <div style="display:flex; align-items:center; gap:10px;"><span style="color:var(--positive);">✓</span><span style="color:var(--text-secondary); font-size:13px;">Biometric data stays on this device</span></div>
+          <div style="display:flex; align-items:center; gap:10px;"><span style="color:var(--positive);">✓</span><span style="color:var(--text-secondary); font-size:13px;">Never transmitted to our servers</span></div>
+          <div style="display:flex; align-items:center; gap:10px;"><span style="color:var(--positive);">✓</span><span style="color:var(--text-secondary); font-size:13px;">Can be disabled anytime in Security settings</span></div>
+        </div>
+        <div class="auth-primary-btn" onclick="finishAccountSetup()">Continue</div>
+        <p class="auth-footer-text"><span class="link" onclick="finishAccountSetup()">Skip — I'll use passcode only</span></p>
+      </div></div>
+    </div>
+
+    <!-- ============ FORGOT PASSWORD ============ -->
+    <div class="app-screen" id="screen-forgot">
+      <div class="screen-scroll"><div class="auth-content">
+        <div id="forgotForm">
+          <div class="auth-back-row"><div class="back-btn" onclick="showScreen('screen-login','pop')">←</div></div>
+          <div class="icon-circle-lg" style="margin-top:16px;">🔒</div>
+          <div style="text-align:center; margin-top:16px;"><p class="auth-title">Reset password</p><p class="auth-subtitle">Enter the email linked to your account and we'll send a reset link</p></div>
+          <div class="input-group" style="margin-top:22px;">
+            <div class="input-field-block">
+              <span class="input-label">Email</span>
+              <input class="real-input" type="email" id="forgotEmail" placeholder="you@example.com" oninput="checkForgotValid()" autocomplete="email">
+            </div>
+          </div>
+          <div class="auth-primary-btn disabled" id="forgotBtn" style="margin-top:22px;" onclick="sendReset()"><span id="forgotBtnText">Send Reset Link</span></div>
+          <p class="auth-footer-text" style="margin-top:16px;">Remembered it? <span class="link" onclick="showScreen('screen-login','pop')">Log In</span></p>
+        </div>
+        <div class="sent-state" id="forgotSent">
+          <div class="icon-circle-lg" style="background:rgba(34,197,94,0.15); color:var(--positive); margin-top:60px;">✓</div>
+          <div><p class="auth-title">Check your email</p><p class="auth-subtitle" id="forgotSentSub">We sent a reset link to you@example.com</p></div>
+          <div class="auth-primary-btn" onclick="showScreen('screen-login','pop')">Back to Log In</div>
+          <p class="auth-footer-text">Didn't get it? <span class="link" onclick="sendReset()">Resend</span></p>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ DASHBOARD ============ -->
+    <div class="app-screen" id="screen-dashboard">
+      <div class="screen-scroll"><div class="content with-nav">
+        <div class="top-bar">
+          <div><p class="greet-small">Welcome back</p><p class="greet-title">Portfolio</p></div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="bell-btn" onclick="showScreen('screen-notifications','push')">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 1112 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5z"/><path d="M10 19a2 2 0 004 0"/></svg>
+              <span class="bell-dot"></span>
+            </div>
+            <div class="avatar" onclick="showScreen('screen-profile','fade')"></div>
+          </div>
+        </div>
+        <div class="balance-card">
+          <p class="balance-label">Total Balance</p><p class="balance-value">$4,284.50</p>
+          <div class="change-badge">+2.4% today</div>
+        </div>
+        <div class="quick-actions">
+          <div class="action-btn" onclick="openSheet('sheet-deposit')"><div class="icon">↓</div><span>Deposit</span></div>
+          <div class="action-btn primary" onclick="openBuySheet('btc')"><div class="icon">+</div><span>Buy</span></div>
+          <div class="action-btn" onclick="openSellSheet('btc')"><div class="icon">−</div><span>Sell</span></div>
+          <div class="action-btn" onclick="openSheet('sheet-withdraw')"><div class="icon">↑</div><span>Withdraw</span></div>
+        </div>
+        <div>
+          <p class="section-title">Your Holdings</p>
+          <div class="holding-row" onclick="openDetails('btc')"><div class="coin-icon" style="background:var(--btc)">₿</div><div class="row-info"><span class="name">Bitcoin</span><span class="sub">0.052 BTC</span></div><div class="row-value"><span class="val">$5,420</span><span class="chg up">+3.1%</span></div></div>
+          <div class="holding-row" onclick="openDetails('eth')"><div class="coin-icon" style="background:var(--eth)">Ξ</div><div class="row-info"><span class="name">Ethereum</span><span class="sub">0.83 ETH</span></div><div class="row-value"><span class="val">$3,100</span><span class="chg down">-1.2%</span></div></div>
+          <div class="holding-row" onclick="openDetails('usdt')"><div class="coin-icon" style="background:var(--usdt)">₮</div><div class="row-info"><span class="name">Tether</span><span class="sub">1,240 USDT</span></div><div class="row-value"><span class="val">$1,240</span><span class="chg up">+0.0%</span></div></div>
+        </div>
+        <div>
+          <p class="section-title">Recent Activity</p>
+          <div class="activity-list">
+            <div class="activity-row" onclick="showScreen('screen-transactions','fade')"><div class="activity-badge up">↓</div><div class="activity-info"><span class="line1">Bought Bitcoin</span><span class="line2">Today, 2:14 PM</span></div><div class="activity-value"><span class="amt">+0.012 BTC</span><span class="fiat">-$500</span></div></div>
+            <div class="activity-row" onclick="showScreen('screen-transactions','fade')"><div class="activity-badge down">↑</div><div class="activity-info"><span class="line1">Sold Ethereum</span><span class="line2">Yesterday</span></div><div class="activity-value"><span class="amt">-0.4 ETH</span><span class="fiat">+$1,500</span></div></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ MARKETS ============ -->
+    <div class="app-screen" id="screen-markets">
+      <div class="screen-scroll"><div class="content with-nav">
+        <div class="top-bar"><p class="greet-title">Markets</p><div class="avatar" onclick="showScreen('screen-profile','fade')"></div></div>
+        <div class="search-bar" onclick="this.classList.add('focused')">🔍 Search coin...</div>
+
+        <div>
+          <p class="section-title" style="margin-bottom:8px;">Top Movers</p>
+          <div class="top-movers-row">
+            <div class="mover-chip" onclick="openDetails('doge')"><div class="coin-icon" style="width:28px;height:28px;font-size:12px;background:var(--doge)">Ð</div><div><div class="mover-sym">DOGE</div><div class="mover-chg up">+5.62%</div></div></div>
+            <div class="mover-chip" onclick="openDetails('ada')"><div class="coin-icon" style="width:28px;height:28px;font-size:12px;background:var(--ada)">₳</div><div><div class="mover-sym">ADA</div><div class="mover-chg up">+3.05%</div></div></div>
+            <div class="mover-chip" onclick="openDetails('btc')"><div class="coin-icon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><div><div class="mover-sym">BTC</div><div class="mover-chg up">+2.31%</div></div></div>
+            <div class="mover-chip" onclick="openDetails('eth')"><div class="coin-icon" style="width:28px;height:28px;font-size:12px;background:var(--eth)">Ξ</div><div><div class="mover-sym">ETH</div><div class="mover-chg up">+1.84%</div></div></div>
+            <div class="mover-chip" onclick="openDetails('xrp')"><div class="coin-icon" style="width:28px;height:28px;font-size:12px;background:var(--xrp)">✕</div><div><div class="mover-sym">XRP</div><div class="mover-chg down">-1.10%</div></div></div>
+          </div>
+        </div>
+
+        <div class="filter-pills">
+          <div class="pill active" onclick="filterMarkets(this,'all')">All</div>
+          <div class="pill" onclick="filterMarkets(this,'gainers')">Gainers</div>
+          <div class="pill" onclick="filterMarkets(this,'losers')">Losers</div>
+          <div class="pill" onclick="filterMarkets(this,'volume')">Volume</div>
+        </div>
+        <div id="marketList">
+          <div class="market-row" data-change="up" onclick="openDetails('btc')"><div class="coin-icon" style="background:var(--btc)">₿</div><div class="market-info"><span class="name">Bitcoin</span><span class="symbol">BTC</span></div><svg class="mini-spark" data-coin="btc" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$104,230</span><span class="chg up">+2.31%</span></div></div>
+          <div class="market-row" data-change="up" onclick="openDetails('eth')"><div class="coin-icon" style="background:var(--eth)">Ξ</div><div class="market-info"><span class="name">Ethereum</span><span class="symbol">ETH</span></div><svg class="mini-spark" data-coin="eth" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$3,842</span><span class="chg up">+1.84%</span></div></div>
+          <div class="market-row" data-change="down" onclick="openDetails('sol')"><div class="coin-icon" style="background:var(--sol)">◎</div><div class="market-info"><span class="name">Solana</span><span class="symbol">SOL</span></div><svg class="mini-spark" data-coin="sol" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$181.40</span><span class="chg down">-0.72%</span></div></div>
+          <div class="market-row" data-change="up" onclick="openDetails('bnb')"><div class="coin-icon" style="background:var(--bnb)">◆</div><div class="market-info"><span class="name">BNB</span><span class="symbol">BNB</span></div><svg class="mini-spark" data-coin="bnb" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$612.10</span><span class="chg up">+0.94%</span></div></div>
+          <div class="market-row" data-change="down" onclick="openDetails('xrp')"><div class="coin-icon" style="background:var(--xrp)">✕</div><div class="market-info"><span class="name">XRP</span><span class="symbol">XRP</span></div><svg class="mini-spark" data-coin="xrp" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$0.612</span><span class="chg down">-1.10%</span></div></div>
+          <div class="market-row" data-change="up" onclick="openDetails('ada')"><div class="coin-icon" style="background:var(--ada)">₳</div><div class="market-info"><span class="name">Cardano</span><span class="symbol">ADA</span></div><svg class="mini-spark" data-coin="ada" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$0.441</span><span class="chg up">+3.05%</span></div></div>
+          <div class="market-row" data-change="up" onclick="openDetails('doge')"><div class="coin-icon" style="background:var(--doge)">Ð</div><div class="market-info"><span class="name">Dogecoin</span><span class="symbol">DOGE</span></div><svg class="mini-spark" data-coin="doge" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$0.184</span><span class="chg up">+5.62%</span></div></div>
+          <div class="market-row" data-change="up" onclick="openDetails('usdt')"><div class="coin-icon" style="background:var(--usdt)">₮</div><div class="market-info"><span class="name">Tether</span><span class="symbol">USDT</span></div><svg class="mini-spark" data-coin="usdt" viewBox="0 0 60 24" preserveAspectRatio="none"></svg><div class="market-price"><span class="price">$1.00</span><span class="chg up">+0.01%</span></div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ WALLET ============ -->
+    <div class="app-screen" id="screen-wallet">
+      <div class="screen-scroll"><div class="content with-nav">
+        <div class="top-bar"><p class="greet-title">My Wallet</p><div class="avatar" onclick="showScreen('screen-profile','fade')"></div></div>
+        <div class="wallet-total"><span class="label">Estimated Total Value</span><span class="value">$9,760.00</span></div>
+        <div class="wallet-actions">
+          <div class="action-btn" onclick="openSheet('sheet-deposit')"><div class="icon">↓</div><span>Deposit</span></div>
+          <div class="action-btn" onclick="openSendSheet()"><div class="icon">↗</div><span>Send</span></div>
+          <div class="action-btn" onclick="openReceiveSheet()"><div class="icon">↙</div><span>Receive</span></div>
+          <div class="action-btn" onclick="openSheet('sheet-withdraw')"><div class="icon">↑</div><span>Withdraw</span></div>
+        </div>
+        <div>
+          <p class="section-title">Assets</p>
+          <div class="asset-row"><div class="coin-icon" style="background:var(--bg-surface-raised); color:var(--text-primary)">$</div><div class="row-info"><span class="name">USD</span><span class="sub">Cash balance</span></div><div class="row-value"><span class="val">$2,000.00</span></div></div>
+          <div class="asset-row"><div class="coin-icon" style="background:var(--btc)">₿</div><div class="row-info"><span class="name">Bitcoin</span><span class="sub">0.052 BTC</span></div><div class="row-value"><span class="val">$5,420.00</span></div></div>
+          <div class="asset-row"><div class="coin-icon" style="background:var(--eth)">Ξ</div><div class="row-info"><span class="name">Ethereum</span><span class="sub">0.83 ETH</span></div><div class="row-value"><span class="val">$3,100.00</span></div></div>
+          <div class="asset-row"><div class="coin-icon" style="background:var(--usdt)">₮</div><div class="row-info"><span class="name">Tether</span><span class="sub">1,240 USDT</span></div><div class="row-value"><span class="val">$1,240.00</span></div></div>
+        </div>
+        <div>
+          <p class="section-title">Allocation</p>
+          <div class="allocation-card">
+            <div class="donut-chart" style="background: conic-gradient(var(--text-tertiary) 0 61.2deg, var(--btc) 61.2deg 227.1deg, var(--eth) 227.1deg 322deg, var(--usdt) 322deg 360deg);">
+              <div class="donut-hole"><span class="donut-count">4</span><span class="donut-label">assets</span></div>
+            </div>
+            <div class="allocation-legend">
+              <div class="legend-row"><span class="legend-dot" style="background:var(--btc)"></span><span class="legend-name">BTC</span><span class="legend-pct">46.1%</span><span class="legend-val">$5,420</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--eth)"></span><span class="legend-name">ETH</span><span class="legend-pct">26.4%</span><span class="legend-val">$3,100</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--usdt)"></span><span class="legend-name">USDT</span><span class="legend-pct">10.5%</span><span class="legend-val">$1,240</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--text-tertiary)"></span><span class="legend-name">USD</span><span class="legend-pct">17.0%</span><span class="legend-val">$2,000</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ CRYPTO DETAILS (dynamic) ============ -->
+    <div class="app-screen" id="screen-details">
+      <div class="screen-scroll"><div class="content with-nav" style="gap:20px;">
+        <div class="detail-header">
+          <div class="back-btn" onclick="showScreen(lastTab,'pop')">←</div>
+          <div class="detail-coin-title"><div class="coin-icon" id="detailIcon" style="background:var(--btc)">₿</div><span id="detailName">Bitcoin</span></div>
+        </div>
+        <div class="detail-price-block">
+          <p class="detail-price" id="detailPrice">$104,230.00</p>
+          <div class="detail-change-row"><div class="change-badge" id="detailChangeBadge">+2.31% today</div></div>
+        </div>
+        <div class="chart-box">
+          <svg viewBox="0 0 350 120" width="100%" height="120" preserveAspectRatio="none">
+            <polyline id="chartFill" points="" fill="url(#chartFade)" stroke="none" />
+            <polyline id="chartLine" points="" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <defs><linearGradient id="chartFade" x1="0" y1="0" x2="0" y2="1"><stop id="chartStop1" offset="0%" stop-color="#22C55E" stop-opacity="0.25"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient></defs>
+          </svg>
+          <div class="timeframe-tabs">
+            <div class="tf-tab active" onclick="selectTimeframe(this)">1D</div>
+            <div class="tf-tab" onclick="selectTimeframe(this)">1W</div>
+            <div class="tf-tab" onclick="selectTimeframe(this)">1M</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box"><span class="label">Market Cap</span><span class="val" id="statCap">$2.06T</span></div>
+          <div class="stat-box"><span class="label">24h Volume</span><span class="val" id="statVol">$48.2B</span></div>
+          <div class="stat-box"><span class="label">24h High</span><span class="val" id="statHigh">$105,110</span></div>
+          <div class="stat-box"><span class="label">24h Low</span><span class="val" id="statLow">$101,840</span></div>
+        </div>
+        <div class="detail-actions">
+          <div class="detail-btn sell" onclick="openSellSheet(currentCoin)">Sell</div>
+          <div class="detail-btn buy" onclick="openBuySheet(currentCoin)">Buy</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ TRANSACTIONS ============ -->
+    <div class="app-screen" id="screen-transactions">
+      <div class="screen-scroll"><div class="content with-nav">
+        <div class="top-bar"><p class="greet-title">Transactions</p><div class="avatar" onclick="showScreen('screen-profile','fade')"></div></div>
+        <div class="filter-pills">
+          <div class="pill active" onclick="filterTx(this,'all')">All</div>
+          <div class="pill" onclick="filterTx(this,'buy')">Buy</div>
+          <div class="pill" onclick="filterTx(this,'sell')">Sell</div>
+          <div class="pill" onclick="filterTx(this,'deposit')">Deposit</div>
+          <div class="pill" onclick="filterTx(this,'withdraw')">Withdrawal</div>
+        </div>
+        <div id="txList">
+          <p class="tx-group-label">Today</p>
+          <div class="tx-row" data-type="buy" onclick="openReceiptFromRow('Bought Bitcoin','₿','var(--btc)',[['Type','Buy'],['Asset','Bitcoin (BTC)'],['Amount','0.012 BTC'],['Price','$104,230.00'],['Fee','$5.00'],['Total Paid','$500.00'],['Payment Method','USDT Balance']])"><div class="tx-badge buy">↓</div><div class="tx-info"><span class="line1">Bought Bitcoin</span><span class="line2">2:14 PM</span></div><div class="tx-value"><span class="amt up">+0.012 BTC</span><span class="fiat">-$500.00</span></div></div>
+          <div class="tx-row" data-type="deposit" onclick="openReceiptFromRow('Deposited USDT','₮','var(--usdt)',[['Type','Deposit'],['Asset','Tether (USDT)'],['Amount','1,000 USDT'],['Method','Simulated Funding']])"><div class="tx-badge deposit">↓</div><div class="tx-info"><span class="line1">Deposited USDT</span><span class="line2">9:02 AM</span></div><div class="tx-value"><span class="amt up">+1,000 USDT</span><span class="fiat">+$1,000.00</span></div></div>
+          <p class="tx-group-label">Yesterday</p>
+          <div class="tx-row" data-type="sell" onclick="openReceiptFromRow('Sold Ethereum','Ξ','var(--eth)',[['Type','Sell'],['Asset','Ethereum (ETH)'],['Amount','0.4 ETH'],['Price','$3,842.00'],['Fee','$5.00'],['Total Received','$1,500.00']])"><div class="tx-badge sell">↑</div><div class="tx-info"><span class="line1">Sold Ethereum</span><span class="line2">6:47 PM</span></div><div class="tx-value"><span class="amt down">-0.4 ETH</span><span class="fiat">+$1,500.00</span></div></div>
+          <div class="tx-row" data-type="withdraw" onclick="openReceiptFromRow('Withdrew Funds','↑','var(--bg-surface-raised)',[['Type','Withdrawal'],['Asset','USD'],['Amount','$300.00'],['Destination','Bank ••••4417']])"><div class="tx-badge withdraw">↑</div><div class="tx-info"><span class="line1">Withdrew funds</span><span class="line2">11:20 AM</span></div><div class="tx-value"><span class="amt down">-$300.00</span><span class="fiat">USD</span></div></div>
+          <p class="tx-group-label">Aug 28</p>
+          <div class="tx-row" data-type="buy" onclick="openReceiptFromRow('Bought Solana','◎','var(--sol)',[['Type','Buy'],['Asset','Solana (SOL)'],['Amount','2.4 SOL'],['Price','$180.83'],['Fee','$4.34'],['Total Paid','$434.00'],['Payment Method','USDT Balance']])"><div class="tx-badge buy">↓</div><div class="tx-info"><span class="line1">Bought Solana</span><span class="line2">4:05 PM</span></div><div class="tx-value"><span class="amt up">+2.4 SOL</span><span class="fiat">-$434.00</span></div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ NOTIFICATIONS ============ -->
+    <div class="app-screen" id="screen-notifications">
+      <div class="screen-scroll"><div class="content with-nav" style="gap:16px;">
+        <div class="detail-header" style="justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="back-btn" onclick="showScreen(lastTab,'pop')">←</div>
+            <span style="color:var(--text-primary); font-size:17px; font-weight:700;">Notifications</span>
+          </div>
+          <span class="link" style="color:var(--accent); font-size:13px; font-weight:600; cursor:pointer;" onclick="markAllRead()">Mark all read</span>
+        </div>
+        <div id="notifList">
+          <div class="notif-row unread" onclick="markOneRead(this)">
+            <div class="notif-icon">💹</div>
+            <div class="notif-info">
+              <div class="notif-title-row"><span class="notif-title">ETH Price Alert</span><span class="notif-unread-dot"></span></div>
+              <div class="notif-sub">Ethereum hit your target of $4,000</div>
+            </div>
+            <span class="notif-time">2m ago</span>
+          </div>
+          <div class="notif-row unread" onclick="markOneRead(this)">
+            <div class="notif-icon">✓</div>
+            <div class="notif-info">
+              <div class="notif-title-row"><span class="notif-title">Transaction Confirmed</span><span class="notif-unread-dot"></span></div>
+              <div class="notif-sub">Buy 0.012 BTC for $500.00 is confirmed</div>
+            </div>
+            <span class="notif-time">1h ago</span>
+          </div>
+          <div class="notif-row unread" onclick="markOneRead(this)">
+            <div class="notif-icon">⭐</div>
+            <div class="notif-info">
+              <div class="notif-title-row"><span class="notif-title">Upgrade Available</span><span class="notif-unread-dot"></span></div>
+              <div class="notif-sub">Unlock a $50,000 daily simulated limit</div>
+            </div>
+            <span class="notif-time">3h ago</span>
+          </div>
+          <div class="notif-row" onclick="markOneRead(this)">
+            <div class="notif-icon">🔁</div>
+            <div class="notif-info">
+              <div class="notif-title-row"><span class="notif-title">Swap Complete</span></div>
+              <div class="notif-sub">USDC → ETH swap confirmed</div>
+            </div>
+            <span class="notif-time">8h ago</span>
+          </div>
+          <div class="notif-row" onclick="markOneRead(this)">
+            <div class="notif-icon">📊</div>
+            <div class="notif-info">
+              <div class="notif-title-row"><span class="notif-title">Weekly Report Ready</span></div>
+              <div class="notif-sub">Your portfolio grew +6.4% this week</div>
+            </div>
+            <span class="notif-time">2d ago</span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ PROFILE ============ -->
+    <div class="app-screen" id="screen-profile">
+      <div class="screen-scroll"><div class="content with-nav">
+        <div class="top-bar"><p class="greet-title">Profile</p><div class="back-btn" style="width:32px;height:32px;" onclick="showToast('Opening Settings...')">⚙</div></div>
+        <div class="profile-header">
+          <div class="profile-avatar-lg"></div>
+          <p class="profile-name">Jane Doe</p>
+          <p class="profile-email">jane@example.com</p>
+        </div>
+        <div class="menu-card">
+          <div class="menu-row" onclick="openSheet('sheet-edit-profile')"><div class="m-icon">✎</div><span class="m-label">Edit Profile</span><span class="m-chevron">›</span></div>
+          <div class="menu-row" onclick="openSheet('sheet-change-password')"><div class="m-icon">🔑</div><span class="m-label">Change Password</span><span class="m-chevron">›</span></div>
+          <div class="menu-row" onclick="openSheet('sheet-currency')"><div class="m-icon">$</div><span class="m-label">Preferred Currency</span><span class="m-value" id="prefCurrencyValue">USD</span><span class="m-chevron">›</span></div>
+          <div class="menu-row" onclick="showScreen('screen-notifications','push')"><div class="m-icon">🔔</div><span class="m-label">Notifications</span><span class="m-chevron">›</span></div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-row" onclick="showToast('Opening Security...')"><div class="m-icon">🛡</div><span class="m-label">Security</span><span class="m-chevron">›</span></div>
+          <div class="menu-row" onclick="showToast('Opening Help & Support...')"><div class="m-icon">?</div><span class="m-label">Help &amp; Support</span><span class="m-chevron">›</span></div>
+        </div>
+        <div class="logout-btn" onclick="logout()">Log Out</div>
+        <p class="app-version">CryptoSim v1.0.0 · Simulated Trading Platform</p>
+      </div></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SHEETS -->
+    <!-- ============================================================ -->
+
+    <div class="sheet-overlay" id="sheet-buy-compact">
+      <div class="sheet-panel" style="height:62%;">
+        <div class="drag-handle" onclick="expandBuy()"></div>
+        <div class="sheet-header"><p class="sheet-title-sm" id="buyTitle">Buy Bitcoin</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="buyIcon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><span class="name" id="buyName">Bitcoin</span><span class="price" id="buyPrice">$104,230.00</span></div>
+        <div class="amount-input-block"><div class="amount" id="buyAmount">$500</div><div class="sub" id="buySub">≈ 0.0048 BTC</div></div>
+        <div class="percent-row">
+          <div class="percent-chip" onclick="selectChip(this,'buy')">25%</div>
+          <div class="percent-chip" onclick="selectChip(this,'buy')">50%</div>
+          <div class="percent-chip active" onclick="selectChip(this,'buy')">75%</div>
+          <div class="percent-chip" onclick="selectChip(this,'buy')">MAX</div>
+        </div>
+        <div class="receive-row"><span class="label">Available</span><span class="value">$2,000.00 USDT</span></div>
+        <div class="sheet-primary-btn" onclick="expandBuy()">Continue</div>
+        <p class="hint-text">Swipe up for fee breakdown &amp; confirmation ↑</p>
+      </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheet-buy-full">
+      <div class="sheet-panel expanded">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm" id="buyFullTitle">Buy Bitcoin</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="buyFullIcon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><span class="name" id="buyFullName">Bitcoin</span><span class="price" id="buyFullPrice">$104,230.00</span></div>
+        <div class="amount-input-block"><div class="amount" id="buyFullAmount">$500</div><div class="sub" id="buyFullSub">≈ 0.0048 BTC</div></div>
+        <div class="percent-row">
+          <div class="percent-chip" onclick="selectChip(this,'buy')">25%</div>
+          <div class="percent-chip" onclick="selectChip(this,'buy')">50%</div>
+          <div class="percent-chip active" onclick="selectChip(this,'buy')">75%</div>
+          <div class="percent-chip" onclick="selectChip(this,'buy')">MAX</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-line"><span class="k">Price</span><span class="v" id="buyFullPriceLine">$104,230.00</span></div>
+          <div class="summary-line"><span class="k">Network Fee</span><span class="v">$5.00</span></div>
+          <div class="summary-divider"></div>
+          <div class="summary-line total"><span class="k">Total</span><span class="v" id="buyFullTotal">$505.00</span></div>
+        </div>
+        <div class="payment-row"><div class="p-icon">₮</div><span class="p-label">Pay with USDT balance</span><span class="chevron">›</span></div>
+        <div class="keypad">
+          <div class="keypad-key">1</div><div class="keypad-key">2</div><div class="keypad-key">3</div>
+          <div class="keypad-key">4</div><div class="keypad-key">5</div><div class="keypad-key">6</div>
+          <div class="keypad-key">7</div><div class="keypad-key">8</div><div class="keypad-key">9</div>
+          <div class="keypad-key sub">.</div><div class="keypad-key">0</div><div class="keypad-key sub">⌫</div>
+        </div>
+        <div class="sheet-primary-btn" id="buyConfirmBtn" onclick="confirmBuy()">Confirm Buy — $505.00</div>
+        <p class="hint-text">Simulated purchase · no real assets are exchanged</p>
+      </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheet-sell-compact">
+      <div class="sheet-panel" style="height:60%;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm" id="sellTitle">Sell Bitcoin</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="sellIcon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><span class="name" id="sellName">Bitcoin</span><span class="price" id="sellPrice">$104,230.00</span></div>
+        <div class="amount-input-block"><div class="amount" id="sellAmount">0.020 BTC</div><div class="sub" id="sellSub">≈ $2,084.60</div></div>
+        <div class="percent-row">
+          <div class="percent-chip" onclick="selectChip(this,'sell')">25%</div>
+          <div class="percent-chip active" onclick="selectChip(this,'sell')">50%</div>
+          <div class="percent-chip" onclick="selectChip(this,'sell')">75%</div>
+          <div class="percent-chip" onclick="selectChip(this,'sell')">MAX</div>
+        </div>
+        <div class="receive-row"><span class="label">You own</span><span class="value" id="sellOwnLabel">0.052 BTC</span></div>
+        <div class="sheet-primary-btn sell" onclick="expandSell()">Continue</div>
+        <p class="hint-text">Swipe up for fee breakdown &amp; confirmation ↑</p>
+      </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheet-sell-full">
+      <div class="sheet-panel expanded">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm" id="sellFullTitle">Sell Bitcoin</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="sellFullIcon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><span class="name" id="sellFullName">Bitcoin</span><span class="price" id="sellFullPrice">$104,230.00</span></div>
+        <div class="amount-input-block"><div class="amount" id="sellFullAmount">0.020 BTC</div><div class="sub" id="sellFullSub">≈ $2,084.60</div></div>
+        <div class="percent-row">
+          <div class="percent-chip" onclick="selectChip(this,'sell')">25%</div>
+          <div class="percent-chip active" onclick="selectChip(this,'sell')">50%</div>
+          <div class="percent-chip" onclick="selectChip(this,'sell')">75%</div>
+          <div class="percent-chip" onclick="selectChip(this,'sell')">MAX</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-line"><span class="k">Price</span><span class="v" id="sellFullPriceLine">$104,230.00</span></div>
+          <div class="summary-line"><span class="k">Network Fee</span><span class="v">$5.00</span></div>
+          <div class="summary-divider"></div>
+          <div class="summary-line total"><span class="k">You'll Receive</span><span class="v" id="sellFullTotal">$2,079.60</span></div>
+        </div>
+        <div class="payment-row"><div class="p-icon">₮</div><span class="p-label">Receive to USDT balance</span><span class="chevron">›</span></div>
+        <div class="keypad">
+          <div class="keypad-key">1</div><div class="keypad-key">2</div><div class="keypad-key">3</div>
+          <div class="keypad-key">4</div><div class="keypad-key">5</div><div class="keypad-key">6</div>
+          <div class="keypad-key">7</div><div class="keypad-key">8</div><div class="keypad-key">9</div>
+          <div class="keypad-key sub">.</div><div class="keypad-key">0</div><div class="keypad-key sub">⌫</div>
+        </div>
+        <div class="sheet-primary-btn sell" id="sellConfirmBtn" onclick="confirmSell()">Confirm Sell — $2,079.60</div>
+        <p class="hint-text">Simulated sale · no real assets are exchanged</p>
+      </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheet-deposit">
+      <div class="sheet-panel" style="height:58%;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Deposit</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="depositIcon" style="width:28px;height:28px;font-size:12px;background:var(--usdt)">₮</div><span class="name" id="depositName">Tether</span><span class="change-link" onclick="openPicker('deposit')">Change ›</span></div>
+        <div class="amount-input-block"><div class="amount" id="depositAmount">$500</div><div class="sub">Simulated balance — added instantly</div></div>
+        <div class="quick-amount-row">
+          <div class="quick-amount-chip" onclick="selectAmount(this,100)">$100</div>
+          <div class="quick-amount-chip active" onclick="selectAmount(this,500)">$500</div>
+          <div class="quick-amount-chip" onclick="selectAmount(this,1000)">$1,000</div>
+          <div class="quick-amount-chip" onclick="selectAmount(this,5000)">$5,000</div>
+        </div>
+        <div class="sheet-primary-btn" onclick="confirmDeposit()">Deposit</div>
+        <p class="hint-text">No real payment method required — this is a simulator</p>
+      </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheet-withdraw">
+      <div class="sheet-panel expanded">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Withdraw Bitcoin</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="withdrawIcon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><span class="name" id="withdrawName">Bitcoin</span><span class="change-link" onclick="openPicker('withdraw')">Change ›</span></div>
+        <div class="amount-input-block"><div class="amount" id="withdrawAmount">0.010 BTC</div><div class="sub" id="withdrawSub">≈ $1,042.30</div></div>
+        <div class="percent-row">
+          <div class="percent-chip active" onclick="selectChip(this,'withdraw')">25%</div>
+          <div class="percent-chip" onclick="selectChip(this,'withdraw')">50%</div>
+          <div class="percent-chip" onclick="selectChip(this,'withdraw')">75%</div>
+          <div class="percent-chip" onclick="selectChip(this,'withdraw')">MAX</div>
+        </div>
+        <div class="field-block" id="addressField">
+          <p class="field-label">Wallet Address · tap to test validation</p>
+          <div class="address-input" id="addressInput" onclick="cycleAddress()">
+            <span class="placeholder" id="addressText">bc1q — paste or scan address</span>
+            <span class="paste-btn">Paste</span>
+          </div>
+          <div class="field-error-text">⚠ Not a valid Bitcoin address — check the format and try again</div>
+          <div class="field-valid-text">✓ Valid Bitcoin address</div>
+        </div>
+        <div class="network-row"><span class="label">Network</span><span class="value">Bitcoin (BTC) <span class="chevron">›</span></span></div>
+        <div class="summary-card">
+          <div class="summary-line"><span class="k">You own</span><span class="v">0.052 BTC</span></div>
+          <div class="summary-line"><span class="k">Network Fee</span><span class="v">0.0002 BTC</span></div>
+          <div class="summary-divider"></div>
+          <div class="summary-line total"><span class="k">You'll receive</span><span class="v" id="withdrawReceive">0.0098 BTC</span></div>
+        </div>
+        <div class="warning-note"><span class="icon">⚠</span><span class="text">Double-check the address and network. Withdrawals to the wrong address or network can't be reversed.</span></div>
+        <div class="sheet-primary-btn sell disabled" id="withdrawBtn" onclick="confirmWithdraw()">Withdraw 0.010 BTC</div>
+      </div>
+    </div>
+
+    <!-- SEND (peer-to-peer, to any wallet address — including another app's) -->
+    <div class="sheet-overlay" id="sheet-send">
+      <div class="sheet-panel expanded">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Send Bitcoin</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="asset-pill-row"><div class="coin-icon" id="sendIcon" style="width:28px;height:28px;font-size:12px;background:var(--btc)">₿</div><span class="name" id="sendName">Bitcoin</span><span class="change-link" onclick="openPicker('send')">Change ›</span></div>
+
+        <div class="field-block" id="sendAddressField">
+          <p class="field-label">Recipient Address</p>
+          <div class="address-input" id="sendAddressInput" onclick="cycleSendAddress()">
+            <span class="placeholder" id="sendAddressText">Paste, scan, or enter address</span>
+            <span class="paste-btn">📷 Scan</span>
+          </div>
+          <div class="field-error-text">⚠ Not a valid address for this network</div>
+          <div class="field-valid-text">✓ Valid address</div>
+        </div>
+
+        <div class="amount-input-block"><div class="amount" id="sendAmount">0.010 BTC</div><div class="sub" id="sendSub">≈ $1,042.30</div></div>
+        <div class="percent-row">
+          <div class="percent-chip active" onclick="selectChip(this,'send')">25%</div>
+          <div class="percent-chip" onclick="selectChip(this,'send')">50%</div>
+          <div class="percent-chip" onclick="selectChip(this,'send')">75%</div>
+          <div class="percent-chip" onclick="selectChip(this,'send')">MAX</div>
+        </div>
+
+        <div class="network-row"><span class="label">Network</span><span class="value" id="sendNetworkLabel">Bitcoin (BTC) <span class="chevron">›</span></span></div>
+
+        <div class="summary-card">
+          <div class="summary-line"><span class="k">You own</span><span class="v">0.052 BTC</span></div>
+          <div class="summary-line"><span class="k">Network Fee</span><span class="v">0.0002 BTC</span></div>
+          <div class="summary-divider"></div>
+          <div class="summary-line total"><span class="k">Recipient gets</span><span class="v" id="sendReceive">0.0098 BTC</span></div>
+        </div>
+
+        <div class="warning-note"><span class="icon">⚠</span><span class="text">Works with any wallet on the same simulated network — including addresses from other apps. Double-check before sending; this can't be reversed.</span></div>
+
+        <div class="sheet-primary-btn disabled" id="sendBtn" onclick="confirmSend()">Send 0.010 BTC</div>
+      </div>
+    </div>
+
+    <!-- RECEIVE (QR + address, for someone to send you funds) -->
+    <div class="sheet-overlay" id="sheet-receive">
+      <div class="sheet-panel expanded">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Receive</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+
+        <div class="network-toggle">
+          <div class="toggle-opt active" data-net="btc" onclick="setReceiveNetwork(this,'btc')"><span class="dot" style="background:var(--btc)"></span>Bitcoin</div>
+          <div class="toggle-opt" data-net="eth" onclick="setReceiveNetwork(this,'eth')"><span class="dot" style="background:var(--eth)"></span>Ethereum</div>
+          <div class="toggle-opt" data-net="usdt" onclick="setReceiveNetwork(this,'usdt')"><span class="dot" style="background:var(--usdt)"></span>USDT</div>
+        </div>
+
+        <div class="qr-wrap">
+          <div class="qr-frame">
+            <div class="qr-grid" id="qrGrid"></div>
+            <div class="qr-center-badge" id="qrBadge" style="background:var(--btc);">₿</div>
+          </div>
+        </div>
+
+        <div class="address-display">
+          <span id="receiveAddress">bc1q7x3f91c2e8k2fc9d0e72xy2kgdyg</span>
+          <span class="copy-icon" onclick="copyReceiveAddress()">⧉</span>
+        </div>
+
+        <p class="hint-text">Verify the network before sending. Simulated transfers to the wrong network can't be recovered.</p>
+
+        <div class="dual-btn-row" style="margin-top:auto;">
+          <div class="sheet-primary-btn" onclick="copyReceiveAddress()">📋 Copy Address</div>
+          <div class="sheet-outline-btn" onclick="showToast('Share sheet opened')">Share</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-overlay stacked" id="sheet-picker">
+      <div class="sheet-panel" style="height:68%;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm" id="pickerTitle">Select asset</p><div class="sheet-close" onclick="closePicker()">✕</div></div>
+        <div class="search-input-sheet">🔍 Search asset...</div>
+        <div>
+          <div class="asset-pick-row" onclick="pickAsset('₿','Bitcoin','var(--btc)')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--btc)">₿</div><div class="info"><span class="name">Bitcoin</span><span class="sub">BTC</span></div><span class="bal">0.052 BTC</span></div>
+          <div class="asset-pick-row" onclick="pickAsset('Ξ','Ethereum','var(--eth)')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--eth)">Ξ</div><div class="info"><span class="name">Ethereum</span><span class="sub">ETH</span></div><span class="bal">0.83 ETH</span></div>
+          <div class="asset-pick-row" onclick="pickAsset('₮','Tether','var(--usdt)')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--usdt)">₮</div><div class="info"><span class="name">Tether</span><span class="sub">USDT</span></div><span class="bal">1,240 USDT</span></div>
+          <div class="asset-pick-row" onclick="pickAsset('$','USD','var(--bg-surface-raised)')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--bg-surface-raised);color:var(--text-primary)">$</div><div class="info"><span class="name">USD</span><span class="sub">Cash</span></div><span class="bal">$2,000.00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOADING (transient, non-dismissible) -->
+    <div class="sheet-overlay" id="sheet-loading">
+      <div class="sheet-panel" style="height:34%; align-items:center; justify-content:center; text-align:center;">
+        <div class="spinner"></div>
+        <p class="success-title" id="loadingText" style="margin-top:6px;">Processing...</p>
+        <p class="success-sub">This will just take a moment</p>
+      </div>
+    </div>
+
+    <!-- EDIT PROFILE -->
+    <div class="sheet-overlay" id="sheet-edit-profile">
+      <div class="sheet-panel" style="height:54%;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Edit Profile</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="input-group">
+          <div class="input-field-block">
+            <span class="input-label">Full Name</span>
+            <input class="real-input" type="text" id="editName" value="Jane Doe">
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">Email</span>
+            <input class="real-input" type="email" id="editEmail" value="jane@example.com">
+          </div>
+        </div>
+        <div class="sheet-primary-btn" onclick="saveProfile()">Save Changes</div>
+      </div>
+    </div>
+
+    <!-- CHANGE PASSWORD -->
+    <div class="sheet-overlay" id="sheet-change-password">
+      <div class="sheet-panel" style="height:62%;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Change Password</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="input-group">
+          <div class="input-field-block">
+            <span class="input-label">Current Password</span>
+            <div class="text-input with-input"><input class="real-input" type="password" id="curPwd" placeholder="Enter current password"><span class="eye" onclick="togglePwd('curPwd', this)">👁</span></div>
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">New Password</span>
+            <div class="text-input with-input"><input class="real-input" type="password" id="newPwd" placeholder="Min. 8 characters" oninput="checkPwdSheetValid()"><span class="eye" onclick="togglePwd('newPwd', this)">👁</span></div>
+          </div>
+          <div class="input-field-block">
+            <span class="input-label">Confirm New Password</span>
+            <div class="text-input with-input"><input class="real-input" type="password" id="confirmPwd" placeholder="Re-enter new password" oninput="checkPwdSheetValid()"><span class="eye" onclick="togglePwd('confirmPwd', this)">👁</span></div>
+          </div>
+        </div>
+        <div class="sheet-primary-btn disabled" id="pwdSheetBtn" onclick="savePassword()">Update Password</div>
+      </div>
+    </div>
+
+    <!-- PREFERRED CURRENCY -->
+    <div class="sheet-overlay" id="sheet-currency">
+      <div class="sheet-panel" style="height:52%;">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Preferred Currency</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div>
+          <div class="asset-pick-row" onclick="pickCurrency('USD')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--bg-surface-raised);color:var(--text-primary)">$</div><div class="info"><span class="name">US Dollar</span><span class="sub">USD</span></div></div>
+          <div class="asset-pick-row" onclick="pickCurrency('EUR')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--bg-surface-raised);color:var(--text-primary)">€</div><div class="info"><span class="name">Euro</span><span class="sub">EUR</span></div></div>
+          <div class="asset-pick-row" onclick="pickCurrency('GBP')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--bg-surface-raised);color:var(--text-primary)">£</div><div class="info"><span class="name">British Pound</span><span class="sub">GBP</span></div></div>
+          <div class="asset-pick-row" onclick="pickCurrency('NGN')"><div class="coin-icon" style="width:32px;height:32px;font-size:13px;background:var(--bg-surface-raised);color:var(--text-primary)">₦</div><div class="info"><span class="name">Nigerian Naira</span><span class="sub">NGN</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION -->
+    <div class="sheet-overlay" id="sheet-confirmation">
+      <div class="sheet-panel" style="height:52%;">
+        <div class="drag-handle"></div>
+        <div class="success-icon">✓</div>
+        <p class="success-title" id="confirmTitle">Purchase Successful</p>
+        <p class="success-sub" id="confirmSub">You bought 0.0048 BTC for $505.00</p>
+        <div class="summary-card">
+          <div class="summary-line"><span class="k">Reference</span><span class="v" id="confirmRef">#TX-88213</span></div>
+          <div class="summary-line"><span class="k">Date</span><span class="v" id="confirmDate">Sep 3, 2026 · 3:41 PM</span></div>
+        </div>
+        <div class="sheet-outline-btn" onclick="openReceipt()">View Receipt</div>
+        <div class="sheet-primary-btn" onclick="closeAllSheets()">Done</div>
+      </div>
+    </div>
+
+    <!-- RECEIPT -->
+    <div class="sheet-overlay stacked" id="sheet-receipt">
+      <div class="sheet-panel expanded">
+        <div class="drag-handle"></div>
+        <div class="sheet-header"><p class="sheet-title-sm">Receipt</p><div class="sheet-close" onclick="closeAllSheets()">✕</div></div>
+        <div class="coin-icon" id="receiptIcon" style="width:56px;height:56px;font-size:22px;background:var(--btc);margin:4px auto 0 auto;">₿</div>
+        <p class="success-title" id="receiptTitle" style="margin-top:4px;">Bought Bitcoin</p>
+        <div class="status-badge" id="receiptStatus">✓ Completed</div>
+        <div class="dashed-divider"></div>
+        <div class="summary-card" id="receiptLines"></div>
+        <div class="summary-card">
+          <div class="summary-line"><span class="k">Reference</span><span class="v" id="receiptRef">#TX-88213</span></div>
+          <div class="summary-line"><span class="k">Date &amp; Time</span><span class="v" id="receiptTime">Sep 3, 2026 · 3:41 PM</span></div>
+        </div>
+        <div class="sheet-outline-btn" onclick="showToast('Receipt saved to Photos')">Share Receipt</div>
+        <div class="sheet-primary-btn" onclick="closeAllSheets()">Done</div>
+      </div>
+    </div>
+
+    <!-- ============ BOTTOM NAV (anchored to the screen, not the bezel) ============ -->
+    <div class="bottom-nav" id="bottomNav">
+      <div class="nav-item active" data-screen="screen-dashboard" onclick="navTap('screen-dashboard')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.2L12 4l9 7.2"/><path d="M5.2 9.8V19a1 1 0 001 1h4.3v-6.2h3v6.2H18a1 1 0 001-1V9.8"/></svg></span>Home</div>
+      <div class="nav-item" data-screen="screen-markets" onclick="navTap('screen-markets')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5l5.5-5.5 4 4L21 6"/><path d="M15.5 6H21v5.5"/></svg></span>Markets</div>
+      <div class="nav-item" data-screen="screen-wallet" onclick="navTap('screen-wallet')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="12" rx="2.2"/><path d="M3 10.2h18"/><circle cx="17" cy="14.3" r="1.15" fill="currentColor" stroke="none"/></svg></span>Wallet</div>
+      <div class="nav-item" data-screen="screen-transactions" onclick="navTap('screen-transactions')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.7"/><path d="M12 7.3v5l3.4 2"/></svg></span>Activity</div>
+      <div class="nav-item" data-screen="screen-profile" onclick="navTap('screen-profile')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M4.7 19.5c1.4-3.8 4.3-5.6 7.3-5.6s5.9 1.8 7.3 5.6"/></svg></span>Profile</div>
+    </div>
+
+    </div>
+  </div>
+
+<script>
+  (function(){
+    var t = document.getElementById('statusTime');
+    function tick(){ t.textContent = new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}).replace(/\s?(AM|PM)/i,''); }
+    tick(); setInterval(tick, 15000);
+  })();
+
+  var lastTab = 'screen-dashboard';
+  var currentScreenEl = document.getElementById('screen-onboarding');
+  var currentCoin = 'btc';
+  var pickerTarget = null;
+  var addressState = 'empty';
+  var lastTx = null;
+
+  var COINS = {
+    btc:{symbol:'₿',name:'Bitcoin',price:'$104,230.00',priceNum:104230,change:'+2.31%',up:true,high:'$105,110',low:'$101,840',cap:'$2.06T',vol:'$48.2B',chart:[80,75,85,60,65,40,50,30,35,20,25,10],color:'var(--btc)'},
+    eth:{symbol:'Ξ',name:'Ethereum',price:'$3,842.00',priceNum:3842,change:'+1.84%',up:true,high:'$3,910',low:'$3,760',cap:'$462B',vol:'$18.4B',chart:[70,68,72,60,63,50,55,45,48,35,38,28],color:'var(--eth)'},
+    sol:{symbol:'◎',name:'Solana',price:'$181.40',priceNum:181.4,change:'-0.72%',up:false,high:'$186.20',low:'$178.90',cap:'$86.1B',vol:'$3.2B',chart:[40,45,42,50,48,55,52,60,58,65,62,68],color:'var(--sol)'},
+    bnb:{symbol:'◆',name:'BNB',price:'$612.10',priceNum:612.1,change:'+0.94%',up:true,high:'$618.40',low:'$604.20',cap:'$88.9B',vol:'$1.6B',chart:[60,58,62,55,57,48,50,42,44,36,38,30],color:'var(--bnb)'},
+    xrp:{symbol:'✕',name:'XRP',price:'$0.612',priceNum:0.612,change:'-1.10%',up:false,high:'$0.628',low:'$0.601',cap:'$35.2B',vol:'$1.1B',chart:[35,38,36,42,40,46,44,50,48,54,52,58],color:'var(--xrp)'},
+    ada:{symbol:'₳',name:'Cardano',price:'$0.441',priceNum:0.441,change:'+3.05%',up:true,high:'$0.452',low:'$0.421',cap:'$15.8B',vol:'$540M',chart:[75,70,74,58,62,44,48,32,36,20,24,12],color:'var(--ada)'},
+    doge:{symbol:'Ð',name:'Dogecoin',price:'$0.184',priceNum:0.184,change:'+5.62%',up:true,high:'$0.191',low:'$0.172',cap:'$27.1B',vol:'$980M',chart:[82,76,80,60,64,42,46,28,32,16,20,8],color:'var(--doge)'},
+    usdt:{symbol:'₮',name:'Tether',price:'$1.00',priceNum:1,change:'+0.01%',up:true,high:'$1.001',low:'$0.999',cap:'$118B',vol:'$62B',chart:[50,50,51,50,49,50,51,50,50,49,50,50],color:'var(--usdt)'}
+  };
+
+  /* ---------- screen transitions (robust snap+animate, race-safe) ---------- */
+  var hideTimers = {};
+  function killPending(el) { if (el && hideTimers[el.id]) { clearTimeout(hideTimers[el.id]); delete hideTimers[el.id]; } }
+  function snap(el, transform, opacity, z, pe) {
+    el.style.transition = 'none';
+    el.style.transform = transform;
+    el.style.opacity = opacity;
+    el.style.zIndex = z;
+    el.style.pointerEvents = pe;
+    void el.offsetWidth;
+    el.style.transition = '';
+  }
+  function animateTo(el, transform, opacity) {
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        el.style.transform = transform;
+        if (opacity !== undefined) el.style.opacity = opacity;
+      });
+    });
+  }
+  function scheduleHide(el, delay) {
+    hideTimers[el.id] = setTimeout(function(){
+      el.style.transform = 'translateX(0)';
+      el.style.opacity = 0;
+      el.style.zIndex = 1;
+      el.style.pointerEvents = 'none';
+      el.classList.remove('active');
+      delete hideTimers[el.id];
+    }, delay);
+  }
+
+  function goTo(id, type) {
+    var toEl = document.getElementById(id);
+    var fromEl = currentScreenEl;
+    if (!toEl || toEl === fromEl) return;
+
+    killPending(toEl);
+    if (fromEl) killPending(fromEl);
+
+    if (type === 'fade') {
+      snap(toEl, 'translateX(0)', 0, 6, 'auto');
+      toEl.classList.add('active');
+      animateTo(toEl, 'translateX(0)', 1);
+      if (fromEl) {
+        snap(fromEl, 'translateX(0)', 1, 5, 'none');
+        animateTo(fromEl, 'translateX(0)', 0);
+        scheduleHide(fromEl, 300);
+      }
+    } else if (type === 'push') {
+      snap(toEl, 'translateX(100%)', 1, 6, 'auto');
+      toEl.classList.add('active');
+      animateTo(toEl, 'translateX(0)');
+      if (fromEl) {
+        snap(fromEl, 'translateX(0)', 1, 5, 'none');
+        animateTo(fromEl, 'translateX(-18%)', 0.85);
+        scheduleHide(fromEl, 380);
+      }
+    } else if (type === 'pop') {
+      snap(toEl, 'translateX(0)', 1, 5, 'auto');
+      toEl.classList.add('active');
+      if (fromEl) {
+        snap(fromEl, 'translateX(0)', 1, 6, 'none');
+        animateTo(fromEl, 'translateX(100%)');
+        scheduleHide(fromEl, 380);
+      }
+    }
+    currentScreenEl = toEl;
+  }
+
+  function showScreen(id, type) {
+    type = type || 'push';
+    closeAllSheets();
+    goTo(id, type);
+    var mainTabs = ['screen-dashboard','screen-markets','screen-wallet','screen-transactions','screen-profile'];
+    var nav = document.getElementById('bottomNav');
+    if (mainTabs.indexOf(id) !== -1 || id === 'screen-details' || id === 'screen-notifications') nav.classList.add('visible');
+    else nav.classList.remove('visible');
+    if (mainTabs.indexOf(id) !== -1) {
+      lastTab = id;
+      document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-screen') === id); });
+    }
+  }
+  function navTap(id) { showScreen(id, 'fade'); }
+
+  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function togglePwd(id, el) {
+    var inp = document.getElementById(id);
+    if (inp.type === 'password') { inp.type = 'text'; el.textContent = '🙈'; }
+    else { inp.type = 'password'; el.textContent = '👁'; }
+  }
+
+  function saveProfile() {
+    var name = document.getElementById('editName').value.trim();
+    var email = document.getElementById('editEmail').value.trim();
+    if (name) document.querySelector('.profile-name').textContent = name;
+    if (isEmail(email)) document.querySelector('.profile-email').textContent = email;
+    closeAllSheets();
+    showToast('Profile updated');
+  }
+  function checkPwdSheetValid() {
+    var pwd = document.getElementById('newPwd').value;
+    var confirm = document.getElementById('confirmPwd').value;
+    var ok = pwd.length >= 8 && pwd === confirm;
+    document.getElementById('pwdSheetBtn').classList.toggle('disabled', !ok);
+  }
+  function savePassword() {
+    if (document.getElementById('pwdSheetBtn').classList.contains('disabled')) return;
+    document.getElementById('curPwd').value = '';
+    document.getElementById('newPwd').value = '';
+    document.getElementById('confirmPwd').value = '';
+    document.getElementById('pwdSheetBtn').classList.add('disabled');
+    closeAllSheets();
+    showToast('Password updated');
+  }
+  function pickCurrency(code) {
+    document.getElementById('prefCurrencyValue').textContent = code;
+    closeAllSheets();
+    showToast('Preferred currency set to ' + code);
+  }
+
+  function setBtnLoading(btnId, textId, loading, restoreText) {
+    var btn = document.getElementById(btnId);
+    var txt = document.getElementById(textId);
+    if (loading) { btn.dataset.label = txt.textContent; txt.innerHTML = '<span class="btn-spinner"></span>'; btn.classList.add('disabled'); }
+    else { txt.textContent = restoreText || btn.dataset.label || txt.textContent; }
+  }
+
+  function checkLoginValid() {
+    var ok = isEmail(document.getElementById('loginEmail').value) && document.getElementById('loginPassword').value.length >= 6;
+    document.getElementById('loginBtn').classList.toggle('disabled', !ok);
+  }
+  function checkRegisterValid() {
+    var name = document.getElementById('regName').value.trim().length > 1;
+    var email = isEmail(document.getElementById('regEmail').value);
+    var pwd = document.getElementById('regPassword').value;
+    var confirm = document.getElementById('regConfirm').value;
+    var tos = !document.getElementById('tosBox').classList.contains('off');
+    var ok = name && email && pwd.length >= 8 && pwd === confirm && tos;
+    document.getElementById('registerBtn').classList.toggle('disabled', !ok);
+  }
+  function checkForgotValid() {
+    var ok = isEmail(document.getElementById('forgotEmail').value);
+    document.getElementById('forgotBtn').classList.toggle('disabled', !ok);
+  }
+
+  function login() {
+    if (document.getElementById('loginBtn').classList.contains('disabled')) return;
+    setBtnLoading('loginBtn','loginBtnText', true);
+    setTimeout(function(){
+      setBtnLoading('loginBtn','loginBtnText', false, 'Log In');
+      showScreen('screen-dashboard','fade');
+    }, 900);
+  }
+  function registerSubmit() {
+    if (document.getElementById('registerBtn').classList.contains('disabled')) return;
+    setBtnLoading('registerBtn','registerBtnText', true);
+    setTimeout(function(){
+      setBtnLoading('registerBtn','registerBtnText', false, 'Create Account');
+      showScreen('screen-passcode','fade');
+    }, 900);
+  }
+  function logout() { showScreen('screen-login','fade'); }
+
+  var onboardIndex = 0;
+  function nextSlide() {
+    var slides = document.querySelectorAll('.onboard-slide');
+    if (onboardIndex >= slides.length - 1) { finishOnboarding(); return; }
+    slides[onboardIndex].style.display = 'none';
+    onboardIndex++;
+    slides[onboardIndex].style.display = 'flex';
+    updateOnboardProgress();
+    document.getElementById('onboardBtn').textContent = (onboardIndex === slides.length - 1) ? 'Get Started' : 'Next';
+  }
+  function updateOnboardProgress() {
+    var slides = document.querySelectorAll('.onboard-slide');
+    var pct = ((onboardIndex + 1) / slides.length) * 100;
+    document.getElementById('onboardProgressFill').style.width = pct + '%';
+    document.getElementById('onboardStepLabel').textContent = 'Step ' + (onboardIndex + 1) + ' of ' + slides.length;
+  }
+  function finishOnboarding() {
+    fireConfetti();
+    showScreen('screen-login','fade');
+  }
+
+  var passcodeValue = '';
+  function updatePasscodeDots() {
+    document.querySelectorAll('#passcodeDots .passcode-dot').forEach(function(d, i){
+      d.classList.toggle('filled', i < passcodeValue.length);
+    });
+  }
+  function pressDigit(d) {
+    if (passcodeValue.length >= 6) return;
+    passcodeValue += d;
+    updatePasscodeDots();
+    if (passcodeValue.length === 6) {
+      setTimeout(function(){ showScreen('screen-faceid','fade'); }, 350);
+    }
+  }
+  function pressBackspace() {
+    passcodeValue = passcodeValue.slice(0, -1);
+    updatePasscodeDots();
+  }
+  function finishAccountSetup() {
+    fireConfetti();
+    showScreen('screen-dashboard','fade');
+  }
+
+  function sendReset() {
+    if (document.getElementById('forgotBtn').classList.contains('disabled')) return;
+    setBtnLoading('forgotBtn','forgotBtnText', true);
+    var email = document.getElementById('forgotEmail').value;
+    setTimeout(function(){
+      setBtnLoading('forgotBtn','forgotBtnText', false, 'Send Reset Link');
+      document.getElementById('forgotSentSub').textContent = 'We sent a reset link to ' + email;
+      document.getElementById('forgotForm').classList.add('hidden');
+      document.getElementById('forgotSent').classList.add('active');
+    }, 900);
+  }
+
+
+  /* ---------- sheets ---------- */
+  function closeAllSheets() { document.querySelectorAll('.sheet-overlay').forEach(function(s){ s.classList.remove('open'); }); }
+  function openSheet(id) { closeAllSheets(); document.getElementById(id).classList.add('open'); }
+
+  function openBuySheet(coinKey) {
+    currentCoin = coinKey || currentCoin;
+    var c = COINS[currentCoin];
+    ['buyTitle','buyFullTitle'].forEach(function(i){ document.getElementById(i).textContent = 'Buy ' + c.name; });
+    ['buyIcon','buyFullIcon'].forEach(function(i){ var el=document.getElementById(i); el.textContent=c.symbol; el.style.background=c.color; });
+    ['buyName','buyFullName'].forEach(function(i){ document.getElementById(i).textContent = c.name; });
+    ['buyPrice','buyFullPrice','buyFullPriceLine'].forEach(function(i){ document.getElementById(i).textContent = c.price; });
+    openSheet('sheet-buy-compact');
+  }
+  function openSellSheet(coinKey) {
+    currentCoin = coinKey || currentCoin;
+    var c = COINS[currentCoin];
+    ['sellTitle','sellFullTitle'].forEach(function(i){ document.getElementById(i).textContent = 'Sell ' + c.name; });
+    ['sellIcon','sellFullIcon'].forEach(function(i){ var el=document.getElementById(i); el.textContent=c.symbol; el.style.background=c.color; });
+    ['sellName','sellFullName'].forEach(function(i){ document.getElementById(i).textContent = c.name; });
+    ['sellPrice','sellFullPrice','sellFullPriceLine'].forEach(function(i){ document.getElementById(i).textContent = c.price; });
+    openSheet('sheet-sell-compact');
+  }
+  function expandBuy() {
+    document.getElementById('sheet-buy-compact').classList.remove('open');
+    document.getElementById('sheet-buy-full').classList.add('open');
+  }
+  function expandSell() {
+    document.getElementById('sheet-sell-compact').classList.remove('open');
+    document.getElementById('sheet-sell-full').classList.add('open');
+  }
+
+  function fmtMoney(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+  function selectChip(el, kind) {
+    var row = el.parentElement;
+    row.querySelectorAll('.percent-chip').forEach(function(c){ c.classList.remove('active'); });
+    el.classList.add('active');
+    var label = el.textContent.trim();
+    var pct = label === 'MAX' ? 1 : parseInt(label)/100;
+    var c = COINS[currentCoin];
+
+    if (kind === 'buy') {
+      var usd = Math.round(2000*pct);
+      var btcAmt = (usd / c.priceNum).toFixed(4);
+      ['buyAmount','buyFullAmount'].forEach(function(i){ document.getElementById(i).textContent = '$'+usd.toLocaleString(); });
+      ['buySub','buyFullSub'].forEach(function(i){ document.getElementById(i).textContent = '≈ '+btcAmt+' '+ (currentCoin.toUpperCase()); });
+      var total = usd + 5;
+      document.getElementById('buyFullTotal').textContent = fmtMoney(total);
+      document.getElementById('buyConfirmBtn').textContent = 'Confirm Buy — ' + fmtMoney(total);
+    } else if (kind === 'sell') {
+      var owned = 0.052;
+      var amt = +(owned*pct).toFixed(4);
+      var fiat = amt*c.priceNum;
+      var received = Math.max(0, fiat - 5);
+      ['sellAmount','sellFullAmount'].forEach(function(i){ document.getElementById(i).textContent = amt + ' ' + currentCoin.toUpperCase(); });
+      ['sellSub','sellFullSub'].forEach(function(i){ document.getElementById(i).textContent = '≈ ' + fmtMoney(fiat); });
+      document.getElementById('sellFullTotal').textContent = fmtMoney(received);
+      document.getElementById('sellConfirmBtn').textContent = 'Confirm Sell — ' + fmtMoney(received);
+    } else if (kind === 'withdraw') {
+      var owned2 = 0.052;
+      var amt2 = +(owned2*pct).toFixed(4);
+      var fee = 0.0002;
+      var recv = Math.max(0, +(amt2-fee).toFixed(4));
+      document.getElementById('withdrawAmount').textContent = amt2 + ' BTC';
+      document.getElementById('withdrawSub').textContent = '≈ ' + fmtMoney(amt2*COINS.btc.priceNum);
+      document.getElementById('withdrawReceive').textContent = recv + ' BTC';
+      document.getElementById('withdrawBtn').textContent = 'Withdraw ' + amt2 + ' BTC';
+    } else if (kind === 'send') {
+      var owned3 = 0.052;
+      var amt3 = +(owned3*pct).toFixed(4);
+      var fee3 = 0.0002;
+      var recv3 = Math.max(0, +(amt3-fee3).toFixed(4));
+      document.getElementById('sendAmount').textContent = amt3 + ' BTC';
+      document.getElementById('sendSub').textContent = '≈ ' + fmtMoney(amt3*COINS.btc.priceNum);
+      document.getElementById('sendReceive').textContent = recv3 + ' BTC';
+      document.getElementById('sendBtn').textContent = 'Send ' + amt3 + ' BTC';
+    }
+  }
+
+  function selectAmount(el, val) {
+    var row = el.parentElement;
+    row.querySelectorAll('.quick-amount-chip').forEach(function(c){ c.classList.remove('active'); });
+    el.classList.add('active');
+    document.getElementById('depositAmount').textContent = '$' + val.toLocaleString();
+  }
+
+  function openPicker(target) {
+    pickerTarget = target;
+    var titles = { deposit:'Select asset to deposit', withdraw:'Select asset to withdraw', send:'Select asset to send' };
+    document.getElementById('pickerTitle').textContent = titles[target] || 'Select asset';
+    document.getElementById('sheet-picker').classList.add('open');
+  }
+  function closePicker() { document.getElementById('sheet-picker').classList.remove('open'); }
+  function pickAsset(symbol, name, color) {
+    var map = {
+      deposit: ['sheet-deposit','depositIcon','depositName'],
+      withdraw: ['sheet-withdraw','withdrawIcon','withdrawName'],
+      send: ['sheet-send','sendIcon','sendName']
+    };
+    var ids = map[pickerTarget] || map.withdraw;
+    var icon = document.getElementById(ids[1]);
+    icon.textContent = symbol; icon.style.background = color;
+    document.getElementById(ids[2]).textContent = name;
+    closePicker();
+  }
+  function pickCurrency(code) {
+    document.getElementById('prefCurrencyValue').textContent = code;
+    closeAllSheets();
+    showToast('Preferred currency set to ' + code);
+  }
+  function toggle2FA(el) {
+    el.classList.toggle('on');
+    showToast(el.classList.contains('on') ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled');
+  }
+
+  function cycleAddress() {
+    var input = document.getElementById('addressInput');
+    var text = document.getElementById('addressText');
+    var block = document.getElementById('addressField');
+    var btn = document.getElementById('withdrawBtn');
+    input.classList.remove('error','valid');
+    block.classList.remove('state-invalid','state-valid');
+    if (addressState === 'empty') {
+      addressState = 'invalid';
+      text.textContent = '1BvBMSEYstWetqTFn5Au4m4GFg7xJaN';
+      text.className = 'filled';
+      input.classList.add('error'); block.classList.add('state-invalid'); btn.classList.add('disabled');
+    } else if (addressState === 'invalid') {
+      addressState = 'valid';
+      text.textContent = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+      text.className = 'filled';
+      input.classList.add('valid'); block.classList.add('state-valid'); btn.classList.remove('disabled');
+    } else {
+      addressState = 'empty';
+      text.textContent = 'bc1q — paste or scan address';
+      text.className = 'placeholder';
+      btn.classList.add('disabled');
+    }
+  }
+
+  var sendAddressState = 'empty';
+  function cycleSendAddress() {
+    var input = document.getElementById('sendAddressInput');
+    var text = document.getElementById('sendAddressText');
+    var block = document.getElementById('sendAddressField');
+    var btn = document.getElementById('sendBtn');
+    input.classList.remove('error','valid');
+    block.classList.remove('state-invalid','state-valid');
+    if (sendAddressState === 'empty') {
+      sendAddressState = 'invalid';
+      text.textContent = '1BvBMSEYstWetqTFn5Au4m4GFg7xJaN';
+      text.className = 'filled';
+      input.classList.add('error'); block.classList.add('state-invalid'); btn.classList.add('disabled');
+    } else if (sendAddressState === 'invalid') {
+      sendAddressState = 'valid';
+      text.textContent = 'bc1qfriend8k2xy2kgdygjrsqtzq2n0yrf2493p83';
+      text.className = 'filled';
+      input.classList.add('valid'); block.classList.add('state-valid'); btn.classList.remove('disabled');
+    } else {
+      sendAddressState = 'empty';
+      text.textContent = 'Paste, scan, or enter address';
+      text.className = 'placeholder';
+      btn.classList.add('disabled');
+    }
+  }
+
+  function openSendSheet() {
+    var c = COINS[currentCoin] || COINS.btc;
+    document.getElementById('sendName').textContent = c.name;
+    var icon = document.getElementById('sendIcon'); icon.textContent = c.symbol; icon.style.background = c.color;
+    openSheet('sheet-send');
+  }
+
+  function confirmSend() {
+    if (document.getElementById('sendBtn').classList.contains('disabled')) return;
+    var amt = document.getElementById('sendAmount').textContent;
+    var recv = document.getElementById('sendReceive').textContent;
+    withLoading('Sending funds...', function(){
+      runConfirm('Send Submitted', amt+' is on its way', COINS[currentCoin].symbol, COINS[currentCoin].color, [
+        ['Type','Send'],['Asset',COINS[currentCoin].name+' ('+currentCoin.toUpperCase()+')'],['Amount',amt],
+        ['Network Fee','0.0002 BTC'],['Recipient Gets',recv],['Recipient','bc1qfriend8k2...83']
+      ]);
+    });
+  }
+
+  /* ---------- Receive: faux QR + network switch ---------- */
+  var receiveAddresses = {
+    btc: 'bc1q7x3f91c2e8k2fc9d0e72xy2kgdyg',
+    eth: '0x7A3f91C2E8b2Fc9D0e72a1b4C6d8E2f1',
+    usdt: 'TQn9Y2khD0e7x3f91C2E8b2Fc9D0e72a'
+  };
+  function openReceiveSheet() {
+    setReceiveNetworkByKey('btc');
+    document.querySelectorAll('#sheet-receive .toggle-opt').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-net')==='btc'); });
+    openSheet('sheet-receive');
+  }
+  function setReceiveNetwork(el, key) {
+    document.querySelectorAll('#sheet-receive .toggle-opt').forEach(function(t){ t.classList.remove('active'); });
+    el.classList.add('active');
+    setReceiveNetworkByKey(key);
+  }
+  function setReceiveNetworkByKey(key) {
+    var c = COINS[key];
+    var addr = receiveAddresses[key];
+    document.getElementById('receiveAddress').textContent = addr;
+    var badge = document.getElementById('qrBadge');
+    badge.textContent = c.symbol;
+    badge.style.background = c.color;
+    renderFauxQR(addr, document.getElementById('qrGrid'));
+  }
+  function copyReceiveAddress() { showToast('Address copied to clipboard'); }
+
+  function renderFauxQR(seed, container) {
+    var size = 13;
+    container.style.gridTemplateColumns = 'repeat('+size+', 1fr)';
+    container.style.gridTemplateRows = 'repeat('+size+', 1fr)';
+    container.innerHTML = '';
+    var hash = 0;
+    for (var i = 0; i < seed.length; i++) { hash = ((hash << 5) - hash) + seed.charCodeAt(i); hash |= 0; }
+    function isFinder(r, c) {
+      return (r < 3 && c < 3) || (r < 3 && c >= size-3) || (r >= size-3 && c < 3);
+    }
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
+        var cell = document.createElement('div');
+        cell.className = 'qr-cell';
+        var on;
+        if (isFinder(r, c)) {
+          var lr = r < 3 ? r : r - (size-3);
+          var lc = c < 3 ? c : c - (size-3);
+          on = (lr === 0 || lr === 2 || lc === 0 || lc === 2 || (lr===1 && lc===1));
+        } else {
+          var seedVal = (hash * (r*size+c+7) * 2654435761) % 2147483647;
+          on = (Math.abs(seedVal) % 5) < 2;
+        }
+        if (on) cell.classList.add('on');
+        container.appendChild(cell);
+      }
+    }
+  }
+
+  /* ---------- confirmations ---------- */
+  function nowStamp(){ return new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}); }
+  function refId(){ return '#TX-'+Math.floor(80000+Math.random()*9999); }
+
+  function runConfirm(title, sub, icon, iconBg, lines) {
+    lastTx = {title:title, icon:icon, iconBg:iconBg, lines:lines};
+    closeAllSheets();
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmSub').textContent = sub;
+    document.getElementById('confirmRef').textContent = refId();
+    document.getElementById('confirmDate').textContent = nowStamp();
+    openSheet('sheet-confirmation');
+    fireConfetti();
+  }
+
+  function withLoading(text, action) {
+    document.getElementById('loadingText').textContent = text;
+    openSheet('sheet-loading');
+    setTimeout(action, 1100 + Math.random()*400);
+  }
+
+  function confirmBuy() {
+    var c = COINS[currentCoin];
+    var sub = document.getElementById('buyFullSub').textContent.replace('≈ ','');
+    var total = document.getElementById('buyFullTotal').textContent;
+    withLoading('Processing your purchase...', function(){
+      runConfirm('Purchase Successful', 'You bought '+sub+' for '+total, c.symbol, c.color, [
+        ['Type','Buy'],['Asset',c.name+' ('+currentCoin.toUpperCase()+')'],['Amount',sub],
+        ['Price',c.price],['Fee','$5.00'],['Total Paid',total],['Payment Method','USDT Balance']
+      ]);
+    });
+  }
+  function confirmSell() {
+    var c = COINS[currentCoin];
+    var amt = document.getElementById('sellFullAmount').textContent;
+    var val = document.getElementById('sellFullTotal').textContent;
+    withLoading('Processing your sale...', function(){
+      runConfirm('Sale Successful', 'You sold '+amt+' for '+val, c.symbol, c.color, [
+        ['Type','Sell'],['Asset',c.name+' ('+currentCoin.toUpperCase()+')'],['Amount',amt],
+        ['Price',c.price],['Fee','$5.00'],['Total Received',val]
+      ]);
+    });
+  }
+  function confirmDeposit() {
+    var amt = document.getElementById('depositAmount').textContent;
+    var name = document.getElementById('depositName').textContent;
+    withLoading('Processing your deposit...', function(){
+      runConfirm('Deposit Successful', amt+' added to your '+name+' balance', '↓', 'var(--accent)', [
+        ['Type','Deposit'],['Asset',name],['Amount',amt],['Method','Simulated Funding']
+      ]);
+    });
+  }
+  function confirmWithdraw() {
+    var amt = document.getElementById('withdrawAmount').textContent;
+    var recv = document.getElementById('withdrawReceive').textContent;
+    withLoading('Submitting your withdrawal...', function(){
+      runConfirm('Withdrawal Submitted', amt+' is on its way', '↑', 'var(--bg-surface-raised)', [
+        ['Type','Withdrawal'],['Asset','Bitcoin (BTC)'],['Amount',amt],['Network Fee','0.0002 BTC'],
+        ['You Received',recv],['Destination','bc1qxy2k...jhx0wlh']
+      ]);
+    });
+  }
+
+  function openReceipt() {
+    if (!lastTx) return;
+    var box = document.getElementById('receiptLines'); box.innerHTML = '';
+    lastTx.lines.forEach(function(row){
+      var d = document.createElement('div'); d.className='summary-line';
+      d.innerHTML = '<span class="k">'+row[0]+'</span><span class="v">'+row[1]+'</span>';
+      box.appendChild(d);
+    });
+    var icon = document.getElementById('receiptIcon');
+    icon.textContent = lastTx.icon; icon.style.background = lastTx.iconBg;
+    document.getElementById('receiptTitle').textContent = lastTx.title.replace(' Successful','').replace('Submitted','');
+    document.getElementById('receiptRef').textContent = document.getElementById('confirmRef').textContent;
+    document.getElementById('receiptTime').textContent = document.getElementById('confirmDate').textContent;
+    openSheet('sheet-receipt');
+  }
+
+  function openReceiptFromRow(title, icon, iconBg, lines) {
+    lastTx = {title:title, icon:icon, iconBg:iconBg, lines:lines};
+    document.getElementById('confirmRef').textContent = refId();
+    document.getElementById('confirmDate').textContent = nowStamp();
+    openReceipt();
+  }
+
+  /* ---------- crypto details ---------- */
+  function openDetails(key) {
+    currentCoin = key;
+    var c = COINS[key];
+    var icon = document.getElementById('detailIcon');
+    icon.textContent = c.symbol; icon.style.background = c.color;
+    document.getElementById('detailName').textContent = c.name;
+    document.getElementById('detailPrice').textContent = c.price;
+    var badge = document.getElementById('detailChangeBadge');
+    badge.textContent = c.change + ' today';
+    badge.classList.toggle('down', !c.up);
+    document.getElementById('statCap').textContent = c.cap;
+    document.getElementById('statVol').textContent = c.vol;
+    document.getElementById('statHigh').textContent = c.high;
+    document.getElementById('statLow').textContent = c.low;
+    document.querySelectorAll('#screen-details .tf-tab').forEach(function(t,i){ t.classList.toggle('active', i===0); });
+    drawChart(c.chart, c.up);
+    showScreen('screen-details','push');
+  }
+
+  function drawChart(vals, up) {
+    var w=350, h=120, n=vals.length;
+    var pts = vals.map(function(v,i){ var x=i*(w/(n-1)); var y=h-(v/100*h*0.9)-5; return x.toFixed(1)+','+y.toFixed(1); }).join(' ');
+    var color = up ? '#22C55E' : '#EF4444';
+    var line = document.getElementById('chartLine');
+    var fill = document.getElementById('chartFill');
+    line.setAttribute('points', pts);
+    line.setAttribute('stroke', color);
+    fill.setAttribute('points', pts+' '+w+','+h+' 0,'+h);
+    document.getElementById('chartStop1').setAttribute('stop-color', color);
+  }
+
+  function selectTimeframe(el) {
+    var row = el.parentElement;
+    row.querySelectorAll('.tf-tab').forEach(function(t){ t.classList.remove('active'); });
+    el.classList.add('active');
+    var c = COINS[currentCoin];
+    var vals = c.chart.slice();
+    var label = el.textContent;
+    if (label === '1W') vals = vals.slice().reverse();
+    else if (label === '1M') vals = vals.map(function(v,i){ return Math.max(5, Math.min(95, v + ((i%3)-1)*8)); });
+    drawChart(vals, c.up);
+  }
+
+  /* ---------- filters ---------- */
+  function filterMarkets(el, type) {
+    var pills = el.parentElement.querySelectorAll('.pill');
+    pills.forEach(function(p){ p.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('#marketList .market-row').forEach(function(row){
+      var ch = row.getAttribute('data-change');
+      var show = type==='all' || type==='volume' || (type==='gainers'&&ch==='up') || (type==='losers'&&ch==='down');
+      row.style.display = show ? 'flex' : 'none';
+    });
+  }
+  function filterTx(el, type) {
+    var pills = el.parentElement.querySelectorAll('.pill');
+    pills.forEach(function(p){ p.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('#txList .tx-row').forEach(function(row){
+      var t = row.getAttribute('data-type');
+      row.style.display = (type==='all' || t===type) ? 'flex' : 'none';
+    });
+    document.querySelectorAll('#txList .tx-group-label').forEach(function(l){ l.style.display = 'block'; });
+  }
+
+  /* ---------- notifications ---------- */
+  function updateBellDot() {
+    var hasUnread = document.querySelectorAll('#notifList .notif-row.unread').length > 0;
+    var dot = document.querySelector('.bell-dot');
+    if (dot) dot.style.display = hasUnread ? 'block' : 'none';
+  }
+  function markOneRead(el) { el.classList.remove('unread'); var d = el.querySelector('.notif-unread-dot'); if (d) d.remove(); updateBellDot(); }
+  function markAllRead() {
+    document.querySelectorAll('#notifList .notif-row.unread').forEach(function(el){ markOneRead(el); });
+    showToast('All notifications marked as read');
+  }
+
+  /* ---------- toast ---------- */
+  function showToast(msg) {
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.getElementById('appShell').appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 300); }, 1900);
+  }
+
+  /* ---------- confetti ---------- */
+  function fireConfetti() {
+    var colors = ['#6C5CE7','#22C55E','#F29A1D','#5F68D3','#EF4444','#F0B90B'];
+    var container = document.getElementById('appShell');
+    for (var i=0;i<30;i++) {
+      (function(){
+        var p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.left = (Math.random()*100)+'%';
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
+        p.style.animationDelay = (Math.random()*0.25)+'s';
+        p.style.transform = 'rotate('+(Math.random()*360)+'deg)';
+        container.appendChild(p);
+        setTimeout(function(){ p.remove(); }, 1900);
+      })();
+    }
+  }
+
+  /* ---------- market row sparklines ---------- */
+  function renderSparklines() {
+    document.querySelectorAll('.mini-spark[data-coin]').forEach(function(svg){
+      var key = svg.getAttribute('data-coin');
+      var c = COINS[key];
+      if (!c) return;
+      var vals = c.chart, w = 60, h = 24, n = vals.length;
+      var pts = vals.map(function(v,i){
+        var x = i*(w/(n-1));
+        var y = h - (v/100*h*0.85) - 2;
+        return x.toFixed(1)+','+y.toFixed(1);
+      }).join(' ');
+      var color = c.up ? '#22C55E' : '#EF4444';
+      svg.innerHTML = '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    });
+  }
+
+  /* init */
+  drawChart(COINS.btc.chart, true);
+  renderSparklines();
+</script>
+</body>
+</html>
