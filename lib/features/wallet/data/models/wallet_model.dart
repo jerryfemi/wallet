@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/wallet_entity.dart';
-import 'asset_model.dart';
+import 'package:wallet/features/wallet/domain/entities/wallet_entity.dart';
+import 'package:wallet/features/wallet/data/models/asset_model.dart';
 
 part 'wallet_model.freezed.dart';
 part 'wallet_model.g.dart';

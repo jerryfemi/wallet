@@ -1,8 +1,8 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
-import 'semantic_colors.dart';
-import 'text_styles.dart';
+import 'package:wallet/app/theme/semantic_colors.dart';
+import 'package:wallet/app/theme/text_styles.dart';
 
 class AppTheme {
   static const _primary = Color(0xFF6C5CE7);

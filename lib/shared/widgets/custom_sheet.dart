@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 
-import 'app_button.dart';
+import 'package:wallet/shared/widgets/app_button.dart';
 
 enum CustomSheetType {
   success,

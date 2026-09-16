@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../domain/entities/user_profile.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../models/user_profile_model.dart';
+import 'package:wallet/features/auth/domain/entities/user_profile.dart';
+import 'package:wallet/features/auth/domain/repositories/auth_repository.dart';
+import 'package:wallet/features/auth/data/models/user_profile_model.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _auth;

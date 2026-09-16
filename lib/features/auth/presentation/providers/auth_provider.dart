@@ -3,9 +3,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../domain/repositories/auth_repository.dart';
-import '../../data/repositories/firebase_auth_repository.dart';
-import '../../../wallet/presentation/providers/wallet_provider.dart';
+import 'package:wallet/features/auth/domain/repositories/auth_repository.dart';
+import 'package:wallet/features/auth/data/repositories/firebase_auth_repository.dart';
+import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 
 part 'auth_provider.g.dart';
 

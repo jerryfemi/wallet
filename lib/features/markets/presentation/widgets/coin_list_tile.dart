@@ -5,7 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:decimal/decimal.dart';
 
-import '../../domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 
 class CoinListTile extends StatelessWidget {
   final CoinEntity coin;

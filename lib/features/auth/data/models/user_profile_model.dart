@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/user_profile.dart';
+import 'package:wallet/features/auth/domain/entities/user_profile.dart';
 
 part 'user_profile_model.freezed.dart';
 part 'user_profile_model.g.dart';

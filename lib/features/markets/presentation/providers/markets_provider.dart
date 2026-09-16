@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../domain/entities/coin_entity.dart';
-import '../../data/sources/coingecko_api_service.dart';
-import '../../data/repositories/market_repository.dart';
-import '../../../../core/network/dio_client.dart';
+import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
+import 'package:wallet/features/markets/data/repositories/market_repository.dart';
+import 'package:wallet/core/network/dio_client.dart';
 
 part 'markets_provider.g.dart';
 

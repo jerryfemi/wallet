@@ -5,12 +5,12 @@ import 'package:device_preview/device_preview.dart';
 import 'package:device_preview/presets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import 'app/router/app_router.dart';
-import 'app/theme/app_theme.dart';
+import 'package:wallet/app/router/app_router.dart';
+import 'package:wallet/app/theme/app_theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
-import 'firebase_options.dart';
+import 'package:wallet/firebase_options.dart';
 
 void main() async {
   DevicePreview.enable(enabled: kDebugMode);

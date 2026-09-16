@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:decimal/decimal.dart';
 
-import '../../domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 
 class TopMoverChip extends StatelessWidget {
   final CoinEntity coin;

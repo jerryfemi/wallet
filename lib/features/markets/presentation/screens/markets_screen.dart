@@ -3,10 +3,10 @@ import 'package:decimal/decimal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../providers/markets_provider.dart';
-import '../widgets/coin_list_tile.dart';
-import '../widgets/top_mover_chip.dart';
-import '../../domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
+import 'package:wallet/features/markets/presentation/widgets/coin_list_tile.dart';
+import 'package:wallet/features/markets/presentation/widgets/top_mover_chip.dart';
+import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 
 class MarketsScreen extends HookConsumerWidget {
   const MarketsScreen({super.key});

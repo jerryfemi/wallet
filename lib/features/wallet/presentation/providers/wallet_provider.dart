@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../domain/entities/wallet_entity.dart';
-import '../../domain/entities/transaction_entity.dart';
-import '../../domain/repositories/wallet_repository.dart';
-import '../../data/repositories/wallet_repository_impl.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import 'package:wallet/features/wallet/domain/entities/wallet_entity.dart';
+import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
+import 'package:wallet/features/wallet/domain/repositories/wallet_repository.dart';
+import 'package:wallet/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
 
 part 'wallet_provider.g.dart';
 

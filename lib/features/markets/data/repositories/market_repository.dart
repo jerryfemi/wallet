@@ -1,6 +1,6 @@
-import '../../domain/entities/coin_entity.dart';
-import '../models/coin_model.dart';
-import '../sources/coingecko_api_service.dart';
+import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/data/models/coin_model.dart';
+import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
 
 class MarketRepository {
   final CoinGeckoApiService _apiService;

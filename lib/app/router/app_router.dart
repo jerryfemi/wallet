@@ -3,17 +3,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/auth/presentation/screens/forgot_password_screen.dart';
-import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/markets/presentation/screens/markets_screen.dart';
-import '../../features/wallet/presentation/screens/wallet_screen.dart';
-import '../../features/transactions/presentation/screens/activity_screen.dart';
-import '../../features/profile/presentation/screens/profile_screen.dart';
-import '../../shared/widgets/app_shell.dart';
-import 'routes.dart';
+import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
+import 'package:wallet/features/auth/presentation/screens/login_screen.dart';
+import 'package:wallet/features/auth/presentation/screens/register_screen.dart';
+import 'package:wallet/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:wallet/features/home/presentation/screens/home_screen.dart';
+import 'package:wallet/features/markets/presentation/screens/markets_screen.dart';
+import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
+import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
+import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
+import 'package:wallet/shared/widgets/app_shell.dart';
+import 'package:wallet/app/router/routes.dart';
 
 part 'app_router.g.dart';
 

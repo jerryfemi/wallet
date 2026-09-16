@@ -1,5 +1,5 @@
 import 'package:decimal/decimal.dart';
-import 'asset_entity.dart';
+import 'package:wallet/features/wallet/domain/entities/asset_entity.dart';
 
 class WalletEntity {
   final String userId;

@@ -1,5 +1,5 @@
-import '../entities/transaction_entity.dart';
-import '../entities/wallet_entity.dart';
+import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
+import 'package:wallet/features/wallet/domain/entities/wallet_entity.dart';
 
 abstract class WalletRepository {
   /// Stream the user's wallet to keep UI updated in real-time

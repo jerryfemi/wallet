@@ -3,11 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../shared/widgets/app_button.dart';
-import '../../../../shared/widgets/app_text_field.dart';
-import '../../../../shared/widgets/custom_sheet.dart';
-import '../../domain/utils/auth_exception_mapper.dart';
-import '../providers/auth_provider.dart';
+import 'package:wallet/shared/widgets/app_button.dart';
+import 'package:wallet/shared/widgets/app_text_field.dart';
+import 'package:wallet/shared/widgets/custom_sheet.dart';
+import 'package:wallet/features/auth/domain/utils/auth_exception_mapper.dart';
+import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
 
 class RegisterScreen extends HookConsumerWidget {
   const RegisterScreen({super.key});

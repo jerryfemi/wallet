@@ -1,8 +1,8 @@
 import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/asset_entity.dart';
-import '../../../markets/data/models/coin_model.dart';
+import 'package:wallet/features/wallet/domain/entities/asset_entity.dart';
+import 'package:wallet/features/markets/data/models/coin_model.dart';
 
 part 'asset_model.freezed.dart';
 part 'asset_model.g.dart';
