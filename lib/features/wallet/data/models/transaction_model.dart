@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entities/transaction_entity.dart';
 import '../../../markets/data/models/coin_model.dart';
+import '../../../../core/utils/converters.dart';
 
 part 'transaction_model.freezed.dart';
 part 'transaction_model.g.dart';
@@ -17,7 +18,7 @@ abstract class TransactionModel with _$TransactionModel {
     required String assetSymbol,
     @DecimalConverter() required Decimal amount,
     @DecimalConverter() required Decimal fiatValue,
-    required DateTime timestamp,
+    @TimestampConverter() required DateTime timestamp,
   }) = _TransactionModel;
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) => _$TransactionModelFromJson(json);

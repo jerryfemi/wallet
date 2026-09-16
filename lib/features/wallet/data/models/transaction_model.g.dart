@@ -13,7 +13,7 @@ _TransactionModel _$TransactionModelFromJson(Map<String, dynamic> json) =>
       assetSymbol: json['assetSymbol'] as String,
       amount: const DecimalConverter().fromJson(json['amount']),
       fiatValue: const DecimalConverter().fromJson(json['fiatValue']),
-      timestamp: DateTime.parse(json['timestamp'] as String),
+      timestamp: const TimestampConverter().fromJson(json['timestamp']),
     );
 
 Map<String, dynamic> _$TransactionModelToJson(_TransactionModel instance) =>
@@ -23,7 +23,7 @@ Map<String, dynamic> _$TransactionModelToJson(_TransactionModel instance) =>
       'assetSymbol': instance.assetSymbol,
       'amount': const DecimalConverter().toJson(instance.amount),
       'fiatValue': const DecimalConverter().toJson(instance.fiatValue),
-      'timestamp': instance.timestamp.toIso8601String(),
+      'timestamp': const TimestampConverter().toJson(instance.timestamp),
     };
 
 const _$TransactionTypeEnumMap = {

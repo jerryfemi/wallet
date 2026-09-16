@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionModel {
 
- String get id; TransactionType get type; String get assetSymbol;@DecimalConverter() Decimal get amount;@DecimalConverter() Decimal get fiatValue; DateTime get timestamp;
+ String get id; TransactionType get type; String get assetSymbol;@DecimalConverter() Decimal get amount;@DecimalConverter() Decimal get fiatValue;@TimestampConverter() DateTime get timestamp;
 /// Create a copy of TransactionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $TransactionModelCopyWith<$Res>  {
   factory $TransactionModelCopyWith(TransactionModel value, $Res Function(TransactionModel) _then) = _$TransactionModelCopyWithImpl;
 @useResult
 $Res call({
- String id, TransactionType type, String assetSymbol,@DecimalConverter() Decimal amount,@DecimalConverter() Decimal fiatValue, DateTime timestamp
+ String id, TransactionType type, String assetSymbol,@DecimalConverter() Decimal amount,@DecimalConverter() Decimal fiatValue,@TimestampConverter() DateTime timestamp
 });
 
 
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  TransactionType type,  String assetSymbol, @DecimalConverter()  Decimal amount, @DecimalConverter()  Decimal fiatValue,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  TransactionType type,  String assetSymbol, @DecimalConverter()  Decimal amount, @DecimalConverter()  Decimal fiatValue, @TimestampConverter()  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionModel() when $default != null:
 return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatValue,_that.timestamp);case _:
@@ -185,7 +185,7 @@ return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatVal
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  TransactionType type,  String assetSymbol, @DecimalConverter()  Decimal amount, @DecimalConverter()  Decimal fiatValue,  DateTime timestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  TransactionType type,  String assetSymbol, @DecimalConverter()  Decimal amount, @DecimalConverter()  Decimal fiatValue, @TimestampConverter()  DateTime timestamp)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionModel():
 return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatValue,_that.timestamp);case _:
@@ -205,7 +205,7 @@ return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatVal
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  TransactionType type,  String assetSymbol, @DecimalConverter()  Decimal amount, @DecimalConverter()  Decimal fiatValue,  DateTime timestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  TransactionType type,  String assetSymbol, @DecimalConverter()  Decimal amount, @DecimalConverter()  Decimal fiatValue, @TimestampConverter()  DateTime timestamp)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionModel() when $default != null:
 return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatValue,_that.timestamp);case _:
@@ -220,7 +220,7 @@ return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatVal
 @JsonSerializable()
 
 class _TransactionModel extends TransactionModel {
-  const _TransactionModel({required this.id, required this.type, required this.assetSymbol, @DecimalConverter() required this.amount, @DecimalConverter() required this.fiatValue, required this.timestamp}): super._();
+  const _TransactionModel({required this.id, required this.type, required this.assetSymbol, @DecimalConverter() required this.amount, @DecimalConverter() required this.fiatValue, @TimestampConverter() required this.timestamp}): super._();
   factory _TransactionModel.fromJson(Map<String, dynamic> json) => _$TransactionModelFromJson(json);
 
 @override final  String id;
@@ -228,7 +228,7 @@ class _TransactionModel extends TransactionModel {
 @override final  String assetSymbol;
 @override@DecimalConverter() final  Decimal amount;
 @override@DecimalConverter() final  Decimal fiatValue;
-@override final  DateTime timestamp;
+@override@TimestampConverter() final  DateTime timestamp;
 
 /// Create a copy of TransactionModel
 /// with the given fields replaced by the non-null parameter values.
@@ -265,7 +265,7 @@ abstract mixin class _$TransactionModelCopyWith<$Res> implements $TransactionMod
   factory _$TransactionModelCopyWith(_TransactionModel value, $Res Function(_TransactionModel) _then) = __$TransactionModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, TransactionType type, String assetSymbol,@DecimalConverter() Decimal amount,@DecimalConverter() Decimal fiatValue, DateTime timestamp
+ String id, TransactionType type, String assetSymbol,@DecimalConverter() Decimal amount,@DecimalConverter() Decimal fiatValue,@TimestampConverter() DateTime timestamp
 });
 
 
