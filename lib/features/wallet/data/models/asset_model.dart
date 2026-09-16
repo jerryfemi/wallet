@@ -9,6 +9,8 @@ part 'asset_model.g.dart';
 
 @freezed
 class AssetModel with _$AssetModel {
+  const AssetModel._();
+
   const factory AssetModel({
     required String coinId,
     required String symbol,

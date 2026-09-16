@@ -216,8 +216,8 @@ return $default(_that.coinId,_that.symbol,_that.amount);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _AssetModel implements AssetModel {
-  const _AssetModel({required this.coinId, required this.symbol, @DecimalConverter() required this.amount});
+class _AssetModel extends AssetModel {
+  const _AssetModel({required this.coinId, required this.symbol, @DecimalConverter() required this.amount}): super._();
   factory _AssetModel.fromJson(Map<String, dynamic> json) => _$AssetModelFromJson(json);
 
 @override final  String coinId;
