@@ -7,7 +7,7 @@ part 'wallet_model.freezed.dart';
 part 'wallet_model.g.dart';
 
 @freezed
-class WalletModel with _$WalletModel {
+abstract class WalletModel with _$WalletModel {
   const WalletModel._();
 
   const factory WalletModel({
