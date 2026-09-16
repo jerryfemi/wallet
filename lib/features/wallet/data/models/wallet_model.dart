@@ -1,0 +1,33 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../domain/entities/wallet_entity.dart';
+import 'asset_model.dart';
+
+part 'wallet_model.freezed.dart';
+part 'wallet_model.g.dart';
+
+@freezed
+class WalletModel with _$WalletModel {
+  const factory WalletModel({
+    required String userId,
+    @Default([]) List<AssetModel> assets,
+  }) = _WalletModel;
+
+  factory WalletModel.fromJson(Map<String, dynamic> json) => _$WalletModelFromJson(json);
+
+  factory WalletModel.fromEntity(WalletEntity entity) {
+    return WalletModel(
+      userId: entity.userId,
+      assets: entity.assets.map((a) => AssetModel.fromEntity(a)).toList(),
+    );
+  }
+}
+
+extension WalletModelX on WalletModel {
+  WalletEntity toEntity() {
+    return WalletEntity(
+      userId: userId,
+      assets: assets.map((a) => a.toEntity()).toList(),
+    );
+  }
+}
