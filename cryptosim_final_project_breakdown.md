@@ -443,6 +443,11 @@ Handles:
 
 The `AuthRepository` interface exposes these operations. The `FirebaseAuthRepository` implementation wraps `FirebaseAuth` calls.
 
+**Initial Funding (Registration Hook):**
+When a new user successfully registers, the authentication layer should trigger the creation of a default `Wallet` document for them, seeded with an initial balance of **$10,000 USD**. This allows the user to immediately begin using the trading simulator.
+* The `Wallet` stores asset *quantities* (e.g. `10000 USD`, `0.05 BTC`).
+* Total portfolio value is calculated dynamically in the UI layer by multiplying the held quantities by live market prices from CoinGecko, ensuring the user's total balance fluctuates authentically with the market.
+
 ### Cloud Firestore
 
 Stores all application data: users, wallets, balances, orders, transactions. Provides real-time streams (`snapshots()`) for live-updating UI and one-shot reads (`get()`) where real-time is unnecessary.
