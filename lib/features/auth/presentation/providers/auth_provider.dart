@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../data/repositories/firebase_auth_repository.dart';
+import '../../../wallet/presentation/providers/wallet_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -47,6 +48,12 @@ class AuthController extends _$AuthController {
         password: password,
         displayName: displayName,
       );
+      
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await ref.read(walletRepositoryProvider).createInitialWallet(user.uid);
+      }
+
       state = const AsyncData(null);
     } catch (e, st) {
       print('Firebase Sign Up Error: $e'); // Debugging raw error
