@@ -10,7 +10,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 part 'wallet_provider.g.dart';
 
 @riverpod
-WalletRepository walletRepository(WalletRepositoryRef ref) {
+WalletRepository walletRepository(Ref ref) {
   // Here is where we glue the Abstract Repository to the Concrete Implementation!
   // The rest of the app only asks for "walletRepositoryProvider" and has no idea
   // that it's getting a WalletRepositoryImpl that talks to Firestore.
@@ -18,10 +18,10 @@ WalletRepository walletRepository(WalletRepositoryRef ref) {
 }
 
 @riverpod
-Stream<WalletEntity?> walletStream(WalletStreamRef ref) {
+Stream<WalletEntity?> walletStream(Ref ref) {
   // 1. Get the current authenticated user
   final user = ref.watch(authStateProvider).valueOrNull;
-  
+
   if (user == null) {
     // If they aren't logged in, they have no wallet!
     return Stream.value(null);
@@ -29,23 +29,23 @@ Stream<WalletEntity?> walletStream(WalletStreamRef ref) {
 
   // 2. Get our repository
   final repository = ref.watch(walletRepositoryProvider);
-  
+
   // 3. Start watching their wallet in Firestore
   return repository.watchWallet(user.uid);
 }
 
 @riverpod
-Stream<List<TransactionEntity>> transactionsStream(TransactionsStreamRef ref) {
+Stream<List<TransactionEntity>> transactionsStream(Ref ref) {
   // 1. Get the current authenticated user
   final user = ref.watch(authStateProvider).valueOrNull;
-  
+
   if (user == null) {
     return Stream.value([]);
   }
 
   // 2. Get our repository
   final repository = ref.watch(walletRepositoryProvider);
-  
+
   // 3. Start watching their transactions
   return repository.watchTransactions(user.uid);
 }
