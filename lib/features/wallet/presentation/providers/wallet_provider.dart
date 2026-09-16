@@ -11,9 +11,6 @@ part 'wallet_provider.g.dart';
 
 @riverpod
 WalletRepository walletRepository(Ref ref) {
-  // Here is where we glue the Abstract Repository to the Concrete Implementation!
-  // The rest of the app only asks for "walletRepositoryProvider" and has no idea
-  // that it's getting a WalletRepositoryImpl that talks to Firestore.
   return WalletRepositoryImpl(FirebaseFirestore.instance);
 }
 

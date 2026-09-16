@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/repositories/auth_repository.dart';
 import '../../data/repositories/firebase_auth_repository.dart';
 import '../../../wallet/presentation/providers/wallet_provider.dart';
@@ -48,7 +50,7 @@ class AuthController extends _$AuthController {
         password: password,
         displayName: displayName,
       );
-      
+
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await ref.read(walletRepositoryProvider).createInitialWallet(user.uid);
@@ -56,7 +58,7 @@ class AuthController extends _$AuthController {
 
       state = const AsyncData(null);
     } catch (e, st) {
-      print('Firebase Sign Up Error: $e'); // Debugging raw error
+      debugPrint('Firebase Sign Up Error: $e'); // Debugging raw error
       state = AsyncError(e, st);
     }
   }
