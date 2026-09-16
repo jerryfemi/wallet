@@ -215,8 +215,8 @@ return $default(_that.userId,_that.assets);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _WalletModel implements WalletModel {
-  const _WalletModel({required this.userId,  List<AssetModel> assets = const []}): _assets = assets;
+class _WalletModel extends WalletModel {
+  const _WalletModel({required this.userId,  List<AssetModel> assets = const []}): _assets = assets,super._();
   factory _WalletModel.fromJson(Map<String, dynamic> json) => _$WalletModelFromJson(json);
 
 @override final  String userId;

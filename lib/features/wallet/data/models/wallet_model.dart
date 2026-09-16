@@ -8,6 +8,8 @@ part 'wallet_model.g.dart';
 
 @freezed
 class WalletModel with _$WalletModel {
+  const WalletModel._();
+
   const factory WalletModel({
     required String userId,
     @Default([]) List<AssetModel> assets,
