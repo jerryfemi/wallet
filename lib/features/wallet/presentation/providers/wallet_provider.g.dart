@@ -53,7 +53,7 @@ final class WalletRepositoryProvider
   }
 }
 
-String _$walletRepositoryHash() => r'1d1dc9a09bbbaf784fef71f4f6df625c81b9e159';
+String _$walletRepositoryHash() => r'9ea1211027cc05f4b51306b97b3b34e532e7fef5';
 
 @ProviderFor(walletStream)
 final walletStreamProvider = WalletStreamProvider._();
@@ -92,7 +92,7 @@ final class WalletStreamProvider
   }
 }
 
-String _$walletStreamHash() => r'93185b0a5f29e5b8e45981addefdc05f5c4d0c6a';
+String _$walletStreamHash() => r'27418c73a5d0f830a603cdb2222023404800004c';
 
 @ProviderFor(transactionsStream)
 final transactionsStreamProvider = TransactionsStreamProvider._();
@@ -134,4 +134,4 @@ final class TransactionsStreamProvider
 }
 
 String _$transactionsStreamHash() =>
-    r'f39470d077148f3e43ebd4335a728130df07ac03';
+    r'd8d7f89490c866dc18ad2636ee8198db95e42f94';
