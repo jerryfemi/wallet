@@ -219,8 +219,8 @@ return $default(_that.id,_that.type,_that.assetSymbol,_that.amount,_that.fiatVal
 /// @nodoc
 @JsonSerializable()
 
-class _TransactionModel implements TransactionModel {
-  const _TransactionModel({required this.id, required this.type, required this.assetSymbol, @DecimalConverter() required this.amount, @DecimalConverter() required this.fiatValue, required this.timestamp});
+class _TransactionModel extends TransactionModel {
+  const _TransactionModel({required this.id, required this.type, required this.assetSymbol, @DecimalConverter() required this.amount, @DecimalConverter() required this.fiatValue, required this.timestamp}): super._();
   factory _TransactionModel.fromJson(Map<String, dynamic> json) => _$TransactionModelFromJson(json);
 
 @override final  String id;
