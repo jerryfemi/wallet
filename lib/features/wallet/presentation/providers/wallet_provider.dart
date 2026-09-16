@@ -20,7 +20,7 @@ WalletRepository walletRepository(Ref ref) {
 @riverpod
 Stream<WalletEntity?> walletStream(Ref ref) {
   // 1. Get the current authenticated user
-  final user = ref.watch(authStateProvider).valueOrNull;
+  final user = ref.watch(authStateProvider).value;
 
   if (user == null) {
     // If they aren't logged in, they have no wallet!
@@ -37,7 +37,7 @@ Stream<WalletEntity?> walletStream(Ref ref) {
 @riverpod
 Stream<List<TransactionEntity>> transactionsStream(Ref ref) {
   // 1. Get the current authenticated user
-  final user = ref.watch(authStateProvider).valueOrNull;
+  final user = ref.watch(authStateProvider).value;
 
   if (user == null) {
     return Stream.value([]);
