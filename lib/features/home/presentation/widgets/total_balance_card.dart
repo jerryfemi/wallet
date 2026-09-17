@@ -21,7 +21,7 @@ class TotalBalanceCard extends HookConsumerWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -37,7 +37,7 @@ class TotalBalanceCard extends HookConsumerWidget {
           Text(
             Formatters.formatFiat(totalValue),
             style: theme.textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
               color: theme.colorScheme.onSurface,
             ),
           ),
