@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:wallet/features/home/presentation/widgets/home_header.dart';
@@ -9,7 +8,6 @@ import 'package:wallet/features/home/presentation/widgets/quick_actions_row.dart
 import 'package:wallet/features/home/presentation/widgets/section_header.dart';
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
-import 'package:wallet/core/utils/converters.dart';
 import 'package:decimal/decimal.dart';
 
 class HomeScreen extends HookConsumerWidget {
@@ -44,7 +42,7 @@ class HomeScreen extends HookConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: totalValueAsync.when(
                     data: (totalValue) {
-                      final change = totalChangeAsync.valueOrNull ?? 0.0;
+                      final change = totalChangeAsync.value ?? 0.0;
                       return TotalBalanceCard(
                         totalValue: totalValue,
                         percentageChange: change,
@@ -56,7 +54,8 @@ class HomeScreen extends HookConsumerWidget {
                         percentageChange: 2.5,
                       ),
                     ),
-                    error: (e, st) => const Center(child: Text('Error loading balance')),
+                    error: (e, st) =>
+                        const Center(child: Text('Error loading balance')),
                   ),
                 ),
               ),
@@ -92,40 +91,48 @@ class HomeScreen extends HookConsumerWidget {
                       if (assets.isEmpty) {
                         return const Center(child: Text('No assets found.'));
                       }
-                      
+
                       // Take only top 3
                       final topAssets = assets.take(3).toList();
-                      
+
                       return Column(
-                        children: topAssets.map((asset) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: AssetBalanceTile(
-                            name: asset.name,
-                            symbol: asset.symbol,
-                            cryptoAmount: asset.amount,
-                            fiatAmount: asset.fiatValue,
-                            changePercentage: asset.changePercentage24h,
-                            iconUrl: asset.imageUrl,
-                          ),
-                        )).toList(),
+                        children: topAssets
+                            .map(
+                              (asset) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: AssetBalanceTile(
+                                  name: asset.name,
+                                  symbol: asset.symbol,
+                                  cryptoAmount: asset.amount,
+                                  fiatAmount: asset.fiatValue,
+                                  changePercentage: asset.changePercentage24h,
+                                  iconUrl: asset.imageUrl,
+                                ),
+                              ),
+                            )
+                            .toList(),
                       );
                     },
                     loading: () => Skeletonizer(
                       child: Column(
-                        children: List.generate(3, (index) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: AssetBalanceTile(
-                            name: 'Loading...',
-                            symbol: 'LOD',
-                            cryptoAmount: Decimal.one,
-                            fiatAmount: 1000,
-                            changePercentage: 0,
-                            iconUrl: '',
+                        children: List.generate(
+                          3,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: AssetBalanceTile(
+                              name: 'Loading...',
+                              symbol: 'LOD',
+                              cryptoAmount: Decimal.one,
+                              fiatAmount: 1000.0,
+                              changePercentage: 0.0,
+                              iconUrl: '',
+                            ),
                           ),
-                        )),
+                        ),
                       ),
                     ),
-                    error: (e, st) => const Center(child: Text('Error loading assets')),
+                    error: (e, st) =>
+                        const Center(child: Text('Error loading assets')),
                   ),
                 ),
               ),
@@ -155,7 +162,7 @@ class HomeScreen extends HookConsumerWidget {
                           padding: EdgeInsets.symmetric(vertical: 24),
                           child: Center(
                             child: Text(
-                              'No recent activity', 
+                              'No recent activity',
                               style: TextStyle(color: Colors.grey),
                             ),
                           ),
@@ -168,22 +175,22 @@ class HomeScreen extends HookConsumerWidget {
                         children: topTransactions.map((tx) {
                           // TODO: Replace with TransactionTile widget later
                           return ListTile(
-                            title: Text('${tx.type.name} ${tx.symbol}'),
+                            title: Text('${tx.type.name} ${tx.assetSymbol}'),
                             subtitle: Text(tx.timestamp.toString()),
                             trailing: Text(tx.amount.toString()),
                           );
                         }).toList(),
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (e, st) => const Center(child: Text('Error loading activity')),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (e, st) =>
+                        const Center(child: Text('Error loading activity')),
                   ),
                 ),
               ),
-              
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 32),
-              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),
         ),
