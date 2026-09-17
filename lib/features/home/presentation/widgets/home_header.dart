@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:go_router/go_router.dart';
+import 'package:wallet/core/presentation/widgets/user_avatar.dart';
+import 'package:wallet/core/presentation/widgets/notification_bell.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -20,32 +21,14 @@ class HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final displayName = user?.displayName ?? 'Trader';
-    final firstName = displayName.split(' ').first; // Just take the first name
+    final firstName = displayName.split(' ').first;
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Avatar + Greeting
         Row(
           children: [
-            GestureDetector(
-              onTap: () => context.push('/profile'),
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                  ),
-                ),
-                child: Icon(
-                  Icons.person_outline,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            ),
+            const UserAvatar(),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,46 +49,7 @@ class HomeHeader extends StatelessWidget {
             ),
           ],
         ),
-        
-        // Notification Bell
-        Stack(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.surface,
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.notifications_none),
-                onPressed: () {
-                  // TODO: Navigate to notifications
-                },
-              ),
-            ),
-            // Unread Dot
-            Positioned(
-              top: 10,
-              right: 12,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.surface,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        const NotificationBell(),
       ],
     );
   }
