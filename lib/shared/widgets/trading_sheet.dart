@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 
+/// A reusable sheet wrapper for Deposit, Buy, and Sell flows.
+/// Uses StupidSimpleCupertinoSheetRoute with snapping support.
 class TradingSheet extends StatelessWidget {
   final Widget child;
 
@@ -28,35 +30,11 @@ class TradingSheet extends StatelessWidget {
       left: false,
       right: false,
       child: SheetBackground(
-        // Let SheetBackground handle the surface color
         child: Material(
           type: MaterialType.transparency,
-          child: Stack(
-            children: [
-              // Main content
-              SafeArea(
-                top: false,
-                child: child,
-              ),
-              
-              // "Minimize" / "Exit full screen" button at top left
-              Positioned(
-                top: 16,
-                left: 16,
-                child: Builder(
-                  builder: (ctx) {
-                    return IconButton(
-                      icon: const Icon(Icons.close_fullscreen),
-                      onPressed: () {
-                        final controller = StupidSimpleSheetController.maybeOf<void>(ctx);
-                        controller?.animateToRelative(0.5, snap: true);
-                      },
-                      tooltip: 'Minimize',
-                    );
-                  },
-                ),
-              ),
-            ],
+          child: SafeArea(
+            top: false,
+            child: child,
           ),
         ),
       ),
