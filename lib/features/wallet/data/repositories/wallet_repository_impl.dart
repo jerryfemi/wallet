@@ -22,12 +22,12 @@ class WalletRepositoryImpl implements WalletRepository {
         .doc('main')
         .snapshots()
         .map((snapshot) {
-      if (!snapshot.exists || snapshot.data() == null) {
-        return null;
-      }
-      final model = WalletModel.fromJson(snapshot.data()!);
-      return model.toEntity();
-    });
+          if (!snapshot.exists || snapshot.data() == null) {
+            return null;
+          }
+          final model = WalletModel.fromJson(snapshot.data()!);
+          return model.toEntity();
+        });
   }
 
   @override
@@ -39,13 +39,13 @@ class WalletRepositoryImpl implements WalletRepository {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        data['id'] = doc.id;
-        final model = TransactionModel.fromJson(data);
-        return model.toEntity();
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            final model = TransactionModel.fromJson(data);
+            return model.toEntity();
+          }).toList();
+        });
   }
 
   @override
@@ -55,7 +55,7 @@ class WalletRepositoryImpl implements WalletRepository {
         .doc(userId)
         .collection('wallet')
         .doc('main');
-        
+
     final doc = await walletRef.get();
     if (doc.exists) return; // Don't overwrite if it already exists
 
@@ -83,25 +83,27 @@ class WalletRepositoryImpl implements WalletRepository {
 
     final wallet = WalletModel.fromJson(doc.data()!);
     final List<AssetModel> updatedAssets = List.from(wallet.assets);
-    
+
     // Find tether (USDT)
     final existingIndex = updatedAssets.indexWhere((a) => a.coinId == 'tether');
-    
+
     if (existingIndex >= 0) {
       final existing = updatedAssets[existingIndex];
       final newAmount = existing.amount + Decimal.parse(amount.toString());
       updatedAssets[existingIndex] = existing.copyWith(amount: newAmount);
     } else {
-      updatedAssets.add(AssetModel(
-        coinId: 'tether',
-        symbol: 'USDT',
-        amount: Decimal.parse(amount.toString()),
-      ));
+      updatedAssets.add(
+        AssetModel(
+          coinId: 'tether',
+          symbol: 'USDT',
+          amount: Decimal.parse(amount.toString()),
+        ),
+      );
     }
 
     final walletJson = wallet.copyWith(assets: updatedAssets).toJson();
     walletJson['assets'] = updatedAssets.map((a) => a.toJson()).toList();
-    
+
     // 1. Update wallet
     await walletRef.set(walletJson);
 
@@ -117,10 +119,12 @@ class WalletRepositoryImpl implements WalletRepository {
       type: TransactionType.deposit,
       assetSymbol: 'USDT',
       amount: Decimal.parse(amount.toString()),
-      fiatValue: Decimal.parse(amount.toString()), // 1 USDT ~= 1 USD for deposit sim
+      fiatValue: Decimal.parse(
+        amount.toString(),
+      ), // 1 USDT ~= 1 USD for deposit sim
       timestamp: DateTime.now(),
     );
 
-    await txRef.set(tx.toJson());
+    await tx.set(tx.toJson());
   }
 }
