@@ -89,7 +89,40 @@ class HomeScreen extends HookConsumerWidget {
                   child: assetsAsync.when(
                     data: (assets) {
                       if (assets.isEmpty) {
-                        return const Center(child: Text('No assets found.'));
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.account_balance_wallet_outlined,
+                                size: 48,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Your wallet is empty',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Deposit USDT to get started with simulated trading.',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        );
                       }
 
                       // Take only top 3
