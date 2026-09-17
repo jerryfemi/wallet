@@ -7,7 +7,7 @@ import 'package:wallet/features/wallet/presentation/providers/wallet_provider.da
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/home/presentation/widgets/quick_actions_row.dart';
 import 'package:wallet/features/home/presentation/widgets/section_header.dart';
-import 'package:wallet/core/utils/converters.dart';
+import 'package:wallet/core/utils/formatters.dart';
 
 class WalletScreen extends HookConsumerWidget {
   const WalletScreen({super.key});
@@ -88,7 +88,7 @@ class WalletScreen extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                        error: (_, __) => const Text('Error'),
+                        error: (_, _) => const Text('Error'),
                       ),
                     ],
                   ),
@@ -133,7 +133,7 @@ class WalletScreen extends HookConsumerWidget {
                               ),
                               child: Center(
                                 child: Text(
-                                  assetsAsync.valueOrNull?.length.toString() ?? '0',
+                                  assetsAsync.value?.length.toString() ?? '0',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -154,9 +154,12 @@ class WalletScreen extends HookConsumerWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     'Visual chart coming soon in the polish phase!',
-                                    style: theme.textTheme.labelMedium?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
+                                    style: theme.textTheme.labelMedium
+                                        ?.copyWith(
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -186,44 +189,51 @@ class WalletScreen extends HookConsumerWidget {
                             );
                           }
                           return Column(
-                            children: assets.map((asset) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: AssetBalanceTile(
-                                name: asset.name,
-                                symbol: asset.symbol,
-                                cryptoAmount: asset.amount,
-                                fiatAmount: asset.fiatValue,
-                                changePercentage: asset.changePercentage24h,
-                                iconUrl: asset.imageUrl,
-                              ),
-                            )).toList(),
+                            children: assets
+                                .map(
+                                  (asset) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: AssetBalanceTile(
+                                      name: asset.name,
+                                      symbol: asset.symbol,
+                                      cryptoAmount: asset.amount,
+                                      fiatAmount: asset.fiatValue,
+                                      changePercentage:
+                                          asset.changePercentage24h,
+                                      iconUrl: asset.imageUrl,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           );
                         },
                         loading: () => Skeletonizer(
                           child: Column(
-                            children: List.generate(3, (index) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: AssetBalanceTile(
-                                name: 'Loading...',
-                                symbol: 'LOD',
-                                cryptoAmount: Decimal.one,
-                                fiatAmount: 1000,
-                                changePercentage: 0,
-                                iconUrl: '',
+                            children: List.generate(
+                              3,
+                              (index) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: AssetBalanceTile(
+                                  name: 'Loading...',
+                                  symbol: 'LOD',
+                                  cryptoAmount: Decimal.one,
+                                  fiatAmount: 1000.0,
+                                  changePercentage: 0.0,
+                                  iconUrl: '',
+                                ),
                               ),
-                            )),
+                            ),
                           ),
                         ),
-                        error: (_, __) => const Center(child: Text('Error loading assets')),
+                        error: (_, _) =>
+                            const Center(child: Text('Error loading assets')),
                       ),
                     ],
                   ),
                 ),
               ),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 32),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),
         ),
