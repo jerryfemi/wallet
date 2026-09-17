@@ -125,6 +125,6 @@ class WalletRepositoryImpl implements WalletRepository {
       timestamp: DateTime.now(),
     );
 
-    await tx.set(tx.toJson());
+    await txRef.set(tx.toJson());
   }
 }
