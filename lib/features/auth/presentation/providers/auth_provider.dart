@@ -43,8 +43,12 @@ class AuthController extends _$AuthController {
 
   Future<void> signUp(String email, String password, String displayName) async {
     state = const AsyncLoading();
+    
+    // 1. Grab everything we need from `ref` BEFORE the async operation starts!
+    final repository = ref.read(authRepositoryProvider);
+    final walletRepo = ref.read(walletRepositoryProvider);
+    
     try {
-      final repository = ref.read(authRepositoryProvider);
       await repository.signUpWithEmailAndPassword(
         email: email,
         password: password,
@@ -53,12 +57,14 @@ class AuthController extends _$AuthController {
 
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        await ref.read(walletRepositoryProvider).createInitialWallet(user.uid);
+        // 2. Use the walletRepo we grabbed earlier instead of `ref.read`
+        await walletRepo.createInitialWallet(user.uid);
       }
-
-      state = const AsyncData(null);
+      
+      // We purposefully don't set state to AsyncData here because GoRouter 
+      // instantly redirects us and disposes this controller before it finishes!
     } catch (e, st) {
-      debugPrint('Firebase Sign Up Error: $e'); // Debugging raw error
+      debugPrint('Firebase Sign Up Error: $e');
       state = AsyncError(e, st);
     }
   }
