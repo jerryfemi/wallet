@@ -79,24 +79,9 @@ Future<List<PortfolioAsset>> portfolioAssets(Ref ref) async {
   final List<PortfolioAsset> assets = [];
 
   for (final asset in wallet.assets) {
-    if (asset.coinId == 'usd') {
-      assets.add(
-        PortfolioAsset(
-          coinId: 'usd',
-          symbol: 'USD',
-          name: 'US Dollar',
-          amount: asset.amount,
-          fiatValue: asset.amount.toDouble(),
-          changePercentage24h: 0.0,
-          imageUrl: '',
-        ),
-      );
-      continue;
-    }
-
     final marketCoin = markets.firstWhere(
       (c) => c.id == asset.coinId,
-      orElse: () => throw Exception('Coin not found in markets'),
+      orElse: () => throw Exception('Coin not found in markets: ${asset.coinId}'),
     );
 
     final fiatValue =
@@ -141,4 +126,12 @@ Future<double> portfolioTotalChange24h(Ref ref) async {
 
   if (totalValue == 0) return 0.0;
   return weightedChangeSum / totalValue;
+}
+
+@riverpod
+Future<void> simulateDeposit(Ref ref, double amount) async {
+  final user = ref.read(authStateProvider).value;
+  if (user == null) return;
+  final repository = ref.read(walletRepositoryProvider);
+  await repository.simulateDeposit(user.uid, amount);
 }
