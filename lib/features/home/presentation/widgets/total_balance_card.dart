@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:wallet/core/utils/converters.dart';
+import 'package:wallet/core/utils/formatters.dart';
 
 class TotalBalanceCard extends HookConsumerWidget {
   final double totalValue;
@@ -16,7 +16,7 @@ class TotalBalanceCard extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isPositive = percentageChange >= 0;
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -46,8 +46,8 @@ class TotalBalanceCard extends HookConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: isPositive
-                  ? Colors.green.withOpacity(0.15)
-                  : Colors.red.withOpacity(0.15),
+                  ? Colors.green.withValues(alpha: 0.15)
+                  : Colors.red.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
