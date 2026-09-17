@@ -25,11 +25,7 @@ class QuickActionsRow extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _ActionBtn(
-            icon: Icons.remove,
-            label: 'Sell',
-            onTap: () {},
-          ),
+          child: _ActionBtn(icon: Icons.remove, label: 'Sell', onTap: () {}),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -61,9 +57,13 @@ class _ActionBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
-    final bgColor = isPrimary ? colorScheme.primary : colorScheme.surfaceContainerHighest;
-    final iconBgColor = isPrimary ? Colors.white.withOpacity(0.2) : colorScheme.primary;
+
+    final bgColor = isPrimary
+        ? colorScheme.primary
+        : colorScheme.surfaceContainerHighest;
+    final iconBgColor = isPrimary
+        ? Colors.white.withValues(alpha: 0.2)
+        : colorScheme.primary;
     final iconColor = isPrimary ? colorScheme.onPrimary : colorScheme.onPrimary;
     final textColor = isPrimary ? colorScheme.onPrimary : colorScheme.onSurface;
 
@@ -88,11 +88,7 @@ class _ActionBtn extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: iconBgColor,
                 ),
-                child: Icon(
-                  icon,
-                  size: 14,
-                  color: iconColor,
-                ),
+                child: Icon(icon, size: 14, color: iconColor),
               ),
               const SizedBox(height: 6),
               Text(
