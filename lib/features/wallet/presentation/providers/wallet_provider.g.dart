@@ -175,7 +175,7 @@ final class PortfolioAssetsProvider
   }
 }
 
-String _$portfolioAssetsHash() => r'feca3ac235f12071224bd0126002737b8b09a0b0';
+String _$portfolioAssetsHash() => r'701dce2d56e3c99a4bd62f0e550fad10145645d5';
 
 @ProviderFor(portfolioTotalValue)
 final portfolioTotalValueProvider = PortfolioTotalValueProvider._();
@@ -209,7 +209,7 @@ final class PortfolioTotalValueProvider
 }
 
 String _$portfolioTotalValueHash() =>
-    r'a63cfd5304a8e49bd899c9c3db372e0f05ef87d8';
+    r'6d75d77cefbd37ebf53555e2ff41be8493a65435';
 
 @ProviderFor(portfolioTotalChange24h)
 final portfolioTotalChange24hProvider = PortfolioTotalChange24hProvider._();
@@ -244,3 +244,72 @@ final class PortfolioTotalChange24hProvider
 
 String _$portfolioTotalChange24hHash() =>
     r'efcaa746143b03ed7671d8caf86038391a2bfa25';
+
+@ProviderFor(simulateDeposit)
+final simulateDepositProvider = SimulateDepositFamily._();
+
+final class SimulateDepositProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  SimulateDepositProvider._({
+    required SimulateDepositFamily super.from,
+    required double super.argument,
+  }) : super(
+         retry: null,
+         name: r'simulateDepositProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$simulateDepositHash();
+
+  @override
+  String toString() {
+    return r'simulateDepositProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    final argument = this.argument as double;
+    return simulateDeposit(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SimulateDepositProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$simulateDepositHash() => r'293895158092173098c3d7349d338d5e79786883';
+
+final class SimulateDepositFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<void>, double> {
+  SimulateDepositFamily._()
+    : super(
+        retry: null,
+        name: r'simulateDepositProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SimulateDepositProvider call(double amount) =>
+      SimulateDepositProvider._(argument: amount, from: this);
+
+  @override
+  String toString() => r'simulateDepositProvider';
+}
