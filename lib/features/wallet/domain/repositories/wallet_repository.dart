@@ -8,6 +8,9 @@ abstract class WalletRepository {
   /// Stream the user's transaction history
   Stream<List<TransactionEntity>> watchTransactions(String userId);
 
-  /// Creates a default wallet for a new user seeded with $10k
+  /// Creates a default wallet for a new user (empty by default)
   Future<void> createInitialWallet(String userId);
+
+  /// Simulates depositing USDT into the user's wallet
+  Future<void> simulateDeposit(String userId, double amount);
 }
