@@ -80,15 +80,17 @@ Future<List<PortfolioAsset>> portfolioAssets(Ref ref) async {
 
   for (final asset in wallet.assets) {
     if (asset.coinId == 'usd') {
-      assets.add(PortfolioAsset(
-        coinId: 'usd',
-        symbol: 'USD',
-        name: 'US Dollar',
-        amount: asset.amount,
-        fiatValue: asset.amount.toDouble(),
-        changePercentage24h: 0.0,
-        imageUrl: '',
-      ));
+      assets.add(
+        PortfolioAsset(
+          coinId: 'usd',
+          symbol: 'USD',
+          name: 'US Dollar',
+          amount: asset.amount,
+          fiatValue: asset.amount.toDouble(),
+          changePercentage24h: 0.0,
+          imageUrl: '',
+        ),
+      );
       continue;
     }
 
@@ -97,17 +99,20 @@ Future<List<PortfolioAsset>> portfolioAssets(Ref ref) async {
       orElse: () => throw Exception('Coin not found in markets'),
     );
 
-    final fiatValue = asset.amount.toDouble() * marketCoin.currentPrice.toDouble();
+    final fiatValue =
+        asset.amount.toDouble() * marketCoin.currentPrice.toDouble();
 
-    assets.add(PortfolioAsset(
-      coinId: asset.coinId,
-      symbol: asset.symbol,
-      name: marketCoin.name,
-      amount: asset.amount,
-      fiatValue: fiatValue,
-      changePercentage24h: marketCoin.priceChangePercentage24h,
-      imageUrl: marketCoin.image,
-    ));
+    assets.add(
+      PortfolioAsset(
+        coinId: asset.coinId,
+        symbol: asset.symbol,
+        name: marketCoin.name,
+        amount: asset.amount,
+        fiatValue: fiatValue,
+        changePercentage24h: marketCoin.priceChangePercentage24h.toDouble(),
+        imageUrl: marketCoin.imageUrl,
+      ),
+    );
   }
 
   // Sort by fiat value descending
@@ -118,14 +123,14 @@ Future<List<PortfolioAsset>> portfolioAssets(Ref ref) async {
 @riverpod
 Future<double> portfolioTotalValue(Ref ref) async {
   final assets = await ref.watch(portfolioAssetsProvider.future);
-  return assets.fold(0.0, (sum, asset) => sum + asset.fiatValue);
+  return assets.fold<double>(0.0, (acc, asset) => acc + asset.fiatValue);
 }
 
 @riverpod
 Future<double> portfolioTotalChange24h(Ref ref) async {
   final assets = await ref.watch(portfolioAssetsProvider.future);
   if (assets.isEmpty) return 0.0;
-  
+
   double totalValue = 0;
   double weightedChangeSum = 0;
 
