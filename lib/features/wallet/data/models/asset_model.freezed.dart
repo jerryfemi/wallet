@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AssetModel {
 
- String get coinId; String get symbol;@DecimalConverter() Decimal get amount;
+ String get coinId; String get symbol;@_StringDecimalConverter() Decimal get amount;
 /// Create a copy of AssetModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -54,7 +54,7 @@ abstract mixin class $AssetModelCopyWith<$Res>  {
   factory $AssetModelCopyWith(AssetModel value, $Res Function(AssetModel) _then) = _$AssetModelCopyWithImpl;
 @useResult
 $Res call({
- String coinId, String symbol,@DecimalConverter() Decimal amount
+ String coinId, String symbol,@_StringDecimalConverter() Decimal amount
 });
 
 
@@ -161,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String coinId,  String symbol, @DecimalConverter()  Decimal amount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String coinId,  String symbol, @_StringDecimalConverter()  Decimal amount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AssetModel() when $default != null:
 return $default(_that.coinId,_that.symbol,_that.amount);case _:
@@ -182,7 +182,7 @@ return $default(_that.coinId,_that.symbol,_that.amount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String coinId,  String symbol, @DecimalConverter()  Decimal amount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String coinId,  String symbol, @_StringDecimalConverter()  Decimal amount)  $default,) {final _that = this;
 switch (_that) {
 case _AssetModel():
 return $default(_that.coinId,_that.symbol,_that.amount);case _:
@@ -202,7 +202,7 @@ return $default(_that.coinId,_that.symbol,_that.amount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String coinId,  String symbol, @DecimalConverter()  Decimal amount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String coinId,  String symbol, @_StringDecimalConverter()  Decimal amount)?  $default,) {final _that = this;
 switch (_that) {
 case _AssetModel() when $default != null:
 return $default(_that.coinId,_that.symbol,_that.amount);case _:
@@ -217,12 +217,12 @@ return $default(_that.coinId,_that.symbol,_that.amount);case _:
 @JsonSerializable()
 
 class _AssetModel extends AssetModel {
-  const _AssetModel({required this.coinId, required this.symbol, @DecimalConverter() required this.amount}): super._();
+  const _AssetModel({required this.coinId, required this.symbol, @_StringDecimalConverter() required this.amount}): super._();
   factory _AssetModel.fromJson(Map<String, dynamic> json) => _$AssetModelFromJson(json);
 
 @override final  String coinId;
 @override final  String symbol;
-@override@DecimalConverter() final  Decimal amount;
+@override@_StringDecimalConverter() final  Decimal amount;
 
 /// Create a copy of AssetModel
 /// with the given fields replaced by the non-null parameter values.
@@ -259,7 +259,7 @@ abstract mixin class _$AssetModelCopyWith<$Res> implements $AssetModelCopyWith<$
   factory _$AssetModelCopyWith(_AssetModel value, $Res Function(_AssetModel) _then) = __$AssetModelCopyWithImpl;
 @override @useResult
 $Res call({
- String coinId, String symbol,@DecimalConverter() Decimal amount
+ String coinId, String symbol,@_StringDecimalConverter() Decimal amount
 });
 
 
