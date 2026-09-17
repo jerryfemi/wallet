@@ -71,10 +71,11 @@ class AuthController extends _$AuthController {
 
   Future<void> signOut() async {
     state = const AsyncLoading();
+    final repository = ref.read(authRepositoryProvider);
     try {
-      final repository = ref.read(authRepositoryProvider);
       await repository.signOut();
-      state = const AsyncData(null);
+      // GoRouter intercepts the state change and redirects us to Login, 
+      // destroying this controller in the process, so no need to set state!
     } catch (e, st) {
       state = AsyncError(e, st);
     }
