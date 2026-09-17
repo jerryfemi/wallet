@@ -135,3 +135,112 @@ final class TransactionsStreamProvider
 
 String _$transactionsStreamHash() =>
     r'd085439f05094a7bdb6fc86c9a34f9432a374f6a';
+
+@ProviderFor(portfolioAssets)
+final portfolioAssetsProvider = PortfolioAssetsProvider._();
+
+final class PortfolioAssetsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PortfolioAsset>>,
+          List<PortfolioAsset>,
+          FutureOr<List<PortfolioAsset>>
+        >
+    with
+        $FutureModifier<List<PortfolioAsset>>,
+        $FutureProvider<List<PortfolioAsset>> {
+  PortfolioAssetsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'portfolioAssetsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$portfolioAssetsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<PortfolioAsset>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<PortfolioAsset>> create(Ref ref) {
+    return portfolioAssets(ref);
+  }
+}
+
+String _$portfolioAssetsHash() => r'feca3ac235f12071224bd0126002737b8b09a0b0';
+
+@ProviderFor(portfolioTotalValue)
+final portfolioTotalValueProvider = PortfolioTotalValueProvider._();
+
+final class PortfolioTotalValueProvider
+    extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
+    with $FutureModifier<double>, $FutureProvider<double> {
+  PortfolioTotalValueProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'portfolioTotalValueProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$portfolioTotalValueHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<double> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<double> create(Ref ref) {
+    return portfolioTotalValue(ref);
+  }
+}
+
+String _$portfolioTotalValueHash() =>
+    r'a63cfd5304a8e49bd899c9c3db372e0f05ef87d8';
+
+@ProviderFor(portfolioTotalChange24h)
+final portfolioTotalChange24hProvider = PortfolioTotalChange24hProvider._();
+
+final class PortfolioTotalChange24hProvider
+    extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
+    with $FutureModifier<double>, $FutureProvider<double> {
+  PortfolioTotalChange24hProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'portfolioTotalChange24hProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$portfolioTotalChange24hHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<double> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<double> create(Ref ref) {
+    return portfolioTotalChange24h(ref);
+  }
+}
+
+String _$portfolioTotalChange24hHash() =>
+    r'efcaa746143b03ed7671d8caf86038391a2bfa25';
