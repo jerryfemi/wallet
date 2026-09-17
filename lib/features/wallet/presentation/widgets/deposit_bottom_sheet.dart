@@ -34,16 +34,26 @@ class DepositBottomSheet extends HookConsumerWidget {
         final controller = StupidSimpleSheetController.maybeOf<void>(context);
         if (controller == null) return;
 
+        double target = 0.55;
         switch (stage.value) {
           case DepositStage.input:
-            controller.animateToRelative(0.5, snap: true);
+            target = 0.55;
+            break;
           case DepositStage.processing:
-            controller.animateToRelative(0.35, snap: true);
+            target = 0.35;
+            break;
           case DepositStage.success:
-            controller.animateToRelative(0.55, snap: true);
+            target = 0.55;
+            break;
           case DepositStage.receipt:
-            controller.animateToRelative(0.9, snap: true);
+            target = 0.9;
+            break;
         }
+        
+        controller.overrideSnappingConfig(
+          SheetSnappingConfig([target], initialSnap: target),
+          animateToComply: true,
+        );
       });
       return null;
     }, [stage.value]);
@@ -163,7 +173,7 @@ class _InputView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -193,19 +203,32 @@ class _InputView extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Amount Input
-          TextField(
-            controller: amountController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.displaySmall
-                ?.copyWith(fontWeight: FontWeight.w900),
-            decoration: const InputDecoration(
-              hintText: '\$0',
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '\$',
+                style: theme.textTheme.displaySmall
+                    ?.copyWith(fontWeight: FontWeight.w900, color: theme.colorScheme.onSurface),
+              ),
+              IntrinsicWidth(
+                child: TextField(
+                  controller: amountController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.displaySmall
+                      ?.copyWith(fontWeight: FontWeight.w900),
+                  decoration: const InputDecoration(
+                    hintText: '0',
+                    filled: false,
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 4),
@@ -285,21 +308,26 @@ class _ProcessingView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(
-            width: 56,
-            height: 56,
-            child: CircularProgressIndicator(strokeWidth: 3),
+          const Center(
+            child: SizedBox(
+              width: 56,
+              height: 56,
+              child: CircularProgressIndicator(strokeWidth: 3),
+            ),
           ),
           const SizedBox(height: 24),
           Text(
             'Processing your deposit...',
+            textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
             'This will just take a moment',
+            textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
@@ -370,7 +398,7 @@ class _SuccessView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -539,7 +567,7 @@ class _ReceiptView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -561,7 +589,7 @@ class _ReceiptView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
