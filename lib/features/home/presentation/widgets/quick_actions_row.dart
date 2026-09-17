@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
+
+import 'package:wallet/shared/widgets/trading_sheet.dart';
+import 'package:wallet/features/wallet/presentation/widgets/deposit_bottom_sheet.dart';
 
 class QuickActionsRow extends ConsumerWidget {
   const QuickActionsRow({super.key});
@@ -15,8 +17,7 @@ class QuickActionsRow extends ConsumerWidget {
             iconAsset: 'assets/icons/deposit.svg',
             label: 'Deposit',
             onTap: () {
-              // Simulate depositing 10,000 USDT for testing
-              ref.read(simulateDepositProvider(10000.0).future);
+              TradingSheet.show(context, child: const DepositBottomSheet());
             },
           ),
         ),
