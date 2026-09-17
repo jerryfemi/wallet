@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 
-class QuickActionsRow extends StatelessWidget {
+class QuickActionsRow extends ConsumerWidget {
   const QuickActionsRow({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         Expanded(
           child: _ActionBtn(
             iconAsset: 'assets/icons/deposit.svg',
             label: 'Deposit',
-            onTap: () {},
+            onTap: () {
+              // Simulate depositing 10,000 USDT for testing
+              ref.read(simulateDepositProvider(10000.0).future);
+            },
           ),
         ),
         const SizedBox(width: 10),
