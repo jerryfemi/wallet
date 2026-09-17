@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wallet/core/utils/converters.dart';
+import 'package:wallet/core/utils/formatters.dart';
 import 'package:decimal/decimal.dart';
 
 class AssetBalanceTile extends StatelessWidget {
