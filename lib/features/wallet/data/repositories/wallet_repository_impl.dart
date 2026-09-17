@@ -70,6 +70,9 @@ class WalletRepositoryImpl implements WalletRepository {
       assets: [initialAsset],
     );
 
-    await walletRef.set(newWallet.toJson());
+    final walletJson = newWallet.toJson();
+    walletJson['assets'] = newWallet.assets.map((a) => a.toJson()).toList();
+
+    await walletRef.set(walletJson);
   }
 }
