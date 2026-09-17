@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class QuickActionsRow extends StatelessWidget {
   const QuickActionsRow({super.key});
@@ -9,7 +10,7 @@ class QuickActionsRow extends StatelessWidget {
       children: [
         Expanded(
           child: _ActionBtn(
-            icon: Icons.arrow_downward,
+            iconAsset: 'assets/icons/deposit.svg',
             label: 'Deposit',
             onTap: () {},
           ),
@@ -17,7 +18,7 @@ class QuickActionsRow extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _ActionBtn(
-            icon: Icons.add,
+            iconAsset: 'assets/icons/buy.svg',
             label: 'Buy',
             isPrimary: true,
             onTap: () {},
@@ -25,12 +26,16 @@ class QuickActionsRow extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _ActionBtn(icon: Icons.remove, label: 'Sell', onTap: () {}),
+          child: _ActionBtn(
+            iconAsset: 'assets/icons/sell.svg',
+            label: 'Sell',
+            onTap: () {},
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _ActionBtn(
-            icon: Icons.arrow_upward,
+            iconAsset: 'assets/icons/withdraw.svg',
             label: 'Withdraw',
             onTap: () {},
           ),
@@ -41,13 +46,13 @@ class QuickActionsRow extends StatelessWidget {
 }
 
 class _ActionBtn extends StatelessWidget {
-  final IconData icon;
+  final String iconAsset;
   final String label;
   final bool isPrimary;
   final VoidCallback onTap;
 
   const _ActionBtn({
-    required this.icon,
+    required this.iconAsset,
     required this.label,
     required this.onTap,
     this.isPrimary = false,
@@ -88,7 +93,14 @@ class _ActionBtn extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: iconBgColor,
                 ),
-                child: Icon(icon, size: 14, color: iconColor),
+                child: Center(
+                  child: SvgPicture.asset(
+                    iconAsset,
+                    colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+                    width: 12,
+                    height: 12,
+                  ),
+                ),
               ),
               const SizedBox(height: 6),
               Text(
