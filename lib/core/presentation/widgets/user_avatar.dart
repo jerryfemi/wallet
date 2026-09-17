@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class UserAvatar extends StatelessWidget {
   const UserAvatar({super.key});
@@ -18,9 +19,16 @@ class UserAvatar extends StatelessWidget {
             color: Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
-        child: Icon(
-          Icons.person_outline,
-          color: Theme.of(context).colorScheme.onSurface,
+        child: Center(
+          child: SvgPicture.asset(
+            'assets/icons/profile.svg',
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.onSurface,
+              BlendMode.srcIn,
+            ),
+            width: 20,
+            height: 20,
+          ),
         ),
       ),
     );
