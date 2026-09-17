@@ -85,7 +85,7 @@ class _InputStage extends HookWidget {
     final colorScheme = theme.colorScheme;
     
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -245,7 +245,7 @@ class _SuccessStage extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
