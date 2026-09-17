@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:wallet/features/home/presentation/widgets/home_header.dart';
@@ -206,11 +207,30 @@ class HomeScreen extends HookConsumerWidget {
 
                       return Column(
                         children: topTransactions.map((tx) {
-                          // TODO: Replace with TransactionTile widget later
+                          final isDeposit = tx.type.name == 'deposit';
+                          final formattedAmount = NumberFormat.currency(symbol: '\$').format(tx.amount.toDouble());
+                          final formattedDate = DateFormat('MMM d, y, h:mm a').format(tx.timestamp);
+                          final typeName = tx.type.name[0].toUpperCase() + tx.type.name.substring(1);
+                          
                           return ListTile(
-                            title: Text('${tx.type.name} ${tx.assetSymbol}'),
-                            subtitle: Text(tx.timestamp.toString()),
-                            trailing: Text(tx.amount.toString()),
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              backgroundColor: isDeposit ? Colors.green.withValues(alpha: 0.15) : Colors.red.withValues(alpha: 0.15),
+                              child: Icon(
+                                isDeposit ? Icons.arrow_downward : Icons.arrow_upward,
+                                color: isDeposit ? Colors.green.shade400 : Colors.red.shade400,
+                              ),
+                            ),
+                            title: Text('$typeName ${tx.assetSymbol}'),
+                            subtitle: Text(formattedDate),
+                            trailing: Text(
+                              '${isDeposit ? '+' : '-'}$formattedAmount',
+                              style: TextStyle(
+                                color: isDeposit ? Colors.green.shade400 : Colors.red.shade400,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                           );
                         }).toList(),
                       );
