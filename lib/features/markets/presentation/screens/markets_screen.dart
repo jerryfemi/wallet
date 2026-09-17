@@ -112,8 +112,22 @@ class MarketsScreen extends HookConsumerWidget {
                         );
                       },
                     ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => Skeletonizer(
+                      enabled: true,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 3,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 10),
+                        itemBuilder: (context, index) {
+                          return TopMoverChip(
+                            coin: const MarketsScreen()._getDummyData()[index],
+                            onTap: () {},
+                          );
+                        },
+                      ),
+                    ),
                     error: (error, stack) => const SizedBox(),
                   ),
                 ),
@@ -175,7 +189,31 @@ class MarketsScreen extends HookConsumerWidget {
                   ),
                 ),
                 error: (error, stack) => SliverFillRemaining(
-                  child: Center(child: Text('Failed to load markets:\n$error')),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.wifi_off_rounded,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Oops! Market data is unavailable.',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Please check your connection and pull to refresh.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
