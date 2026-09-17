@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NotificationBell extends StatelessWidget {
   const NotificationBell({super.key});
@@ -12,13 +13,21 @@ class NotificationBell extends StatelessWidget {
           height: 44,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             border: Border.all(
               color: Theme.of(context).colorScheme.outlineVariant,
             ),
           ),
           child: IconButton(
-            icon: const Icon(Icons.notifications_none),
+            icon: SvgPicture.asset(
+              'assets/icons/bell.svg',
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
+              width: 20,
+              height: 20,
+            ),
             onPressed: () {
               // TODO: Navigate to notifications
             },
