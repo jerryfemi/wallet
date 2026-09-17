@@ -92,7 +92,7 @@ final class WalletStreamProvider
   }
 }
 
-String _$walletStreamHash() => r'27418c73a5d0f830a603cdb2222023404800004c';
+String _$walletStreamHash() => r'e5e6c2cef499da6ad9de96f4b36e1f499453aa21';
 
 @ProviderFor(transactionsStream)
 final transactionsStreamProvider = TransactionsStreamProvider._();
@@ -134,4 +134,4 @@ final class TransactionsStreamProvider
 }
 
 String _$transactionsStreamHash() =>
-    r'd8d7f89490c866dc18ad2636ee8198db95e42f94';
+    r'd085439f05094a7bdb6fc86c9a34f9432a374f6a';
