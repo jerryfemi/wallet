@@ -6,18 +6,12 @@ import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 class TradingSheet extends StatelessWidget {
   final Widget child;
 
-  const TradingSheet({
-    super.key,
-    required this.child,
-  });
+  const TradingSheet({super.key, required this.child});
 
   static Future<T?> show<T>(BuildContext context, {required Widget child}) {
     return Navigator.of(context, rootNavigator: true).push(
       StupidSimpleCupertinoSheetRoute<T>(
-        snappingConfig: SheetSnappingConfig(
-          [0.5, 0.9],
-          initialSnap: 0.5,
-        ),
+        snappingConfig: SheetSnappingConfig([0.5, 0.9], initialSnap: 0.5),
         child: TradingSheet(child: child),
       ),
     );
@@ -32,10 +26,7 @@ class TradingSheet extends StatelessWidget {
       child: SheetBackground(
         child: Material(
           type: MaterialType.transparency,
-          child: SafeArea(
-            top: false,
-            child: child,
-          ),
+          child: SafeArea(top: false, child: child),
         ),
       ),
     );
