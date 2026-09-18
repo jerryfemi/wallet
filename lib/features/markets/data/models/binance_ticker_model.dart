@@ -7,7 +7,7 @@ part 'binance_ticker_model.freezed.dart';
 part 'binance_ticker_model.g.dart';
 
 @freezed
-class BinanceTickerModel with _$BinanceTickerModel {
+abstract class BinanceTickerModel with _$BinanceTickerModel {
   const BinanceTickerModel._();
 
   const factory BinanceTickerModel({
@@ -16,7 +16,8 @@ class BinanceTickerModel with _$BinanceTickerModel {
     @DecimalConverter() @JsonKey(name: 'P') required Decimal priceChangePercent,
   }) = _BinanceTickerModel;
 
-  factory BinanceTickerModel.fromJson(Map<String, dynamic> json) => _$BinanceTickerModelFromJson(json);
+  factory BinanceTickerModel.fromJson(Map<String, dynamic> json) =>
+      _$BinanceTickerModelFromJson(json);
 
   TickerUpdateEntity toEntity() {
     return TickerUpdateEntity(
