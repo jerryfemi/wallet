@@ -4,26 +4,56 @@ import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:decimal/decimal.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 
-class CoinListTile extends StatelessWidget {
+class CoinListTile extends HookConsumerWidget {
   final CoinEntity coin;
 
   const CoinListTile({super.key, required this.coin});
 
   @override
-  Widget build(BuildContext context) {
-    final isPositive = coin.priceChangePercentage24h >= Decimal.zero;
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Select precisely this coin's update from the massive Map.
+    // Riverpod's `select` ensures this tile ONLY rebuilds if its specific coin's price changes!
+    final ticker = ref.watch(
+      livePricesProvider.select((map) => map[coin.symbol.toLowerCase()]),
+    );
+
+    final currentPrice = ticker?.price ?? coin.currentPrice;
+    final priceChange =
+        ticker?.priceChangePercentage24h ??
+        coin.priceChangePercentage24h;
+
+    final isPositive = priceChange >= Decimal.zero;
     final color = isPositive ? Colors.greenAccent : Colors.redAccent;
+
+    final flashColor = useState<Color?>(null);
+
+    ref.listen(
+      livePricesProvider.select((map) => map[coin.symbol.toLowerCase()]),
+      (previous, next) {
+      final nextPrice = next?.price;
+      final prevPrice = previous?.price ?? coin.currentPrice;
+
+      if (nextPrice != null && nextPrice != prevPrice) {
+        flashColor.value = nextPrice > prevPrice
+            ? Colors.greenAccent
+            : Colors.redAccent;
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (context.mounted) flashColor.value = null;
+        });
+      }
+    });
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-          ),
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Row(
@@ -34,19 +64,29 @@ class CoinListTile extends StatelessWidget {
             child: Skeleton.replace(
               width: 48,
               height: 48,
-              child: kIsWeb 
+              child: kIsWeb
                   ? Image.network(
                       coin.imageUrl,
                       width: 48,
                       height: 48,
-                      errorBuilder: (context, error, stackTrace) => const SizedBox(width: 48, height: 48, child: Icon(Icons.error)),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Icon(Icons.error),
+                          ),
                     )
                   : CachedNetworkImage(
                       imageUrl: coin.imageUrl,
                       width: 48,
                       height: 48,
-                      placeholder: (context, url) => const SizedBox(width: 48, height: 48),
-                      errorWidget: (context, url, error) => const SizedBox(width: 48, height: 48, child: Icon(Icons.error)),
+                      placeholder: (context, url) =>
+                          const SizedBox(width: 48, height: 48),
+                      errorWidget: (context, url, error) => const SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: Icon(Icons.error),
+                      ),
                     ),
             ),
           ),
@@ -68,8 +108,9 @@ class CoinListTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   coin.symbol,
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -121,10 +162,15 @@ class CoinListTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  '\$${coin.currentPrice.toStringAsFixed(2)}',
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color:
+                        flashColor.value ??
+                        Theme.of(context).textTheme.titleMedium?.color,
+                  ),
+                  child: Text('\$${currentPrice.toStringAsFixed(2)}'),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -136,7 +182,7 @@ class CoinListTile extends StatelessWidget {
                       size: 18,
                     ),
                     Text(
-                      '${coin.priceChangePercentage24h.abs().toStringAsFixed(2)}%',
+                      '${priceChange.abs().toStringAsFixed(2)}%',
                       style: Theme.of(context).textTheme.bodyMedium
                           ?.copyWith(color: color, fontWeight: FontWeight.w600),
                     ),
