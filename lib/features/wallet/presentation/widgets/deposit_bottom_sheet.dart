@@ -49,7 +49,7 @@ class DepositBottomSheet extends HookConsumerWidget {
             target = 0.55;
             break;
           case DepositStage.receipt:
-            target = 0.9;
+            target = 0.95;
             break;
         }
 
@@ -67,14 +67,15 @@ class DepositBottomSheet extends HookConsumerWidget {
       // Simulate processing delay
       await Future.delayed(const Duration(seconds: 2));
 
-      // Execute the actual deposit
-      await ref.read(simulateDepositProvider(amount).future);
-
       depositedAmount.value = amount;
       referenceNumber.value = generateRef();
       depositTime.value = DateTime.now();
 
       stage.value = DepositStage.success;
+
+      // Update the actual balance after showing success
+      await Future.delayed(const Duration(milliseconds: 300));
+      await ref.read(simulateDepositProvider(amount).future);
     }
 
     return AnimatedSwitcher(
