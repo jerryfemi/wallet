@@ -14,7 +14,7 @@ class AppShell extends StatelessWidget {
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(left: 12, right: 12, bottom: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest
+          color: Theme.of(context).colorScheme.surfaceContainer
               .withValues(alpha: 1.5),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
