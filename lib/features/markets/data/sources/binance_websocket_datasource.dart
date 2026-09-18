@@ -11,7 +11,7 @@ class BinanceWebSocketDataSource {
     // Connect if not already connected
     _channel ??= WebSocketChannel.connect(Uri.parse(_url));
 
-    return _channel!.stream.map((event) {
+    return _channel!.stream.asBroadcastStream().map((event) {
       final List<dynamic> data = jsonDecode(event.toString());
       return data.map((json) => BinanceTickerModel.fromJson(json as Map<String, dynamic>)).toList();
     });
