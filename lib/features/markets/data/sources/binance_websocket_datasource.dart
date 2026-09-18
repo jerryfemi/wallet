@@ -4,7 +4,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wallet/features/markets/data/models/binance_ticker_model.dart';
 
 class BinanceWebSocketDataSource {
-  static const String _url = 'wss://stream.binance.us:9443/ws/!ticker@arr';
+  // fstream is the Binance Futures endpoint. It uses the exact same format but is hosted on a different domain
+  // that is rarely blocked by ISPs compared to the main stream.binance.com domain.
+  static const String _url = 'wss://fstream.binance.com/ws/!ticker@arr';
   WebSocketChannel? _channel;
   Stream<List<BinanceTickerModel>>? _broadcastStream;
 

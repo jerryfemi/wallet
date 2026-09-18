@@ -3,6 +3,7 @@ import 'package:wallet/features/markets/data/models/coin_model.dart';
 import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
 import 'package:wallet/features/markets/data/sources/binance_websocket_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
+
 class MarketRepository {
   final CoinGeckoApiService _apiService;
   final BinanceWebSocketDataSource _binanceWebSocketDataSource;
@@ -11,7 +12,7 @@ class MarketRepository {
 
   Future<List<CoinEntity>> getTopCoins() async {
     final List<CoinModel> models = await _apiService.getTopCoins();
-    
+
     return models.map((model) {
       return CoinEntity(
         id: model.id,

@@ -14,13 +14,14 @@ class TickerUpdateEntity {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is TickerUpdateEntity &&
-      other.symbol == symbol &&
-      other.price == price &&
-      other.priceChangePercentage24h == priceChangePercentage24h;
+        other.symbol == symbol &&
+        other.price == price &&
+        other.priceChangePercentage24h == priceChangePercentage24h;
   }
 
   @override
-  int get hashCode => symbol.hashCode ^ price.hashCode ^ priceChangePercentage24h.hashCode;
+  int get hashCode =>
+      symbol.hashCode ^ price.hashCode ^ priceChangePercentage24h.hashCode;
 }
