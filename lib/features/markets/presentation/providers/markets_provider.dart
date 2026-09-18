@@ -6,6 +6,8 @@ import 'package:wallet/core/network/dio_client.dart';
 import 'package:wallet/features/markets/data/sources/binance_websocket_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
 
+import 'dart:async';
+
 part 'markets_provider.g.dart';
 
 @riverpod
@@ -36,9 +38,27 @@ MarketRepository marketRepository(Ref ref) {
 }
 
 @riverpod
-Stream<TickerUpdateEntity> tickerUpdate(Ref ref, String symbol) {
-  final repository = ref.watch(marketRepositoryProvider);
-  return repository.getLiveTickerStream().where((update) => update.symbol == symbol);
+class LivePrices extends _$LivePrices {
+  StreamSubscription? _subscription;
+
+  @override
+  Map<String, TickerUpdateEntity> build() {
+    final repository = ref.watch(marketRepositoryProvider);
+    
+    _subscription = repository.getLiveTickerStream().listen((updates) {
+      final newMap = Map<String, TickerUpdateEntity>.from(state);
+      for (final update in updates) {
+        newMap[update.symbol] = update;
+      }
+      state = newMap;
+    });
+
+    ref.onDispose(() {
+      _subscription?.cancel();
+    });
+
+    return {};
+  }
 }
 
 @riverpod
