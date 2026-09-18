@@ -16,13 +16,14 @@ class DepositInputView extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header with close button
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header with close button
           Row(
             children: [
               Text(
@@ -42,10 +43,6 @@ class DepositInputView extends StatelessWidget {
           // Fixed Asset (Tether)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(16),
-            ),
             child: Row(
               children: [
                 const CircleAvatar(
@@ -162,6 +159,6 @@ class DepositInputView extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
