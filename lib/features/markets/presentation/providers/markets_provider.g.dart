@@ -98,6 +98,55 @@ final class CoinGeckoApiServiceProvider
 String _$coinGeckoApiServiceHash() =>
     r'8526d98bf0c2a78dadf0c27ab962a40a0e8fa556';
 
+@ProviderFor(binanceWebSocketDataSource)
+final binanceWebSocketDataSourceProvider =
+    BinanceWebSocketDataSourceProvider._();
+
+final class BinanceWebSocketDataSourceProvider
+    extends
+        $FunctionalProvider<
+          BinanceWebSocketDataSource,
+          BinanceWebSocketDataSource,
+          BinanceWebSocketDataSource
+        >
+    with $Provider<BinanceWebSocketDataSource> {
+  BinanceWebSocketDataSourceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'binanceWebSocketDataSourceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$binanceWebSocketDataSourceHash();
+
+  @$internal
+  @override
+  $ProviderElement<BinanceWebSocketDataSource> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  BinanceWebSocketDataSource create(Ref ref) {
+    return binanceWebSocketDataSource(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(BinanceWebSocketDataSource value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<BinanceWebSocketDataSource>(value),
+    );
+  }
+}
+
+String _$binanceWebSocketDataSourceHash() =>
+    r'4f5c8ccbd0c85fa7198ebc27391fd5d71cf6c352';
+
 @ProviderFor(marketRepository)
 final marketRepositoryProvider = MarketRepositoryProvider._();
 
@@ -142,7 +191,84 @@ final class MarketRepositoryProvider
   }
 }
 
-String _$marketRepositoryHash() => r'6d5b0ae6f61ad1b139f581f31c466d72f64efcc0';
+String _$marketRepositoryHash() => r'ac5815d1ec0c491a38eab0a2149a1681544e9647';
+
+@ProviderFor(tickerUpdate)
+final tickerUpdateProvider = TickerUpdateFamily._();
+
+final class TickerUpdateProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TickerUpdateEntity>,
+          TickerUpdateEntity,
+          Stream<TickerUpdateEntity>
+        >
+    with
+        $FutureModifier<TickerUpdateEntity>,
+        $StreamProvider<TickerUpdateEntity> {
+  TickerUpdateProvider._({
+    required TickerUpdateFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'tickerUpdateProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$tickerUpdateHash();
+
+  @override
+  String toString() {
+    return r'tickerUpdateProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<TickerUpdateEntity> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<TickerUpdateEntity> create(Ref ref) {
+    final argument = this.argument as String;
+    return tickerUpdate(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TickerUpdateProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$tickerUpdateHash() => r'6e82f3cceb23d9440ac624ad66bd847b467e48a2';
+
+final class TickerUpdateFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<TickerUpdateEntity>, String> {
+  TickerUpdateFamily._()
+    : super(
+        retry: null,
+        name: r'tickerUpdateProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  TickerUpdateProvider call(String symbol) =>
+      TickerUpdateProvider._(argument: symbol, from: this);
+
+  @override
+  String toString() => r'tickerUpdateProvider';
+}
 
 @ProviderFor(Markets)
 final marketsProvider = MarketsProvider._();

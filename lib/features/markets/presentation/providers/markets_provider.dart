@@ -3,6 +3,8 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
 import 'package:wallet/features/markets/data/repositories/market_repository.dart';
 import 'package:wallet/core/network/dio_client.dart';
+import 'package:wallet/features/markets/data/sources/binance_websocket_datasource.dart';
+import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
 
 part 'markets_provider.g.dart';
 
@@ -18,9 +20,25 @@ CoinGeckoApiService coinGeckoApiService(Ref ref) {
 }
 
 @riverpod
+BinanceWebSocketDataSource binanceWebSocketDataSource(Ref ref) {
+  final dataSource = BinanceWebSocketDataSource();
+  ref.onDispose(() {
+    dataSource.dispose();
+  });
+  return dataSource;
+}
+
+@riverpod
 MarketRepository marketRepository(Ref ref) {
   final apiService = ref.watch(coinGeckoApiServiceProvider);
-  return MarketRepository(apiService);
+  final wsDataSource = ref.watch(binanceWebSocketDataSourceProvider);
+  return MarketRepository(apiService, wsDataSource);
+}
+
+@riverpod
+Stream<TickerUpdateEntity> tickerUpdate(Ref ref, String symbol) {
+  final repository = ref.watch(marketRepositoryProvider);
+  return repository.getLiveTickerStream().where((update) => update.symbol == symbol);
 }
 
 @riverpod
