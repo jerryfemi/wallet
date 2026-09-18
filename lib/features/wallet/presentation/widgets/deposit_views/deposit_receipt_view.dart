@@ -22,10 +22,11 @@ class DepositReceiptView extends StatelessWidget {
     final formattedAmount = NumberFormat.currency(symbol: '\$').format(amount);
     final formattedDate = DateFormat('MMM d, y, h:mm a').format(depositTime);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Receipt Header
@@ -111,13 +112,9 @@ class DepositReceiptView extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // Transaction details card
+          // Receipt Details Card
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(16),
-            ),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 ReceiptRow(label: 'Type', value: 'Deposit'),
@@ -188,6 +185,6 @@ class DepositReceiptView extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
