@@ -44,7 +44,7 @@ class WalletScreen extends HookConsumerWidget {
                         height: 44,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: theme.colorScheme.surfaceContainerHighest,
+                          color: theme.colorScheme.surfaceContainer,
                           border: Border.all(
                             color: theme.colorScheme.outlineVariant,
                           ),
