@@ -13,7 +13,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:wallet/firebase_options.dart';
 
 void main() async {
-  DevicePreview.enable(enabled: kDebugMode);
+  try {
+    DevicePreview.enable(enabled: kDebugMode);
+  } catch (e) {
+    // Ignore binding assertion errors during hot restart on web
+  }
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
