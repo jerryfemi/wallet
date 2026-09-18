@@ -21,7 +21,7 @@ class TotalBalanceCard extends HookConsumerWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
