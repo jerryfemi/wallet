@@ -37,19 +37,19 @@ class DepositBottomSheet extends HookConsumerWidget {
         final controller = StupidSimpleSheetController.maybeOf<void>(context);
         if (controller == null) return;
 
-        double target = 0.55;
+        double target = 0.70;
         switch (stage.value) {
           case DepositStage.input:
-            target = 0.55;
+            target = 0.70;
             break;
           case DepositStage.processing:
-            target = 0.35;
+            target = 0.45;
             break;
           case DepositStage.success:
-            target = 0.55;
+            target = 0.70;
             break;
           case DepositStage.receipt:
-            target = 0.9;
+            target = 0.95;
             break;
         }
 
