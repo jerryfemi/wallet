@@ -28,13 +28,10 @@ class MarketRepository {
     }).toList();
   }
 
-  /// Exposes a stream of [TickerUpdateEntity] representing live price ticks.
-  /// It flattens the list of incoming tickers into individual updates.
-  Stream<TickerUpdateEntity> getLiveTickerStream() async* {
-    await for (final models in _binanceWebSocketDataSource.liveTickerStream) {
-      for (final model in models) {
-        yield model.toEntity();
-      }
-    }
+  /// Exposes a stream of [TickerUpdateEntity] lists representing live price ticks.
+  Stream<List<TickerUpdateEntity>> getLiveTickerStream() {
+    return _binanceWebSocketDataSource.liveTickerStream.map((models) {
+      return models.map((m) => m.toEntity()).toList();
+    });
   }
 }
