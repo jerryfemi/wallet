@@ -11,6 +11,9 @@ class TradingSheet extends StatelessWidget {
   static Future<T?> show<T>(BuildContext context, {required Widget child}) {
     return Navigator.of(context, rootNavigator: true).push(
       StupidSimpleCupertinoSheetRoute<T>(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
         snappingConfig: SheetSnappingConfig([0.5, 0.9], initialSnap: 0.5),
         child: TradingSheet(child: child),
       ),
@@ -23,11 +26,9 @@ class TradingSheet extends StatelessWidget {
       bottom: false,
       left: false,
       right: false,
-      child: SheetBackground(
-        child: Material(
-          type: MaterialType.transparency,
-          child: SafeArea(top: false, child: child),
-        ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: SafeArea(top: false, child: child),
       ),
     );
   }
