@@ -68,7 +68,7 @@ class MarketsScreen extends HookConsumerWidget {
                       filled: true,
                       fillColor: Theme.of(context)
                           .colorScheme
-                          .surfaceContainerHighest
+                          .surfaceContainer
                           .withValues(alpha: 0.5),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -263,7 +263,7 @@ class _FilterPill extends HookConsumerWidget {
         decoration: BoxDecoration(
           color: isActive
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceContainerHighest
+              : Theme.of(context).colorScheme.surfaceContainer
                     .withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
