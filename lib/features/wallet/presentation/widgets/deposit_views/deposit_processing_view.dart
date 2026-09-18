@@ -16,8 +16,8 @@ class DepositProcessingView extends StatelessWidget {
         children: [
           const Center(
             child: SizedBox(
-              width: 56,
-              height: 56,
+              width: 40,
+              height: 40,
               child: CircularProgressIndicator(strokeWidth: 3),
             ),
           ),
