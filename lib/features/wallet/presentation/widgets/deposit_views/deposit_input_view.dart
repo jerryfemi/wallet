@@ -43,6 +43,10 @@ class DepositInputView extends StatelessWidget {
           // Fixed Asset (Tether)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Row(
               children: [
                 const CircleAvatar(

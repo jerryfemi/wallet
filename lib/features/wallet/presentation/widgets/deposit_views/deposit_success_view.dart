@@ -1,10 +1,12 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
 
-class DepositSuccessView extends StatefulWidget {
+class DepositSuccessView extends HookWidget {
   final double amount;
   final String referenceNumber;
   final DateTime depositTime;
@@ -19,31 +21,63 @@ class DepositSuccessView extends StatefulWidget {
   });
 
   @override
-  State<DepositSuccessView> createState() => _DepositSuccessViewState();
-}
-
-class _DepositSuccessViewState extends State<DepositSuccessView> {
-  late ConfettiController _confettiController;
-
-  @override
-  void initState() {
-    super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 1));
-    _confettiController.play();
-  }
-
-  @override
-  void dispose() {
-    _confettiController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final confettiController = useMemoized(
+      () => ConfettiController(duration: const Duration(milliseconds: 1500)),
+    );
+
+    useEffect(() {
+      confettiController.play();
+
+      final overlayEntry = OverlayEntry(
+        builder: (context) {
+          return Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: confettiController,
+                blastDirectionality:
+                    BlastDirectionality.explosive, // Explodes in all directions
+                emissionFrequency: 0.05,
+                numberOfParticles: 40,
+                maxBlastForce: 20,
+                minBlastForce: 5,
+                gravity: 0.1,
+                minimumSize: const Size(5, 5),
+                maximumSize: const Size(12, 12),
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple,
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      // Wait a tiny bit for the build to finish before inserting the overlay
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          Overlay.of(context).insert(overlayEntry);
+        }
+      });
+
+      return () {
+        overlayEntry.remove();
+        confettiController.dispose();
+      };
+    }, const []);
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final formattedAmount = NumberFormat.currency(symbol: '\$').format(widget.amount);
-    final formattedDate = DateFormat('MMM d, y, h:mm a').format(widget.depositTime);
+    final formattedAmount = NumberFormat.currency(symbol: '\$').format(amount);
+    final formattedDate = DateFormat('MMM d, y, h:mm a').format(depositTime);
 
     return Stack(
       alignment: Alignment.topCenter,
@@ -57,10 +91,11 @@ class _DepositSuccessViewState extends State<DepositSuccessView> {
               children: [
                 // Success Icon
                 Center(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.green.shade600,
-                    radius: 28,
-                    child: const Icon(Icons.check, color: Colors.white, size: 32),
+                  child: Lottie.asset(
+                    'assets/lottie/Success.json',
+                    width: 80,
+                    height: 80,
+                    repeat: false,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -88,7 +123,7 @@ class _DepositSuccessViewState extends State<DepositSuccessView> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      ReceiptRow(label: 'Reference', value: widget.referenceNumber),
+                      ReceiptRow(label: 'Reference', value: referenceNumber),
                       const SizedBox(height: 12),
                       ReceiptRow(label: 'Date', value: formattedDate),
                     ],
@@ -105,7 +140,7 @@ class _DepositSuccessViewState extends State<DepositSuccessView> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: widget.onViewReceipt,
+                  onPressed: onViewReceipt,
                   child: const Text(
                     'View Receipt',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -133,13 +168,6 @@ class _DepositSuccessViewState extends State<DepositSuccessView> {
               ],
             ),
           ),
-        ),
-        ConfettiWidget(
-          confettiController: _confettiController,
-          blastDirectionality: BlastDirectionality.explosive,
-          shouldLoop: false,
-          colors: const [Colors.green, Colors.blue, Colors.pink, Colors.orange, Colors.purple],
-          gravity: 0.1,
         ),
       ],
     );
