@@ -25,7 +25,7 @@ class TopMoverChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
