@@ -115,6 +115,10 @@ class DepositReceiptView extends StatelessWidget {
           // Receipt Details Card
           Container(
             padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Column(
               children: [
                 ReceiptRow(label: 'Type', value: 'Deposit'),
@@ -134,7 +138,7 @@ class DepositReceiptView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colorScheme.surface,
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
