@@ -193,81 +193,66 @@ final class MarketRepositoryProvider
 
 String _$marketRepositoryHash() => r'ac5815d1ec0c491a38eab0a2149a1681544e9647';
 
-@ProviderFor(tickerUpdate)
-final tickerUpdateProvider = TickerUpdateFamily._();
+@ProviderFor(LivePrices)
+final livePricesProvider = LivePricesProvider._();
 
-final class TickerUpdateProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<TickerUpdateEntity>,
-          TickerUpdateEntity,
-          Stream<TickerUpdateEntity>
-        >
-    with
-        $FutureModifier<TickerUpdateEntity>,
-        $StreamProvider<TickerUpdateEntity> {
-  TickerUpdateProvider._({
-    required TickerUpdateFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'tickerUpdateProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+final class LivePricesProvider
+    extends $NotifierProvider<LivePrices, Map<String, TickerUpdateEntity>> {
+  LivePricesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'livePricesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
-  String debugGetCreateSourceHash() => _$tickerUpdateHash();
-
-  @override
-  String toString() {
-    return r'tickerUpdateProvider'
-        ''
-        '($argument)';
-  }
+  String debugGetCreateSourceHash() => _$livePricesHash();
 
   @$internal
   @override
-  $StreamProviderElement<TickerUpdateEntity> $createElement(
-    $ProviderPointer pointer,
-  ) => $StreamProviderElement(pointer);
+  LivePrices create() => LivePrices();
 
-  @override
-  Stream<TickerUpdateEntity> create(Ref ref) {
-    final argument = this.argument as String;
-    return tickerUpdate(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is TickerUpdateProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, TickerUpdateEntity> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, TickerUpdateEntity>>(
+        value,
+      ),
+    );
   }
 }
 
-String _$tickerUpdateHash() => r'6e82f3cceb23d9440ac624ad66bd847b467e48a2';
+String _$livePricesHash() => r'b99b9e815b320d81dc53394e38141567e1058699';
 
-final class TickerUpdateFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<TickerUpdateEntity>, String> {
-  TickerUpdateFamily._()
-    : super(
-        retry: null,
-        name: r'tickerUpdateProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  TickerUpdateProvider call(String symbol) =>
-      TickerUpdateProvider._(argument: symbol, from: this);
-
+abstract class _$LivePrices extends $Notifier<Map<String, TickerUpdateEntity>> {
+  Map<String, TickerUpdateEntity> build();
+  @$mustCallSuper
   @override
-  String toString() => r'tickerUpdateProvider';
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              Map<String, TickerUpdateEntity>,
+              Map<String, TickerUpdateEntity>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                Map<String, TickerUpdateEntity>,
+                Map<String, TickerUpdateEntity>
+              >,
+              Map<String, TickerUpdateEntity>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
 }
 
 @ProviderFor(Markets)
