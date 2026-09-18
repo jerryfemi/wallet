@@ -116,7 +116,7 @@ class DepositReceiptView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -138,7 +138,7 @@ class DepositReceiptView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
