@@ -94,7 +94,7 @@ class HomeScreen extends HookConsumerWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            color: Theme.of(context).colorScheme.surfaceContainer,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Column(
