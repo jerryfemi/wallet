@@ -74,7 +74,7 @@ class _ActionBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
+            color: colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Column(
