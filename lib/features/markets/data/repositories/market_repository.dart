@@ -1,14 +1,14 @@
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/data/models/coin_model.dart';
 import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
-import 'package:wallet/features/markets/data/sources/binance_websocket_datasource.dart';
+import 'package:wallet/features/markets/data/sources/coinbase_websocket_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
 
 class MarketRepository {
   final CoinGeckoApiService _apiService;
-  final BinanceWebSocketDataSource _binanceWebSocketDataSource;
+  final CoinbaseWebSocketDataSource _webSocketDataSource;
 
-  MarketRepository(this._apiService, this._binanceWebSocketDataSource);
+  MarketRepository(this._apiService, this._webSocketDataSource);
 
   Future<List<CoinEntity>> getTopCoins() async {
     final List<CoinModel> models = await _apiService.getTopCoins();
@@ -31,8 +31,10 @@ class MarketRepository {
 
   /// Exposes a stream of [TickerUpdateEntity] lists representing live price ticks.
   Stream<List<TickerUpdateEntity>> getLiveTickerStream() {
-    return _binanceWebSocketDataSource.liveTickerStream.map((models) {
-      return models.map((m) => m.toEntity()).toList();
-    });
+    return _webSocketDataSource.liveTickerStream;
+  }
+  
+  void subscribeToLiveTickers(List<String> symbols) {
+    _webSocketDataSource.subscribeToSymbols(symbols);
   }
 }
