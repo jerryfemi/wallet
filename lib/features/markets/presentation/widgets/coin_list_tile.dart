@@ -20,7 +20,7 @@ class CoinListTile extends HookConsumerWidget {
     // Select precisely this coin's update from the massive Map.
     // Riverpod's `select` ensures this tile ONLY rebuilds if its specific coin's price changes!
     final ticker = ref.watch(
-      livePricesProvider.select((map) => map[coin.symbol.toLowerCase()]),
+      livePricesProvider.select((map) => map[coin.symbol.toUpperCase()]),
     );
 
     final currentPrice = ticker?.price ?? coin.currentPrice;
@@ -34,7 +34,7 @@ class CoinListTile extends HookConsumerWidget {
     final flashColor = useState<Color?>(null);
 
     ref.listen(
-      livePricesProvider.select((map) => map[coin.symbol.toLowerCase()]),
+      livePricesProvider.select((map) => map[coin.symbol.toUpperCase()]),
       (previous, next) {
       final nextPrice = next?.price;
       final prevPrice = previous?.price ?? coin.currentPrice;
