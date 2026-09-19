@@ -44,6 +44,7 @@ class CustomSheet extends StatelessWidget {
   }) {
     return Navigator.of(context, rootNavigator: true).push(
       StupidSimpleCupertinoSheetRoute(
+        snappingConfig: SheetSnappingConfig([0.5]),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
