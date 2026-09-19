@@ -5,25 +5,27 @@ import 'package:decimal/decimal.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
 
 class CoinbaseWebSocketDataSource {
-  static const String _url = 'wss://ws-feed.exchange.coinbase.com';
+  static const String _url = 'wss://advanced-trade-ws.coinbase.com';
   WebSocketChannel? _channel;
   Stream<List<TickerUpdateEntity>>? _broadcastStream;
   bool _isConnected = false;
 
-  void subscribeToSymbols(List<String> symbols) {
+  Future<void> subscribeToSymbols(List<String> symbols) async {
     if (symbols.isEmpty) return;
 
-    // Coinbase uses pairs like "BTC-USD"
-    final productIds = symbols.map((s) => '$s-USD').toList();
-
-    final subscribeMsg = {
-      "type": "subscribe",
-      "product_ids": productIds,
-      "channels": ["ticker"],
-    };
-
     _channel ??= WebSocketChannel.connect(Uri.parse(_url));
-    _channel!.sink.add(jsonEncode(subscribeMsg));
+
+    // Subscribe to each coin individually with a small delay to avoid hitting 
+    // Coinbase's burst rate limits (which causes them to drop the connection).
+    for (final s in symbols) {
+      final subscribeMsg = {
+        "type": "subscribe",
+        "product_ids": ["$s-USD"],
+        "channels": ["ticker", "heartbeat"],
+      };
+      _channel!.sink.add(jsonEncode(subscribeMsg));
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
   }
 
   Stream<List<TickerUpdateEntity>> get liveTickerStream {
