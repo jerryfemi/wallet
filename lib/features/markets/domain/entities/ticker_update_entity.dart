@@ -1,14 +1,14 @@
 import 'package:decimal/decimal.dart';
 
 class TickerUpdateEntity {
-  final String symbol;
+  final String symbol; // We will use this to store the CoinGecko 'id' (e.g. "bitcoin")
   final Decimal price;
-  final Decimal priceChangePercentage24h;
+  final Decimal? priceChangePercentage24h;
 
   const TickerUpdateEntity({
     required this.symbol,
     required this.price,
-    required this.priceChangePercentage24h,
+    this.priceChangePercentage24h,
   });
 
   @override
