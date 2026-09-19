@@ -37,43 +37,38 @@ MarketRepository marketRepository(Ref ref) {
   return MarketRepository(apiService, wsDataSource);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class LivePrices extends _$LivePrices {
-  StreamSubscription? _subscription;
-
   @override
   Map<String, TickerUpdateEntity> build() {
     final repository = ref.watch(marketRepositoryProvider);
-    
-    // Coinbase requires us to subscribe to specific pairs!
-    // We watch the marketsProvider to get the loaded coins.
-    final marketsState = ref.watch(marketsProvider);
-    if (marketsState is AsyncData<List<CoinEntity>>) {
-      final coins = marketsState.value;
-      final symbols = coins.map((c) => c.symbol.toUpperCase()).toList();
-      repository.subscribeToLiveTickers(symbols);
-    }
 
-    _subscription = repository.getLiveTickerStream().listen((updates) {
-      final newMap = Map<String, TickerUpdateEntity>.from(state);
+    final subscription = repository.getLiveTickerStream().listen((updates) {
+      final next = Map<String, TickerUpdateEntity>.from(state);
       for (final update in updates) {
-        // Since Coinbase ticker channel doesn't provide the 24h% change live,
-        // we merge the new price with the old percentage from state (if it exists)
-        final existing = newMap[update.symbol];
-        newMap[update.symbol] = TickerUpdateEntity(
+        next[update.symbol] = TickerUpdateEntity(
           symbol: update.symbol,
           price: update.price,
-          priceChangePercentage24h: update.priceChangePercentage24h ?? existing?.priceChangePercentage24h,
+          // Fall back to the last known % if a tick didn't carry one.
+          priceChangePercentage24h:
+              update.priceChangePercentage24h ??
+              next[update.symbol]?.priceChangePercentage24h,
         );
       }
-      state = newMap;
+      state = next;
     });
+    ref.onDispose(subscription.cancel);
 
-    ref.onDispose(() {
-      _subscription?.cancel();
-    });
+    // listen, NOT watch: a markets refresh (AsyncLoading -> AsyncData) must not
+    // rebuild this notifier, otherwise it resets the price map to {} and
+    // re-subscribes every time.
+    ref.listen<AsyncValue<List<CoinEntity>>>(marketsProvider, (_, next) {
+      final coins = next.value;
+      if (coins == null) return;
+      repository.subscribeToLiveTickers(coins.map((c) => c.symbol).toList());
+    }, fireImmediately: true);
 
-    return {};
+    return const <String, TickerUpdateEntity>{};
   }
 }
 

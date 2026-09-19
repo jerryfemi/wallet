@@ -204,7 +204,7 @@ final class LivePricesProvider
         argument: null,
         retry: null,
         name: r'livePricesProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -227,7 +227,7 @@ final class LivePricesProvider
   }
 }
 
-String _$livePricesHash() => r'84a0b7f6bc50b0ffe38f41f497445c64a467e353';
+String _$livePricesHash() => r'b719cd0359873ee1ce38781805f9b59336959123';
 
 abstract class _$LivePrices extends $Notifier<Map<String, TickerUpdateEntity>> {
   Map<String, TickerUpdateEntity> build();
