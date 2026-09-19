@@ -66,9 +66,7 @@ class MarketsScreen extends HookConsumerWidget {
                         size: 20,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainer
+                      fillColor: Theme.of(context).colorScheme.surfaceContainer
                           .withValues(alpha: 0.5),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -206,8 +204,11 @@ class MarketsScreen extends HookConsumerWidget {
                         const SizedBox(height: 8),
                         Text(
                           'Please check your connection and pull to refresh.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                           textAlign: TextAlign.center,
                         ),
