@@ -98,54 +98,54 @@ final class CoinGeckoApiServiceProvider
 String _$coinGeckoApiServiceHash() =>
     r'8526d98bf0c2a78dadf0c27ab962a40a0e8fa556';
 
-@ProviderFor(binanceWebSocketDataSource)
-final binanceWebSocketDataSourceProvider =
-    BinanceWebSocketDataSourceProvider._();
+@ProviderFor(coinbaseWebSocketDataSource)
+final coinbaseWebSocketDataSourceProvider =
+    CoinbaseWebSocketDataSourceProvider._();
 
-final class BinanceWebSocketDataSourceProvider
+final class CoinbaseWebSocketDataSourceProvider
     extends
         $FunctionalProvider<
-          BinanceWebSocketDataSource,
-          BinanceWebSocketDataSource,
-          BinanceWebSocketDataSource
+          CoinbaseWebSocketDataSource,
+          CoinbaseWebSocketDataSource,
+          CoinbaseWebSocketDataSource
         >
-    with $Provider<BinanceWebSocketDataSource> {
-  BinanceWebSocketDataSourceProvider._()
+    with $Provider<CoinbaseWebSocketDataSource> {
+  CoinbaseWebSocketDataSourceProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'binanceWebSocketDataSourceProvider',
+        name: r'coinbaseWebSocketDataSourceProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$binanceWebSocketDataSourceHash();
+  String debugGetCreateSourceHash() => _$coinbaseWebSocketDataSourceHash();
 
   @$internal
   @override
-  $ProviderElement<BinanceWebSocketDataSource> $createElement(
+  $ProviderElement<CoinbaseWebSocketDataSource> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  BinanceWebSocketDataSource create(Ref ref) {
-    return binanceWebSocketDataSource(ref);
+  CoinbaseWebSocketDataSource create(Ref ref) {
+    return coinbaseWebSocketDataSource(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(BinanceWebSocketDataSource value) {
+  Override overrideWithValue(CoinbaseWebSocketDataSource value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<BinanceWebSocketDataSource>(value),
+      providerOverride: $SyncValueProvider<CoinbaseWebSocketDataSource>(value),
     );
   }
 }
 
-String _$binanceWebSocketDataSourceHash() =>
-    r'4f5c8ccbd0c85fa7198ebc27391fd5d71cf6c352';
+String _$coinbaseWebSocketDataSourceHash() =>
+    r'30d7c38e8d3faa325fe56e17aa7d7e159b8fe3fb';
 
 @ProviderFor(marketRepository)
 final marketRepositoryProvider = MarketRepositoryProvider._();
@@ -191,7 +191,7 @@ final class MarketRepositoryProvider
   }
 }
 
-String _$marketRepositoryHash() => r'ac5815d1ec0c491a38eab0a2149a1681544e9647';
+String _$marketRepositoryHash() => r'baf3119c160d85ddff7c7470c62f3cee7575f5ad';
 
 @ProviderFor(LivePrices)
 final livePricesProvider = LivePricesProvider._();
@@ -227,7 +227,7 @@ final class LivePricesProvider
   }
 }
 
-String _$livePricesHash() => r'b99b9e815b320d81dc53394e38141567e1058699';
+String _$livePricesHash() => r'84a0b7f6bc50b0ffe38f41f497445c64a467e353';
 
 abstract class _$LivePrices extends $Notifier<Map<String, TickerUpdateEntity>> {
   Map<String, TickerUpdateEntity> build();

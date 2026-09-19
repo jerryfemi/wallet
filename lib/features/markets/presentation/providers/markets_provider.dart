@@ -3,7 +3,7 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
 import 'package:wallet/features/markets/data/repositories/market_repository.dart';
 import 'package:wallet/core/network/dio_client.dart';
-import 'package:wallet/features/markets/data/sources/binance_websocket_datasource.dart';
+import 'package:wallet/features/markets/data/sources/coinbase_websocket_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
 
 import 'dart:async';
@@ -22,8 +22,8 @@ CoinGeckoApiService coinGeckoApiService(Ref ref) {
 }
 
 @riverpod
-BinanceWebSocketDataSource binanceWebSocketDataSource(Ref ref) {
-  final dataSource = BinanceWebSocketDataSource();
+CoinbaseWebSocketDataSource coinbaseWebSocketDataSource(Ref ref) {
+  final dataSource = CoinbaseWebSocketDataSource();
   ref.onDispose(() {
     dataSource.dispose();
   });
@@ -33,7 +33,7 @@ BinanceWebSocketDataSource binanceWebSocketDataSource(Ref ref) {
 @riverpod
 MarketRepository marketRepository(Ref ref) {
   final apiService = ref.watch(coinGeckoApiServiceProvider);
-  final wsDataSource = ref.watch(binanceWebSocketDataSourceProvider);
+  final wsDataSource = ref.watch(coinbaseWebSocketDataSourceProvider);
   return MarketRepository(apiService, wsDataSource);
 }
 
@@ -45,10 +45,26 @@ class LivePrices extends _$LivePrices {
   Map<String, TickerUpdateEntity> build() {
     final repository = ref.watch(marketRepositoryProvider);
     
+    // Coinbase requires us to subscribe to specific pairs!
+    // We watch the marketsProvider to get the loaded coins.
+    final marketsState = ref.watch(marketsProvider);
+    if (marketsState is AsyncData<List<CoinEntity>>) {
+      final coins = marketsState.value;
+      final symbols = coins.map((c) => c.symbol.toUpperCase()).toList();
+      repository.subscribeToLiveTickers(symbols);
+    }
+
     _subscription = repository.getLiveTickerStream().listen((updates) {
       final newMap = Map<String, TickerUpdateEntity>.from(state);
       for (final update in updates) {
-        newMap[update.symbol] = update;
+        // Since Coinbase ticker channel doesn't provide the 24h% change live,
+        // we merge the new price with the old percentage from state (if it exists)
+        final existing = newMap[update.symbol];
+        newMap[update.symbol] = TickerUpdateEntity(
+          symbol: update.symbol,
+          price: update.price,
+          priceChangePercentage24h: update.priceChangePercentage24h ?? existing?.priceChangePercentage24h,
+        );
       }
       state = newMap;
     });
