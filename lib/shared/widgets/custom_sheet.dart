@@ -42,8 +42,11 @@ class CustomSheet extends StatelessWidget {
     String buttonText = 'Continue',
     VoidCallback? onPressed,
   }) {
-    return Navigator.of(context).push(
-      StupidSimpleSheetRoute(
+    return Navigator.of(context, rootNavigator: true).push(
+      StupidSimpleCupertinoSheetRoute(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
         child: CustomSheet(
           title: title,
           message: message,
@@ -59,51 +62,49 @@ class CustomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      child: SheetBackground(
-        child: Material(
-          type: MaterialType.transparency,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Lottie.asset(
-                    type.animationPath,
-                    width: 120,
-                    height: 120,
-                    repeat: false,
+      child: Material(
+        type: MaterialType.transparency,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Lottie.asset(
+                  type.animationPath,
+                  width: 120,
+                  height: 120,
+                  repeat: false,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge?.color
+                        ?.withValues(alpha: 0.7),
+                    height: 1.5,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge?.color
-                          ?.withValues(alpha: 0.7),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  AppButton(
-                    text: buttonText,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      if (onPressed != null) {
-                        onPressed!();
-                      }
-                    },
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 32),
+                AppButton(
+                  text: buttonText,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    if (onPressed != null) {
+                      onPressed!();
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
