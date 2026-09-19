@@ -37,4 +37,8 @@ class MarketRepository {
   void subscribeToLiveTickers(List<String> symbols) {
     _webSocketDataSource.subscribeToSymbols(symbols);
   }
+  
+  void reconnectLiveTickers() {
+    _webSocketDataSource.reconnect();
+  }
 }
