@@ -175,7 +175,7 @@ final class PortfolioAssetsProvider
   }
 }
 
-String _$portfolioAssetsHash() => r'701dce2d56e3c99a4bd62f0e550fad10145645d5';
+String _$portfolioAssetsHash() => r'e5de7b8711b0bd81390217c2fd39f19707641563';
 
 @ProviderFor(portfolioTotalValue)
 final portfolioTotalValueProvider = PortfolioTotalValueProvider._();
