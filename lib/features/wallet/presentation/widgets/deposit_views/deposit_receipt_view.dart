@@ -159,7 +159,7 @@ class DepositReceiptView extends StatelessWidget {
               ),
             ),
 
-            const Spacer(),
+            const SizedBox(height: 12),
 
             // Share Receipt
             OutlinedButton(
@@ -178,7 +178,7 @@ class DepositReceiptView extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12),
+            const Spacer(),
 
             // Done
             ElevatedButton(
