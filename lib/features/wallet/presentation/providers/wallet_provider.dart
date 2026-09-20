@@ -81,6 +81,11 @@ Future<List<PortfolioAsset>> portfolioAssets(Ref ref) async {
 
   for (final asset in wallet.assets) {
     if (asset.coinId == 'tether') {
+      final tetherMarketCoin = markets.firstWhere(
+        (c) => c.id == 'tether',
+        orElse: () => throw Exception('Tether not found in markets'),
+      );
+
       assets.add(
         PortfolioAsset(
           coinId: asset.coinId,
@@ -89,8 +94,7 @@ Future<List<PortfolioAsset>> portfolioAssets(Ref ref) async {
           amount: asset.amount,
           fiatValue: asset.amount.toDouble(),
           changePercentage24h: 0.0,
-          imageUrl:
-              'https://assets.coingecko.com/coins/images/325/large/Tether.png',
+          imageUrl: tetherMarketCoin.imageUrl,
         ),
       );
       continue;
