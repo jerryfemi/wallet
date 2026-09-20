@@ -10,15 +10,14 @@ import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposi
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_processing_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_view.dart';
-
-enum DepositStage { input, processing, success, receipt }
+import 'package:wallet/shared/providers/trade_flow_provider.dart';
 
 class DepositBottomSheet extends HookConsumerWidget {
   const DepositBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stage = useState(DepositStage.input);
+    final flowState = ref.watch(tradeFlowProvider);
     final amountController = useTextEditingController();
     final depositedAmount = useState(0.0);
     final referenceNumber = useState('');
@@ -32,24 +31,26 @@ class DepositBottomSheet extends HookConsumerWidget {
 
     // Animate sheet height when stage changes
     useEffect(() {
-      // Use post-frame callback to ensure context is ready
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final controller = StupidSimpleSheetController.maybeOf<void>(context);
         if (controller == null) return;
 
         double target = 0.55;
-        switch (stage.value) {
-          case DepositStage.input:
+        switch (flowState.stage) {
+          case TradeFlowStage.input:
             target = 0.55;
             break;
-          case DepositStage.processing:
+          case TradeFlowStage.review:
+            target = 1.0;
+            break;
+          case TradeFlowStage.processing:
             target = 0.35;
             break;
-          case DepositStage.success:
+          case TradeFlowStage.success:
             target = 0.55;
             break;
-          case DepositStage.receipt:
-            target = 0.95;
+          case TradeFlowStage.receipt:
+            target = 1.0;
             break;
         }
 
@@ -59,10 +60,10 @@ class DepositBottomSheet extends HookConsumerWidget {
         );
       });
       return null;
-    }, [stage.value]);
+    }, [flowState.stage]);
 
     Future<void> onDepositSubmit(double amount) async {
-      stage.value = DepositStage.processing;
+      ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.processing);
 
       // Simulate processing delay
       await Future.delayed(const Duration(seconds: 2));
@@ -71,7 +72,7 @@ class DepositBottomSheet extends HookConsumerWidget {
       referenceNumber.value = generateRef();
       depositTime.value = DateTime.now();
 
-      stage.value = DepositStage.success;
+      ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
 
       // Update the actual balance after showing success
       await Future.delayed(const Duration(milliseconds: 300));
@@ -84,7 +85,8 @@ class DepositBottomSheet extends HookConsumerWidget {
       switchOutCurve: Curves.easeIn,
       child: _buildCurrentStage(
         context,
-        stage: stage,
+        stage: flowState.stage,
+        ref: ref,
         amountController: amountController,
         depositedAmount: depositedAmount.value,
         referenceNumber: referenceNumber.value,
@@ -96,31 +98,33 @@ class DepositBottomSheet extends HookConsumerWidget {
 
   Widget _buildCurrentStage(
     BuildContext context, {
-    required ValueNotifier<DepositStage> stage,
+    required TradeFlowStage stage,
+    required WidgetRef ref,
     required TextEditingController amountController,
     required double depositedAmount,
     required String referenceNumber,
     required DateTime depositTime,
     required Future<void> Function(double) onSubmit,
   }) {
-    switch (stage.value) {
-      case DepositStage.input:
+    switch (stage) {
+      case TradeFlowStage.input:
         return DepositInputView(
           key: const ValueKey('input'),
           amountController: amountController,
           onSubmit: onSubmit,
         );
-      case DepositStage.processing:
+      case TradeFlowStage.review:
+      case TradeFlowStage.processing:
         return const DepositProcessingView(key: ValueKey('processing'));
-      case DepositStage.success:
+      case TradeFlowStage.success:
         return DepositSuccessView(
           key: const ValueKey('success'),
           amount: depositedAmount,
           referenceNumber: referenceNumber,
           depositTime: depositTime,
-          onViewReceipt: () => stage.value = DepositStage.receipt,
+          onViewReceipt: () => ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.receipt),
         );
-      case DepositStage.receipt:
+      case TradeFlowStage.receipt:
         return DepositReceiptView(
           key: const ValueKey('receipt'),
           amount: depositedAmount,
