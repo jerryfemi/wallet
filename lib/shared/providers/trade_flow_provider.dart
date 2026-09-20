@@ -8,19 +8,27 @@ enum TradeFlowType { deposit, withdraw, buy, sell, convert }
 class TradeFlowState {
   final TradeFlowStage stage;
   final TradeFlowType type;
+  final String? selectedCoinId;
+  final double? inputAmount;
   
   const TradeFlowState({
     required this.stage,
     required this.type,
+    this.selectedCoinId,
+    this.inputAmount,
   });
 
   TradeFlowState copyWith({
     TradeFlowStage? stage,
     TradeFlowType? type,
+    String? selectedCoinId,
+    double? inputAmount,
   }) {
     return TradeFlowState(
       stage: stage ?? this.stage,
       type: type ?? this.type,
+      selectedCoinId: selectedCoinId ?? this.selectedCoinId,
+      inputAmount: inputAmount ?? this.inputAmount,
     );
   }
 }
@@ -41,5 +49,13 @@ class TradeFlow extends _$TradeFlow {
 
   void setType(TradeFlowType newType) {
     state = state.copyWith(type: newType);
+  }
+  
+  void setSelectedCoinId(String? coinId) {
+    state = state.copyWith(selectedCoinId: coinId);
+  }
+  
+  void setInputAmount(double? amount) {
+    state = state.copyWith(inputAmount: amount);
   }
 }
