@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:wallet/shared/widgets/trading_sheet.dart';
-import 'package:wallet/features/wallet/presentation/widgets/deposit_bottom_sheet.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_bottom_sheet.dart';
+import 'package:wallet/shared/providers/trade_flow_provider.dart';
 
 class QuickActionsRow extends ConsumerWidget {
   const QuickActionsRow({super.key});
@@ -17,7 +18,9 @@ class QuickActionsRow extends ConsumerWidget {
             iconAsset: 'assets/icons/deposit.svg',
             label: 'Deposit',
             onTap: () {
-              TradingSheet.show(context, child: const DepositBottomSheet());
+              ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.deposit);
+              ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.input);
+              TradingSheet.show(context, child: const TradeBottomSheet());
             },
           ),
         ),
@@ -26,7 +29,13 @@ class QuickActionsRow extends ConsumerWidget {
           child: _ActionBtn(
             iconAsset: 'assets/icons/buy.svg',
             label: 'Buy',
-            onTap: () {},
+            onTap: () {
+              ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.buy);
+              ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.input);
+              ref.read(tradeFlowProvider.notifier).setSelectedCoinId(null);
+              ref.read(tradeFlowProvider.notifier).setInputAmount(0);
+              TradingSheet.show(context, child: const TradeBottomSheet());
+            },
           ),
         ),
         const SizedBox(width: 10),
