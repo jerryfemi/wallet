@@ -22,31 +22,35 @@ class DepositReceiptView extends StatelessWidget {
     final formattedAmount = NumberFormat.currency(symbol: '\$').format(amount);
     final formattedDate = DateFormat('MMM d, y, h:mm a').format(depositTime);
 
-    return SingleChildScrollView(
+    return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Receipt Header
             Row(
               children: [
-                Text(
-                  'Receipt',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
+                  padding: EdgeInsets.zero,
+                  alignment: Alignment.centerLeft,
                 ),
+                Expanded(
+                  child: Text(
+                    'Receipt',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 40), // Balance the icon space
               ],
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // Deposit icon
             Center(
@@ -155,7 +159,7 @@ class DepositReceiptView extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const Spacer(),
 
             // Share Receipt
             OutlinedButton(
