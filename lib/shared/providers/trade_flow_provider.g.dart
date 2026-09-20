@@ -20,7 +20,7 @@ final class TradeFlowProvider
         argument: null,
         retry: null,
         name: r'tradeFlowProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +41,7 @@ final class TradeFlowProvider
   }
 }
 
-String _$tradeFlowHash() => r'34b5d48fbb1b8f20f407dad8c43a7d4539a4f67d';
+String _$tradeFlowHash() => r'44e7016fd0d5248a63ebdf49d13f1c7f057fe577';
 
 abstract class _$TradeFlow extends $Notifier<TradeFlowState> {
   TradeFlowState build();

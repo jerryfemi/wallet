@@ -33,7 +33,7 @@ class TradeFlowState {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TradeFlow extends _$TradeFlow {
   @override
   TradeFlowState build() {
