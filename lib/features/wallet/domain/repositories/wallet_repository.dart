@@ -13,4 +13,14 @@ abstract class WalletRepository {
 
   /// Simulates depositing USDT into the user's wallet
   Future<void> simulateDeposit(String userId, double amount);
+
+  /// Executes a buy or sell trade inside a transaction
+  Future<void> executeTrade({
+    required String userId,
+    required TransactionType type,
+    required String coinId,
+    required String symbol,
+    required double cryptoAmount,
+    required double executionPrice,
+  });
 }
