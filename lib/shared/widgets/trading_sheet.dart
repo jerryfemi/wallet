@@ -40,27 +40,7 @@ class TradingSheet extends StatelessWidget {
       right: false,
       child: Material(
         type: MaterialType.transparency,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag handle
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 8),
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            // Sheet content
-            Expanded(
-              child: SafeArea(top: false, child: child),
-            ),
-          ],
-        ),
+        child: SafeArea(top: false, child: child),
       ),
     );
   }
