@@ -318,9 +318,9 @@ class SellTradeView extends HookConsumerWidget {
                       executionPrice: executionPrice,
                       theme: theme,
                     )
-                  : SizedBox(
-                      height: 280, // Fixed height for keypad area
-                      child: NumericKeypad(onKeyTap: onKeyTap),
+                  : NumericKeypad(
+                      key: const ValueKey('keypad_section'),
+                      onKeyTap: onKeyTap,
                     ),
             ),
 
