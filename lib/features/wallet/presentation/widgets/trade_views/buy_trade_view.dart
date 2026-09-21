@@ -81,6 +81,9 @@ class BuyTradeView extends HookConsumerWidget {
         ? (fiatValue / executionPrice)
         : 0.0;
 
+    final isBelowMin = inputAmount > 0 && inputAmount < 1.0;
+    final isAboveMax = totalCost > usdtBalance;
+
     // Format the display amount
     final displayAmount = amountString.value.isEmpty
         ? '\$0'
@@ -218,7 +221,9 @@ class BuyTradeView extends HookConsumerWidget {
                       displayAmount,
                       style: theme.textTheme.displayMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
+                        color: (isBelowMin || isAboveMax)
+                            ? colorScheme.error
+                            : colorScheme.onSurface,
                       ),
                     ),
                     if (isReviewing) ...[
@@ -407,9 +412,12 @@ class BuyTradeView extends HookConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
+                disabledBackgroundColor:
+                    colorScheme.onSurface.withValues(alpha: 0.12),
               ),
-              onPressed: inputAmount > 0 && totalCost <= usdtBalance
-                  ? () {
+              onPressed: (inputAmount <= 0 || isBelowMin || isAboveMax)
+                  ? null
+                  : () {
                       if (!isReviewing) {
                         ref
                             .read(tradeFlowProvider.notifier)
@@ -425,12 +433,15 @@ class BuyTradeView extends HookConsumerWidget {
                           executionPrice,
                         );
                       }
-                    }
-                  : null,
+                    },
               child: Text(
-                isReviewing
-                    ? 'Confirm Buy — ${NumberFormat.currency(symbol: '\$').format(totalCost)}'
-                    : 'Continue',
+                isBelowMin
+                    ? 'Minimum \$1.00'
+                    : isAboveMax
+                        ? 'Insufficient USDT Balance'
+                        : isReviewing
+                            ? 'Confirm Buy — ${NumberFormat.currency(symbol: '\$').format(totalCost)}'
+                            : 'Continue',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
