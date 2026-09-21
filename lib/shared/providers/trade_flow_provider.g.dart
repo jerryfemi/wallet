@@ -41,7 +41,7 @@ final class TradeFlowProvider
   }
 }
 
-String _$tradeFlowHash() => r'44e7016fd0d5248a63ebdf49d13f1c7f057fe577';
+String _$tradeFlowHash() => r'061f15fc8c0139fabdcae30ab7d66ca715ff1d6c';
 
 abstract class _$TradeFlow extends $Notifier<TradeFlowState> {
   TradeFlowState build();
