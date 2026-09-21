@@ -15,6 +15,7 @@ import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposi
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_view.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/buy_trade_view.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/sell_trade_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_receipt_view.dart';
 
@@ -121,6 +122,39 @@ class TradeBottomSheet extends HookConsumerWidget {
       ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
     }
 
+    Future<void> onSellConfirm(
+      String coinId,
+      String symbol,
+      double cryptoAmount,
+      double executionPrice,
+    ) async {
+      lastCryptoAmount.value = cryptoAmount;
+      lastExecutionPrice.value = executionPrice;
+
+      // Already in processing state from the Review View
+      await Future.delayed(const Duration(seconds: 2));
+
+      referenceNumber.value = generateRef();
+      tradeTime.value = DateTime.now();
+
+      final user = ref.read(authStateProvider).value;
+      if (user != null) {
+        // Execute trade via backend repository
+        await ref
+            .read(walletRepositoryProvider)
+            .executeTrade(
+              userId: user.uid,
+              type: TransactionType.sell,
+              coinId: coinId,
+              symbol: symbol,
+              cryptoAmount: cryptoAmount,
+              executionPrice: executionPrice,
+            );
+      }
+
+      ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
+    }
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeOut,
@@ -136,6 +170,7 @@ class TradeBottomSheet extends HookConsumerWidget {
         tradeTime: tradeTime.value,
         onDepositSubmit: onDepositSubmit,
         onBuyConfirm: onBuyConfirm,
+        onSellConfirm: onSellConfirm,
       ),
     );
   }
@@ -151,6 +186,7 @@ class TradeBottomSheet extends HookConsumerWidget {
     required DateTime tradeTime,
     required Future<void> Function(double) onDepositSubmit,
     required Future<void> Function(String, String, double, double) onBuyConfirm,
+    required Future<void> Function(String, String, double, double) onSellConfirm,
   }) {
     final marketsState = ref.watch(marketsProvider);
     final markets = marketsState.value ?? [];
@@ -176,6 +212,11 @@ class TradeBottomSheet extends HookConsumerWidget {
             key: const ValueKey('buy_trade'),
             onConfirm: onBuyConfirm,
           );
+        } else if (flowState.type == TradeFlowType.sell) {
+          return SellTradeView(
+            key: const ValueKey('sell_trade'),
+            onConfirm: onSellConfirm,
+          );
         }
         return const SizedBox.shrink();
 
@@ -199,7 +240,20 @@ class TradeBottomSheet extends HookConsumerWidget {
             type: flowState.type,
             title: 'Buy Successful',
             message:
-                '${lastCryptoAmount.toStringAsFixed(6)} ${selectedCoin.symbol.toUpperCase()} added to your wallet',
+                '${lastCryptoAmount.toStringAsFixed(6).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")} ${selectedCoin.symbol.toUpperCase()} added to your wallet',
+            referenceNumber: referenceNumber,
+            tradeTime: tradeTime,
+            onViewReceipt: () => ref
+                .read(tradeFlowProvider.notifier)
+                .setStage(TradeFlowStage.receipt),
+          );
+        } else if (flowState.type == TradeFlowType.sell) {
+          return TradeSuccessView(
+            key: const ValueKey('success_sell'),
+            type: flowState.type,
+            title: 'Sell Successful',
+            message:
+                '${lastCryptoAmount.toStringAsFixed(6).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")} ${selectedCoin.symbol.toUpperCase()} sold',
             referenceNumber: referenceNumber,
             tradeTime: tradeTime,
             onViewReceipt: () => ref
