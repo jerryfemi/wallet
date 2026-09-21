@@ -56,10 +56,10 @@ class TradeBottomSheet extends HookConsumerWidget {
             target = 0.7;
             break;
           case TradeFlowStage.input:
-            target = flowState.type == TradeFlowType.buy ? 0.75 : 0.6;
+            target = flowState.type == TradeFlowType.buy ? 0.9 : 0.6;
             break;
           case TradeFlowStage.review:
-            target = 0.9;
+            target = 1.0;
             break;
           case TradeFlowStage.processing:
             target = 0.35;
@@ -99,7 +99,7 @@ class TradeBottomSheet extends HookConsumerWidget {
     ) async {
       lastCryptoAmount.value = cryptoAmount;
       lastExecutionPrice.value = executionPrice;
-      
+
       // Already in processing state from the Review View
       await Future.delayed(const Duration(seconds: 2));
 
@@ -161,13 +161,16 @@ class TradeBottomSheet extends HookConsumerWidget {
     final markets = marketsState.value ?? [];
     final selectedCoin = markets.firstWhere(
       (c) => c.id == flowState.selectedCoinId,
-      orElse: () => markets.firstWhere((c) => c.symbol == 'BTC', orElse: () => markets.first),
+      orElse: () => markets.firstWhere(
+        (c) => c.symbol == 'BTC',
+        orElse: () => markets.first,
+      ),
     );
 
     switch (flowState.stage) {
       case TradeFlowStage.assetSelection:
         return const AssetSelectionView(key: ValueKey('asset_selection'));
-        
+
       case TradeFlowStage.input:
       case TradeFlowStage.review:
         if (flowState.type == TradeFlowType.deposit) {
@@ -203,7 +206,8 @@ class TradeBottomSheet extends HookConsumerWidget {
             key: const ValueKey('success_buy'),
             type: flowState.type,
             title: 'Buy Successful',
-            message: '${lastCryptoAmount.toStringAsFixed(6)} ${selectedCoin.symbol.toUpperCase()} added to your wallet',
+            message:
+                '${lastCryptoAmount.toStringAsFixed(6)} ${selectedCoin.symbol.toUpperCase()} added to your wallet',
             referenceNumber: referenceNumber,
             tradeTime: tradeTime,
             onViewReceipt: () => ref
