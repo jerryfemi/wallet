@@ -13,8 +13,7 @@ class BuyTradeView extends HookConsumerWidget {
     String symbol,
     double cryptoAmount,
     double executionPrice,
-  )
-  onConfirm;
+  ) onConfirm;
 
   const BuyTradeView({super.key, required this.onConfirm});
 
@@ -32,6 +31,15 @@ class BuyTradeView extends HookConsumerWidget {
 
     final markets = marketsState.value ?? [];
     final wallet = walletState.value;
+
+    // Local state for the amount string managed by the custom keypad
+    final amountString = useState(
+      flowState.inputAmount != null && flowState.inputAmount! > 0
+          ? flowState.inputAmount!.toStringAsFixed(
+              flowState.inputAmount! == flowState.inputAmount!.roundToDouble() ? 0 : 2,
+            )
+          : '',
+    );
 
     if (wallet == null || markets.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -58,22 +66,52 @@ class BuyTradeView extends HookConsumerWidget {
     );
     final usdtBalance = usdtAsset.amount.toDouble();
 
-    final amountController = useTextEditingController(
-      text: flowState.inputAmount != null && flowState.inputAmount! > 0
-          ? flowState.inputAmount.toString()
-          : '',
-    );
-    useListenable(amountController);
-
-    final inputAmount = double.tryParse(amountController.text) ?? 0.0;
+    final inputAmount = double.tryParse(amountString.value) ?? 0.0;
 
     // What the user types is the fiat value (cost of crypto)
     final fiatValue = inputAmount;
     final feeAmount = fiatValue * 0.01;
     final totalCost = fiatValue + feeAmount;
-    final estimatedCrypto = executionPrice > 0
-        ? (fiatValue / executionPrice)
-        : 0.0;
+    final estimatedCrypto =
+        executionPrice > 0 ? (fiatValue / executionPrice) : 0.0;
+
+    // Format the display amount
+    final displayAmount = amountString.value.isEmpty ? '\$0' : '\$${amountString.value}';
+
+    void onKeyTap(String key) {
+      String current = amountString.value;
+      if (key == '⌫') {
+        if (current.isNotEmpty) {
+          current = current.substring(0, current.length - 1);
+        }
+      } else if (key == '.') {
+        if (!current.contains('.') && current.isNotEmpty) {
+          current = '$current.';
+        } else if (current.isEmpty) {
+          current = '0.';
+        }
+      } else {
+        // Prevent leading zeros (except "0.")
+        if (current == '0' && key != '.') {
+          current = key;
+        } else {
+          // Limit decimal places to 2
+          if (current.contains('.')) {
+            final decimalPart = current.split('.').last;
+            if (decimalPart.length >= 2) return;
+          }
+          current = '$current$key';
+        }
+      }
+      amountString.value = current;
+      final parsed = double.tryParse(current);
+      ref.read(tradeFlowProvider.notifier).setInputAmount(parsed);
+    }
+
+    void setQuickAmount(double amount) {
+      amountString.value = amount.toStringAsFixed(2);
+      ref.read(tradeFlowProvider.notifier).setInputAmount(amount);
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -133,8 +171,7 @@ class BuyTradeView extends HookConsumerWidget {
                     ),
                     const Spacer(),
                     Text(
-                      NumberFormat.currency(symbol: '\$')
-                          .format(executionPrice),
+                      NumberFormat.currency(symbol: '\$').format(executionPrice),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -146,40 +183,35 @@ class BuyTradeView extends HookConsumerWidget {
 
             const SizedBox(height: 32),
 
-            // Large Amount Input
-            Center(
-              child: IntrinsicWidth(
-                child: TextField(
-                  controller: amountController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: '\$0',
-                    hintStyle: theme.textTheme.displayMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.5,
+            // Large Amount Display (tappable in review mode to go back)
+            GestureDetector(
+              onTap: isReviewing
+                  ? () {
+                      ref
+                          .read(tradeFlowProvider.notifier)
+                          .setStage(TradeFlowStage.input);
+                    }
+                  : null,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      displayAmount,
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
                       ),
                     ),
-                    prefixText: amountController.text.isNotEmpty ? '\$' : '',
-                    prefixStyle: theme.textTheme.displayMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  onChanged: (val) {
-                    final valDouble = double.tryParse(val);
-                    ref
-                        .read(tradeFlowProvider.notifier)
-                        .setInputAmount(valDouble);
-                  },
+                    if (isReviewing) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.edit_outlined,
+                        size: 20,
+                        color: colorScheme.primary,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
@@ -196,40 +228,16 @@ class BuyTradeView extends HookConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Quick Select Pills
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildQuickSelect(
-                  '25%',
-                  usdtBalance * 0.25,
-                  amountController,
-                  ref,
-                  theme,
-                ),
-                _buildQuickSelect(
-                  '50%',
-                  usdtBalance * 0.50,
-                  amountController,
-                  ref,
-                  theme,
-                ),
-                _buildQuickSelect(
-                  '75%',
-                  usdtBalance * 0.75,
-                  amountController,
-                  ref,
-                  theme,
-                ),
-                _buildQuickSelect(
-                  'MAX',
-                  usdtBalance,
-                  amountController,
-                  ref,
-                  theme,
-                ),
+                _buildQuickSelect('25%', usdtBalance * 0.25, setQuickAmount, theme),
+                _buildQuickSelect('50%', usdtBalance * 0.50, setQuickAmount, theme),
+                _buildQuickSelect('75%', usdtBalance * 0.75, setQuickAmount, theme),
+                _buildQuickSelect('MAX', usdtBalance, setQuickAmount, theme),
               ],
             ),
 
@@ -261,14 +269,18 @@ class BuyTradeView extends HookConsumerWidget {
               ),
             ),
 
-            // Expandable Review Section
-            AnimatedSize(
+            const SizedBox(height: 16),
+
+            // Swappable area: Keypad (input) vs Review details
+            AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
               child: isReviewing
                   ? Column(
+                      key: const ValueKey('review_section'),
                       children: [
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -345,10 +357,13 @@ class BuyTradeView extends HookConsumerWidget {
                         ),
                       ],
                     )
-                  : const SizedBox.shrink(),
+                  : _NumericKeypad(
+                      key: const ValueKey('keypad_section'),
+                      onKeyTap: onKeyTap,
+                    ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Action Button
             ElevatedButton(
@@ -389,6 +404,19 @@ class BuyTradeView extends HookConsumerWidget {
                 ),
               ),
             ),
+
+            // Simulated purchase disclaimer
+            if (isReviewing) ...[
+              const SizedBox(height: 12),
+              Center(
+                child: Text(
+                  'Simulated purchase · no real assets are exchanged',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -398,15 +426,11 @@ class BuyTradeView extends HookConsumerWidget {
   Widget _buildQuickSelect(
     String label,
     double amount,
-    TextEditingController controller,
-    WidgetRef ref,
+    void Function(double) onTap,
     ThemeData theme,
   ) {
     return InkWell(
-      onTap: () {
-        controller.text = amount.toStringAsFixed(2);
-        ref.read(tradeFlowProvider.notifier).setInputAmount(amount);
-      },
+      onTap: () => onTap(amount),
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -450,6 +474,69 @@ class BuyTradeView extends HookConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Compact custom numeric keypad that avoids the native keyboard entirely.
+class _NumericKeypad extends StatelessWidget {
+  final void Function(String key) onKeyTap;
+
+  const _NumericKeypad({super.key, required this.onKeyTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    const keys = [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      ['7', '8', '9'],
+      ['.', '0', '⌫'],
+    ];
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: keys.map((row) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: row.map((key) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => onKeyTap(key),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        height: 48,
+                        alignment: Alignment.center,
+                        child: key == '⌫'
+                            ? Icon(
+                                Icons.backspace_outlined,
+                                color: colorScheme.onSurface,
+                                size: 22,
+                              )
+                            : Text(
+                                key,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      }).toList(),
     );
   }
 }
