@@ -57,7 +57,7 @@ class SellTradeView extends HookConsumerWidget {
     );
 
     // Get real-time execution price
-    final tickerKey = '${selectedCoin.symbol.toUpperCase()}-USD';
+    final tickerKey = selectedCoin.symbol.toUpperCase();
     final executionPrice =
         (livePrices[tickerKey]?.price ?? selectedCoin.currentPrice).toDouble();
 
