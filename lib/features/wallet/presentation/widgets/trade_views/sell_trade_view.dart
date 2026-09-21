@@ -75,7 +75,8 @@ class SellTradeView extends HookConsumerWidget {
     final feeAmount = fiatValue * 0.01; // 1% fee
     final totalReturn = fiatValue - feeAmount;
 
-    final isInsufficient = inputAmount > cryptoBalance;
+    final isBelowMin = inputAmount > 0 && fiatValue < 1.0;
+    final isAboveMax = inputAmount > cryptoBalance;
 
     // Format the display amount
     final displayAmount = amountString.value.isEmpty
@@ -221,7 +222,9 @@ class SellTradeView extends HookConsumerWidget {
                       displayAmount,
                       style: theme.textTheme.displayMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
+                        color: (isBelowMin || isAboveMax)
+                            ? colorScheme.error
+                            : colorScheme.onSurface,
                       ),
                     ),
                     if (isReviewing) ...[
@@ -338,7 +341,7 @@ class SellTradeView extends HookConsumerWidget {
                 disabledBackgroundColor:
                     colorScheme.onSurface.withValues(alpha: 0.12),
               ),
-              onPressed: (inputAmount <= 0 || isInsufficient)
+              onPressed: (inputAmount <= 0 || isBelowMin || isAboveMax)
                   ? null
                   : () async {
                       if (!isReviewing) {
@@ -359,11 +362,13 @@ class SellTradeView extends HookConsumerWidget {
                       }
                     },
               child: Text(
-                isInsufficient 
-                    ? 'Insufficient ${selectedCoin.symbol.toUpperCase()} Balance'
-                    : isReviewing
-                    ? 'Confirm Sell — ${NumberFormat.currency(symbol: '\$').format(totalReturn)}'
-                    : 'Continue',
+                isBelowMin
+                    ? 'Minimum \$1.00'
+                    : isAboveMax
+                        ? 'Insufficient ${selectedCoin.symbol.toUpperCase()} Balance'
+                        : isReviewing
+                            ? 'Confirm Sell — ${NumberFormat.currency(symbol: '\$').format(totalReturn)}'
+                            : 'Continue',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
