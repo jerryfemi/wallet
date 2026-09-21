@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'trade_flow_provider.g.dart';
 
-enum TradeFlowStage { input, review, processing, success, receipt }
+enum TradeFlowStage { assetSelection, input, review, processing, success, receipt }
 enum TradeFlowType { deposit, withdraw, buy, sell, convert }
 
 class TradeFlowState {
