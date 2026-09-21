@@ -12,8 +12,9 @@ import 'package:wallet/features/markets/presentation/providers/markets_provider.
 
 class CoinListTile extends HookConsumerWidget {
   final CoinEntity coin;
+  final double? walletAmount;
 
-  const CoinListTile({super.key, required this.coin});
+  const CoinListTile({super.key, required this.coin, this.walletAmount});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -93,104 +94,153 @@ class CoinListTile extends HookConsumerWidget {
           const SizedBox(width: 16),
 
           // Name and Symbol
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  coin.name,
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  coin.symbol,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Sparkline Chart
-          if (coin.sparkline.isNotEmpty)
+          if (walletAmount != null)
             Expanded(
               flex: 3,
-              child: Container(
-                height: 40,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Skeleton.ignore(
-                  child: LineChart(
-                    LineChartData(
-                      gridData: const FlGridData(show: false),
-                      titlesData: const FlTitlesData(show: false),
-                      borderData: FlBorderData(show: false),
-                      lineTouchData: const LineTouchData(enabled: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: coin.sparkline.asMap().entries.map((e) {
-                            return FlSpot(e.key.toDouble(), e.value);
-                          }).toList(),
-                          isCurved: true,
-                          color: color,
-                          barWidth: 2,
-                          isStrokeCapRound: true,
-                          dotData: const FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            color: color.withValues(alpha: 0.1),
-                          ),
-                        ),
-                      ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    coin.name,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${coin.symbol} • \$${currentPrice.toDouble().toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                ),
+                ],
               ),
             )
           else
-            const Expanded(flex: 3, child: SizedBox(height: 40)),
-
-          const SizedBox(width: 16),
-
-          // Price and Change
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color:
-                        flashColor.value ??
-                        Theme.of(context).textTheme.titleMedium?.color,
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    coin.name,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  child: Text('\$${currentPrice.toStringAsFixed(2)}'),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isPositive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                      color: color,
-                      size: 18,
+                  const SizedBox(height: 4),
+                  Text(
+                    coin.symbol,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                    Text(
-                      '${priceChange.abs().toStringAsFixed(2)}%',
-                      style: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(color: color, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
+
+          if (walletAmount != null)
+            // Portfolio Balance
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${walletAmount!.toStringAsFixed(6).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")} ${coin.symbol.toUpperCase()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '≈ \$${(walletAmount! * currentPrice.toDouble()).toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else ...[
+            // Sparkline Chart
+            if (coin.sparkline.isNotEmpty)
+              Expanded(
+                flex: 3,
+                child: Container(
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Skeleton.ignore(
+                    child: LineChart(
+                      LineChartData(
+                        gridData: const FlGridData(show: false),
+                        titlesData: const FlTitlesData(show: false),
+                        borderData: FlBorderData(show: false),
+                        lineTouchData: const LineTouchData(enabled: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: coin.sparkline.asMap().entries.map((e) {
+                              return FlSpot(e.key.toDouble(), e.value);
+                            }).toList(),
+                            isCurved: true,
+                            color: color,
+                            barWidth: 2,
+                            isStrokeCapRound: true,
+                            dotData: const FlDotData(show: false),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: color.withValues(alpha: 0.1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              const Expanded(flex: 3, child: SizedBox(height: 40)),
+
+            const SizedBox(width: 16),
+
+            // Price and Change
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color:
+                          flashColor.value ??
+                          Theme.of(context).textTheme.titleMedium?.color,
+                    ),
+                    child: Text('\$${currentPrice.toStringAsFixed(2)}'),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isPositive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                        color: color,
+                        size: 18,
+                      ),
+                      Text(
+                        '${priceChange.abs().toStringAsFixed(2)}%',
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: color, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
