@@ -54,7 +54,10 @@ class TradeBottomSheet extends HookConsumerWidget {
         switch (flowState.stage) {
           case TradeFlowStage.assetSelection:
           case TradeFlowStage.input:
-            target = flowState.type == TradeFlowType.buy ? 0.9 : 0.85;
+            target = (flowState.type == TradeFlowType.buy ||
+                    flowState.type == TradeFlowType.sell)
+                ? 0.9
+                : 0.85;
             break;
           case TradeFlowStage.review:
             target = 1.0;
