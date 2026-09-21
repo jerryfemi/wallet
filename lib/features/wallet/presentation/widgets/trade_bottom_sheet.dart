@@ -291,6 +291,23 @@ class TradeBottomSheet extends HookConsumerWidget {
               radius: 28,
             ),
           );
+        } else if (flowState.type == TradeFlowType.sell) {
+          return TradeReceiptView(
+            key: const ValueKey('receipt_sell'),
+            type: flowState.type,
+            title: 'Sell',
+            cryptoAmount: lastCryptoAmount,
+            fiatAmount: lastCryptoAmount * lastExecutionPrice,
+            coinSymbol: selectedCoin.symbol.toUpperCase(),
+            coinName: selectedCoin.name,
+            referenceNumber: referenceNumber,
+            tradeTime: tradeTime,
+            method: 'USDT Balance',
+            customIcon: CircleAvatar(
+              backgroundImage: NetworkImage(selectedCoin.imageUrl),
+              radius: 28,
+            ),
+          );
         }
         return const SizedBox.shrink();
     }
