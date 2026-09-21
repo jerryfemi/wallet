@@ -13,7 +13,7 @@ import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposi
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_processing_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_view.dart';
-import 'package:wallet/features/wallet/presentation/widgets/trade_views/asset_selection_view.dart';
+
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/buy_trade_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_receipt_view.dart';
@@ -26,7 +26,6 @@ class TradeBottomSheet extends HookConsumerWidget {
     final flowState = ref.watch(tradeFlowProvider);
 
     // Deposit state
-    final amountController = useTextEditingController();
     final depositedAmount = useState(0.0);
 
     // Trade state
@@ -53,10 +52,8 @@ class TradeBottomSheet extends HookConsumerWidget {
         // Dynamic targeting based on stage and flow type
         switch (flowState.stage) {
           case TradeFlowStage.assetSelection:
-            target = 0.7;
-            break;
           case TradeFlowStage.input:
-            target = flowState.type == TradeFlowType.buy ? 0.9 : 0.6;
+            target = flowState.type == TradeFlowType.buy ? 0.9 : 0.85;
             break;
           case TradeFlowStage.review:
             target = 1.0;
@@ -132,7 +129,6 @@ class TradeBottomSheet extends HookConsumerWidget {
         context,
         flowState: flowState,
         ref: ref,
-        amountController: amountController,
         depositedAmount: depositedAmount.value,
         lastCryptoAmount: lastCryptoAmount.value,
         lastExecutionPrice: lastExecutionPrice.value,
@@ -148,7 +144,6 @@ class TradeBottomSheet extends HookConsumerWidget {
     BuildContext context, {
     required TradeFlowState flowState,
     required WidgetRef ref,
-    required TextEditingController amountController,
     required double depositedAmount,
     required double lastCryptoAmount,
     required double lastExecutionPrice,
@@ -169,14 +164,11 @@ class TradeBottomSheet extends HookConsumerWidget {
 
     switch (flowState.stage) {
       case TradeFlowStage.assetSelection:
-        return const AssetSelectionView(key: ValueKey('asset_selection'));
-
       case TradeFlowStage.input:
       case TradeFlowStage.review:
         if (flowState.type == TradeFlowType.deposit) {
           return DepositInputView(
             key: const ValueKey('deposit_input'),
-            amountController: amountController,
             onSubmit: onDepositSubmit,
           );
         } else if (flowState.type == TradeFlowType.buy) {
