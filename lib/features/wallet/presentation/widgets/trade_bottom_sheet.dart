@@ -8,13 +8,15 @@ import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
+import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_input_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_processing_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/asset_selection_view.dart';
-import 'package:wallet/features/wallet/presentation/widgets/trade_views/buy_input_view.dart';
-import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_review_view.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/buy_trade_view.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_success_view.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_receipt_view.dart';
 
 class TradeBottomSheet extends HookConsumerWidget {
   const TradeBottomSheet({super.key});
@@ -26,6 +28,10 @@ class TradeBottomSheet extends HookConsumerWidget {
     // Deposit state
     final amountController = useTextEditingController();
     final depositedAmount = useState(0.0);
+
+    // Trade state
+    final lastCryptoAmount = useState(0.0);
+    final lastExecutionPrice = useState(0.0);
 
     // Common state
     final referenceNumber = useState('');
@@ -46,13 +52,11 @@ class TradeBottomSheet extends HookConsumerWidget {
 
         // Dynamic targeting based on stage and flow type
         switch (flowState.stage) {
+          case TradeFlowStage.assetSelection:
+            target = 0.7;
+            break;
           case TradeFlowStage.input:
-            // Asset selection might need a slightly larger input size or just default
-            target =
-                (flowState.type == TradeFlowType.buy &&
-                    flowState.selectedCoinId == null)
-                ? 0.7
-                : 0.6;
+            target = flowState.type == TradeFlowType.buy ? 0.9 : 0.6;
             break;
           case TradeFlowStage.review:
             target = 1.0;
@@ -93,6 +97,9 @@ class TradeBottomSheet extends HookConsumerWidget {
       double cryptoAmount,
       double executionPrice,
     ) async {
+      lastCryptoAmount.value = cryptoAmount;
+      lastExecutionPrice.value = executionPrice;
+      
       // Already in processing state from the Review View
       await Future.delayed(const Duration(seconds: 2));
 
@@ -127,6 +134,8 @@ class TradeBottomSheet extends HookConsumerWidget {
         ref: ref,
         amountController: amountController,
         depositedAmount: depositedAmount.value,
+        lastCryptoAmount: lastCryptoAmount.value,
+        lastExecutionPrice: lastExecutionPrice.value,
         referenceNumber: referenceNumber.value,
         tradeTime: tradeTime.value,
         onDepositSubmit: onDepositSubmit,
@@ -141,13 +150,26 @@ class TradeBottomSheet extends HookConsumerWidget {
     required WidgetRef ref,
     required TextEditingController amountController,
     required double depositedAmount,
+    required double lastCryptoAmount,
+    required double lastExecutionPrice,
     required String referenceNumber,
     required DateTime tradeTime,
     required Future<void> Function(double) onDepositSubmit,
     required Future<void> Function(String, String, double, double) onBuyConfirm,
   }) {
+    final marketsState = ref.watch(marketsProvider);
+    final markets = marketsState.value ?? [];
+    final selectedCoin = markets.firstWhere(
+      (c) => c.id == flowState.selectedCoinId,
+      orElse: () => markets.firstWhere((c) => c.symbol == 'BTC', orElse: () => markets.first),
+    );
+
     switch (flowState.stage) {
+      case TradeFlowStage.assetSelection:
+        return const AssetSelectionView(key: ValueKey('asset_selection'));
+        
       case TradeFlowStage.input:
+      case TradeFlowStage.review:
         if (flowState.type == TradeFlowType.deposit) {
           return DepositInputView(
             key: const ValueKey('deposit_input'),
@@ -155,18 +177,8 @@ class TradeBottomSheet extends HookConsumerWidget {
             onSubmit: onDepositSubmit,
           );
         } else if (flowState.type == TradeFlowType.buy) {
-          if (flowState.selectedCoinId == null) {
-            return const AssetSelectionView(key: ValueKey('asset_selection'));
-          } else {
-            return const BuyInputView(key: ValueKey('buy_input'));
-          }
-        }
-        return const SizedBox.shrink();
-
-      case TradeFlowStage.review:
-        if (flowState.type == TradeFlowType.buy) {
-          return TradeReviewView(
-            key: const ValueKey('buy_review'),
+          return BuyTradeView(
+            key: const ValueKey('buy_trade'),
             onConfirm: onBuyConfirm,
           );
         }
@@ -176,27 +188,58 @@ class TradeBottomSheet extends HookConsumerWidget {
         return const DepositProcessingView(key: ValueKey('processing'));
 
       case TradeFlowStage.success:
-        return DepositSuccessView(
-          key: const ValueKey('success'),
-          amount: flowState.type == TradeFlowType.deposit
-              ? depositedAmount
-              : (flowState.inputAmount ?? 0.0),
-          referenceNumber: referenceNumber,
-          depositTime: tradeTime,
-          onViewReceipt: () => ref
-              .read(tradeFlowProvider.notifier)
-              .setStage(TradeFlowStage.receipt),
-        );
+        if (flowState.type == TradeFlowType.deposit) {
+          return DepositSuccessView(
+            key: const ValueKey('success_deposit'),
+            amount: depositedAmount,
+            referenceNumber: referenceNumber,
+            depositTime: tradeTime,
+            onViewReceipt: () => ref
+                .read(tradeFlowProvider.notifier)
+                .setStage(TradeFlowStage.receipt),
+          );
+        } else if (flowState.type == TradeFlowType.buy) {
+          return TradeSuccessView(
+            key: const ValueKey('success_buy'),
+            type: flowState.type,
+            title: 'Buy Successful',
+            message: '${lastCryptoAmount.toStringAsFixed(6)} ${selectedCoin.symbol.toUpperCase()} added to your wallet',
+            referenceNumber: referenceNumber,
+            tradeTime: tradeTime,
+            onViewReceipt: () => ref
+                .read(tradeFlowProvider.notifier)
+                .setStage(TradeFlowStage.receipt),
+          );
+        }
+        return const SizedBox.shrink();
 
       case TradeFlowStage.receipt:
-        return DepositReceiptView(
-          key: const ValueKey('receipt'),
-          amount: flowState.type == TradeFlowType.deposit
-              ? depositedAmount
-              : (flowState.inputAmount ?? 0.0),
-          referenceNumber: referenceNumber,
-          depositTime: tradeTime,
-        );
+        if (flowState.type == TradeFlowType.deposit) {
+          return DepositReceiptView(
+            key: const ValueKey('receipt_deposit'),
+            amount: depositedAmount,
+            referenceNumber: referenceNumber,
+            depositTime: tradeTime,
+          );
+        } else if (flowState.type == TradeFlowType.buy) {
+          return TradeReceiptView(
+            key: const ValueKey('receipt_buy'),
+            type: flowState.type,
+            title: 'Buy',
+            cryptoAmount: lastCryptoAmount,
+            fiatAmount: flowState.inputAmount ?? 0.0,
+            coinSymbol: selectedCoin.symbol.toUpperCase(),
+            coinName: selectedCoin.name,
+            referenceNumber: referenceNumber,
+            tradeTime: tradeTime,
+            method: 'USDT Balance',
+            customIcon: CircleAvatar(
+              backgroundImage: NetworkImage(selectedCoin.imageUrl),
+              radius: 28,
+            ),
+          );
+        }
+        return const SizedBox.shrink();
     }
   }
 }
