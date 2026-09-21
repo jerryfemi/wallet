@@ -18,8 +18,12 @@ class QuickActionsRow extends ConsumerWidget {
             iconAsset: 'assets/icons/deposit.svg',
             label: 'Deposit',
             onTap: () {
-              ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.deposit);
-              ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.input);
+              ref
+                  .read(tradeFlowProvider.notifier)
+                  .setType(TradeFlowType.deposit);
+              ref
+                  .read(tradeFlowProvider.notifier)
+                  .setStage(TradeFlowStage.input);
               TradingSheet.show(context, child: const TradeBottomSheet());
             },
           ),
@@ -31,7 +35,9 @@ class QuickActionsRow extends ConsumerWidget {
             label: 'Buy',
             onTap: () {
               ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.buy);
-              ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.input);
+              ref
+                  .read(tradeFlowProvider.notifier)
+                  .setStage(TradeFlowStage.input);
               ref.read(tradeFlowProvider.notifier).setSelectedCoinId(null);
               ref.read(tradeFlowProvider.notifier).setInputAmount(0);
               TradingSheet.show(context, child: const TradeBottomSheet());
@@ -43,7 +49,15 @@ class QuickActionsRow extends ConsumerWidget {
           child: _ActionBtn(
             iconAsset: 'assets/icons/sell.svg',
             label: 'Sell',
-            onTap: () {},
+            onTap: () {
+              ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.sell);
+              ref
+                  .read(tradeFlowProvider.notifier)
+                  .setStage(TradeFlowStage.input);
+              ref.read(tradeFlowProvider.notifier).setSelectedCoinId(null);
+              ref.read(tradeFlowProvider.notifier).setInputAmount(0);
+              TradingSheet.show(context, child: const TradeBottomSheet());
+            },
           ),
         ),
         const SizedBox(width: 10),
