@@ -4,14 +4,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_list_tile.dart';
+import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 
 /// A dedicated slide-up asset picker sheet with search.
 /// Returns the selected coin ID when tapped, or null if dismissed.
 class AssetPickerSheet extends HookConsumerWidget {
-  const AssetPickerSheet({super.key});
+  final bool isSell;
+
+  const AssetPickerSheet({super.key, this.isSell = false});
 
   /// Shows the picker as a new modal sheet layered on top of the current sheet.
-  static Future<String?> show(BuildContext context) {
+  static Future<String?> show(BuildContext context, {bool isSell = false}) {
     return Navigator.of(context, rootNavigator: true).push<String>(
       StupidSimpleCupertinoSheetRoute<String>(
         shape: const RoundedRectangleBorder(
@@ -19,7 +22,7 @@ class AssetPickerSheet extends HookConsumerWidget {
         ),
         snappingConfig:
             SheetSnappingConfig([0.85], initialSnap: 0.85),
-        child: const _AssetPickerWrapper(),
+        child: _AssetPickerWrapper(isSell: isSell),
       ),
     );
   }
@@ -33,7 +36,31 @@ class AssetPickerSheet extends HookConsumerWidget {
     final searchQuery = useState('');
 
     final marketsState = ref.watch(marketsProvider);
-    final markets = marketsState.value ?? [];
+    var markets = marketsState.value ?? [];
+
+    final walletState = ref.watch(walletStreamProvider);
+    final wallet = walletState.value;
+
+    if (isSell && wallet != null) {
+      markets = List.from(markets)..sort((a, b) {
+        final aIndex = wallet.assets.indexWhere((asset) => asset.coinId == a.id);
+        final bIndex = wallet.assets.indexWhere((asset) => asset.coinId == b.id);
+        
+        final aAmount = aIndex >= 0 ? wallet.assets[aIndex].amount.toDouble() : 0.0;
+        final bAmount = bIndex >= 0 ? wallet.assets[bIndex].amount.toDouble() : 0.0;
+        
+        if (aAmount > 0 && bAmount == 0) return -1;
+        if (bAmount > 0 && aAmount == 0) return 1;
+        
+        if (aAmount > 0 && bAmount > 0) {
+          final aValue = aAmount * a.currentPrice.toDouble();
+          final bValue = bAmount * b.currentPrice.toDouble();
+          return bValue.compareTo(aValue);
+        }
+        
+        return 0;
+      });
+    }
 
     // Filter markets by search query and exclude tether
     final filteredMarkets = markets.where((coin) {
@@ -129,9 +156,16 @@ class AssetPickerSheet extends HookConsumerWidget {
                   itemCount: filteredMarkets.length,
                   itemBuilder: (context, index) {
                     final coin = filteredMarkets[index];
+                    
+                    final assetIndex = wallet?.assets.indexWhere((a) => a.coinId == coin.id) ?? -1;
+                    final walletAmount = assetIndex >= 0 ? wallet!.assets[assetIndex].amount.toDouble() : 0.0;
+
                     return InkWell(
                       onTap: () => Navigator.of(context).pop(coin.id),
-                      child: CoinListTile(coin: coin),
+                      child: CoinListTile(
+                        coin: coin,
+                        walletAmount: isSell ? walletAmount : null,
+                      ),
                     );
                   },
                 ),
@@ -145,13 +179,15 @@ class AssetPickerSheet extends HookConsumerWidget {
 
 /// Wrapper to provide SafeArea at the bottom for the picker content.
 class _AssetPickerWrapper extends StatelessWidget {
-  const _AssetPickerWrapper();
+  final bool isSell;
+
+  const _AssetPickerWrapper({this.isSell = false});
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
+    return SafeArea(
       top: false,
-      child: AssetPickerSheet(),
+      child: AssetPickerSheet(isSell: isSell),
     );
   }
 }
