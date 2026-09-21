@@ -15,7 +15,8 @@ class BuyTradeView extends HookConsumerWidget {
     String symbol,
     double cryptoAmount,
     double executionPrice,
-  ) onConfirm;
+  )
+  onConfirm;
 
   const BuyTradeView({super.key, required this.onConfirm});
 
@@ -38,7 +39,9 @@ class BuyTradeView extends HookConsumerWidget {
     final amountString = useState(
       flowState.inputAmount != null && flowState.inputAmount! > 0
           ? flowState.inputAmount!.toStringAsFixed(
-              flowState.inputAmount! == flowState.inputAmount!.roundToDouble() ? 0 : 2,
+              flowState.inputAmount! == flowState.inputAmount!.roundToDouble()
+                  ? 0
+                  : 2,
             )
           : '',
     );
@@ -74,11 +77,14 @@ class BuyTradeView extends HookConsumerWidget {
     final fiatValue = inputAmount;
     final feeAmount = fiatValue * 0.01;
     final totalCost = fiatValue + feeAmount;
-    final estimatedCrypto =
-        executionPrice > 0 ? (fiatValue / executionPrice) : 0.0;
+    final estimatedCrypto = executionPrice > 0
+        ? (fiatValue / executionPrice)
+        : 0.0;
 
     // Format the display amount
-    final displayAmount = amountString.value.isEmpty ? '\$0' : '\$${amountString.value}';
+    final displayAmount = amountString.value.isEmpty
+        ? '\$0'
+        : '\$${amountString.value}';
 
     void onKeyTap(String key) {
       String current = amountString.value;
@@ -146,7 +152,9 @@ class BuyTradeView extends HookConsumerWidget {
               onTap: () async {
                 final selectedId = await AssetPickerSheet.show(context);
                 if (selectedId != null) {
-                  ref.read(tradeFlowProvider.notifier).setSelectedCoinId(selectedId);
+                  ref
+                      .read(tradeFlowProvider.notifier)
+                      .setSelectedCoinId(selectedId);
                 }
               },
               borderRadius: BorderRadius.circular(16),
@@ -174,7 +182,8 @@ class BuyTradeView extends HookConsumerWidget {
                     ),
                     const Spacer(),
                     Text(
-                      NumberFormat.currency(symbol: '\$').format(executionPrice),
+                      NumberFormat.currency(symbol: '\$')
+                          .format(executionPrice),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -243,9 +252,24 @@ class BuyTradeView extends HookConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildQuickSelect('25%', usdtBalance * 0.25, setQuickAmount, theme),
-                _buildQuickSelect('50%', usdtBalance * 0.50, setQuickAmount, theme),
-                _buildQuickSelect('75%', usdtBalance * 0.75, setQuickAmount, theme),
+                _buildQuickSelect(
+                  '25%',
+                  usdtBalance * 0.25,
+                  setQuickAmount,
+                  theme,
+                ),
+                _buildQuickSelect(
+                  '50%',
+                  usdtBalance * 0.50,
+                  setQuickAmount,
+                  theme,
+                ),
+                _buildQuickSelect(
+                  '75%',
+                  usdtBalance * 0.75,
+                  setQuickAmount,
+                  theme,
+                ),
                 _buildQuickSelect('MAX', usdtBalance, setQuickAmount, theme),
               ],
             ),
@@ -486,4 +510,3 @@ class BuyTradeView extends HookConsumerWidget {
     );
   }
 }
-
