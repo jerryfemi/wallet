@@ -18,6 +18,7 @@ import 'package:wallet/features/wallet/presentation/widgets/trade_views/buy_trad
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/sell_trade_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_receipt_view.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_failed_view.dart';
 
 class TradeBottomSheet extends HookConsumerWidget {
   const TradeBottomSheet({super.key});
@@ -65,6 +66,7 @@ class TradeBottomSheet extends HookConsumerWidget {
           case TradeFlowStage.processing:
             target = 0.35;
             break;
+          case TradeFlowStage.failed:
           case TradeFlowStage.success:
             target = 0.55;
             break;
@@ -109,20 +111,28 @@ class TradeBottomSheet extends HookConsumerWidget {
 
       final user = ref.read(authStateProvider).value;
       if (user != null) {
-        // Execute trade via backend repository
-        await ref
-            .read(walletRepositoryProvider)
-            .executeTrade(
-              userId: user.uid,
-              type: TransactionType.buy,
-              coinId: coinId,
-              symbol: symbol,
-              cryptoAmount: cryptoAmount,
-              executionPrice: executionPrice,
-            );
-      }
+        try {
+          // Execute trade via backend repository with timeout
+          await ref
+              .read(walletRepositoryProvider)
+              .executeTrade(
+                userId: user.uid,
+                type: TransactionType.buy,
+                coinId: coinId,
+                symbol: symbol,
+                cryptoAmount: cryptoAmount,
+                executionPrice: executionPrice,
+              )
+              .timeout(const Duration(seconds: 10));
 
-      ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
+          ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
+        } catch (e) {
+          ref.read(tradeFlowProvider.notifier).setStage(
+            TradeFlowStage.failed,
+            errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
+          );
+        }
+      }
     }
 
     Future<void> onSellConfirm(
@@ -142,20 +152,28 @@ class TradeBottomSheet extends HookConsumerWidget {
 
       final user = ref.read(authStateProvider).value;
       if (user != null) {
-        // Execute trade via backend repository
-        await ref
-            .read(walletRepositoryProvider)
-            .executeTrade(
-              userId: user.uid,
-              type: TransactionType.sell,
-              coinId: coinId,
-              symbol: symbol,
-              cryptoAmount: cryptoAmount,
-              executionPrice: executionPrice,
-            );
-      }
+        try {
+          // Execute trade via backend repository with timeout
+          await ref
+              .read(walletRepositoryProvider)
+              .executeTrade(
+                userId: user.uid,
+                type: TransactionType.sell,
+                coinId: coinId,
+                symbol: symbol,
+                cryptoAmount: cryptoAmount,
+                executionPrice: executionPrice,
+              )
+              .timeout(const Duration(seconds: 10));
 
-      ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
+          ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
+        } catch (e) {
+          ref.read(tradeFlowProvider.notifier).setStage(
+            TradeFlowStage.failed,
+            errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
+          );
+        }
+      }
     }
 
     return AnimatedSwitcher(
@@ -265,6 +283,17 @@ class TradeBottomSheet extends HookConsumerWidget {
           );
         }
         return const SizedBox.shrink();
+
+      case TradeFlowStage.failed:
+        return TradeFailedView(
+          key: const ValueKey('failed'),
+          title: 'Trade Unsuccessful',
+          message: flowState.errorMessage ?? 'An error occurred.',
+          onTryAgain: () {
+            ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.review);
+          },
+          onDismiss: () => Navigator.of(context).pop(),
+        );
 
       case TradeFlowStage.receipt:
         if (flowState.type == TradeFlowType.deposit) {
