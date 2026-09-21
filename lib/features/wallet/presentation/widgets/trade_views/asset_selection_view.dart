@@ -34,7 +34,7 @@ class AssetSelectionView extends HookConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.input),
                   padding: EdgeInsets.zero,
                   alignment: Alignment.centerRight,
                 ),
