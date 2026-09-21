@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/asset_picker_sheet.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
+import 'package:wallet/shared/widgets/numeric_keypad.dart';
 
 class BuyTradeView extends HookConsumerWidget {
   final Future<void> Function(
@@ -141,10 +143,11 @@ class BuyTradeView extends HookConsumerWidget {
 
             // Asset Selector Pill
             InkWell(
-              onTap: () {
-                ref
-                    .read(tradeFlowProvider.notifier)
-                    .setStage(TradeFlowStage.assetSelection);
+              onTap: () async {
+                final selectedId = await AssetPickerSheet.show(context);
+                if (selectedId != null) {
+                  ref.read(tradeFlowProvider.notifier).setSelectedCoinId(selectedId);
+                }
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
@@ -175,6 +178,12 @@ class BuyTradeView extends HookConsumerWidget {
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                      size: 22,
                     ),
                   ],
                 ),
@@ -357,7 +366,7 @@ class BuyTradeView extends HookConsumerWidget {
                         ),
                       ],
                     )
-                  : _NumericKeypad(
+                  : NumericKeypad(
                       key: const ValueKey('keypad_section'),
                       onKeyTap: onKeyTap,
                     ),
@@ -478,65 +487,3 @@ class BuyTradeView extends HookConsumerWidget {
   }
 }
 
-/// Compact custom numeric keypad that avoids the native keyboard entirely.
-class _NumericKeypad extends StatelessWidget {
-  final void Function(String key) onKeyTap;
-
-  const _NumericKeypad({super.key, required this.onKeyTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    const keys = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['.', '0', '⌫'],
-    ];
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: keys.map((row) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: row.map((key) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => onKeyTap(key),
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        height: 48,
-                        alignment: Alignment.center,
-                        child: key == '⌫'
-                            ? Icon(
-                                Icons.backspace_outlined,
-                                color: colorScheme.onSurface,
-                                size: 22,
-                              )
-                            : Text(
-                                key,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
