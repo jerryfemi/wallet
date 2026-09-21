@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
+import 'package:wallet/shared/widgets/numeric_keypad.dart';
 
-class DepositInputView extends StatelessWidget {
-  final TextEditingController amountController;
+class DepositInputView extends HookWidget {
   final Future<void> Function(double) onSubmit;
 
   const DepositInputView({
     super.key,
-    required this.amountController,
     required this.onSubmit,
   });
 
@@ -15,6 +15,45 @@ class DepositInputView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    // Local state for the amount string managed by the custom keypad
+    final amountString = useState('');
+
+    final inputAmount = double.tryParse(amountString.value) ?? 0.0;
+    final displayAmount =
+        amountString.value.isEmpty ? '\$0' : '\$${amountString.value}';
+
+    void onKeyTap(String key) {
+      String current = amountString.value;
+      if (key == '⌫') {
+        if (current.isNotEmpty) {
+          current = current.substring(0, current.length - 1);
+        }
+      } else if (key == '.') {
+        if (!current.contains('.') && current.isNotEmpty) {
+          current = '$current.';
+        } else if (current.isEmpty) {
+          current = '0.';
+        }
+      } else {
+        // Prevent leading zeros (except "0.")
+        if (current == '0' && key != '.') {
+          current = key;
+        } else {
+          // Limit decimal places to 2
+          if (current.contains('.')) {
+            final decimalPart = current.split('.').last;
+            if (decimalPart.length >= 2) return;
+          }
+          current = '$current$key';
+        }
+      }
+      amountString.value = current;
+    }
+
+    void setQuickAmount(double amount) {
+      amountString.value = amount.toStringAsFixed(0);
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -43,7 +82,8 @@ class DepositInputView extends StatelessWidget {
 
             // Fixed Asset (Tether)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(16),
@@ -75,38 +115,15 @@ class DepositInputView extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Amount Input
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '\$',
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: theme.colorScheme.onSurface,
-                  ),
+            // Amount Display
+            Center(
+              child: Text(
+                displayAmount,
+                style: theme.textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: theme.colorScheme.onSurface,
                 ),
-                IntrinsicWidth(
-                  child: TextField(
-                    controller: amountController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
-                    decoration: const InputDecoration(
-                      hintText: '0',
-                      filled: false,
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
 
             const SizedBox(height: 4),
@@ -125,15 +142,19 @@ class DepositInputView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [100, 500, 1000, 5000].map((amount) {
                 return ActionChip(
-                  label: Text('\$${NumberFormat.compact().format(amount)}'),
-                  onPressed: () {
-                    amountController.text = amount.toString();
-                  },
+                  label:
+                      Text('\$${NumberFormat.compact().format(amount)}'),
+                  onPressed: () => setQuickAmount(amount.toDouble()),
                 );
               }).toList(),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+
+            // Custom Numeric Keypad
+            NumericKeypad(onKeyTap: onKeyTap),
+
+            const SizedBox(height: 16),
 
             // Deposit Button
             ElevatedButton(
@@ -145,12 +166,7 @@ class DepositInputView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              onPressed: () {
-                final val = double.tryParse(amountController.text);
-                if (val != null && val > 0) {
-                  onSubmit(val);
-                }
-              },
+              onPressed: inputAmount > 0 ? () => onSubmit(inputAmount) : null,
               child: const Text(
                 'Deposit',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
