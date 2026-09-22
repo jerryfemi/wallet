@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
@@ -5,8 +8,6 @@ import 'package:wallet/features/markets/data/repositories/market_repository.dart
 import 'package:wallet/core/network/dio_client.dart';
 import 'package:wallet/features/markets/data/sources/coinbase_websocket_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
-
-import 'dart:async';
 
 part 'markets_provider.g.dart';
 
@@ -58,6 +59,15 @@ class LivePrices extends _$LivePrices {
       state = next;
     });
     ref.onDispose(subscription.cancel);
+
+    // Bug 4 fix: when the user brings the app back to the foreground the
+    // WebSocket may be dead (zombie TCP / OS killed it during sleep). Force a
+    // fresh connect so ticks resume immediately instead of waiting for the
+    // 20-second silence watchdog to kick in.
+    final lifecycle = AppLifecycleListener(
+      onResume: repository.reconnectLiveTickers,
+    );
+    ref.onDispose(lifecycle.dispose);
 
     // listen, NOT watch: a markets refresh (AsyncLoading -> AsyncData) must not
     // rebuild this notifier, otherwise it resets the price map to {} and
