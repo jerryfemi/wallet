@@ -38,7 +38,9 @@ class SellTradeView extends HookConsumerWidget {
     // Local state for the amount string managed by the custom keypad
     final amountString = useState(
       flowState.inputAmount != null && flowState.inputAmount! > 0
-          ? flowState.inputAmount!.toStringAsFixed(6).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")
+          ? flowState.inputAmount!
+                .toStringAsFixed(6)
+                .replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")
           : '',
     );
 
@@ -63,10 +65,15 @@ class SellTradeView extends HookConsumerWidget {
 
     final cryptoAsset = wallet.assets.firstWhere(
       (a) => a.coinId == selectedCoin.id,
-      orElse: () => wallet.assets.firstWhere((a) => a.coinId == 'tether', orElse: () => wallet.assets.first), // Fallback if 0 balance
+      orElse: () => wallet.assets.firstWhere(
+        (a) => a.coinId == 'tether',
+        orElse: () => wallet.assets.first,
+      ), // Fallback if 0 balance
     );
     // If the found asset doesn't match the selected coin, it means balance is 0
-    final cryptoBalance = cryptoAsset.coinId == selectedCoin.id ? cryptoAsset.amount.toDouble() : 0.0;
+    final cryptoBalance = cryptoAsset.coinId == selectedCoin.id
+        ? cryptoAsset.amount.toDouble()
+        : 0.0;
 
     final inputAmount = double.tryParse(amountString.value) ?? 0.0;
 
@@ -114,9 +121,11 @@ class SellTradeView extends HookConsumerWidget {
     }
 
     void setQuickAmount(double amount) {
-      String formatted = amount.toStringAsFixed(6).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "");
+      String formatted = amount
+          .toStringAsFixed(6)
+          .replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "");
       if (formatted.isEmpty) formatted = "0";
-      
+
       amountString.value = formatted;
       ref.read(tradeFlowProvider.notifier).setInputAmount(amount);
     }
@@ -150,12 +159,15 @@ class SellTradeView extends HookConsumerWidget {
             // Asset Selector Pill
             InkWell(
               onTap: () async {
-                final selectedId = await AssetPickerSheet.show(context, isSell: true);
+                final selectedId = await AssetPickerSheet.show(
+                  context,
+                  isSell: true,
+                );
                 if (selectedId != null) {
                   ref
                       .read(tradeFlowProvider.notifier)
                       .setSelectedCoinId(selectedId);
-                  
+
                   // Reset input when asset changes
                   amountString.value = '';
                   ref.read(tradeFlowProvider.notifier).setInputAmount(0.0);
@@ -338,8 +350,9 @@ class SellTradeView extends HookConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                disabledBackgroundColor:
-                    colorScheme.onSurface.withValues(alpha: 0.12),
+                disabledBackgroundColor: colorScheme.onSurface.withValues(
+                  alpha: 0.12,
+                ),
               ),
               onPressed: (inputAmount <= 0 || isBelowMin || isAboveMax)
                   ? null
@@ -365,10 +378,10 @@ class SellTradeView extends HookConsumerWidget {
                 isBelowMin
                     ? 'Minimum \$1.00'
                     : isAboveMax
-                        ? 'Insufficient ${selectedCoin.symbol.toUpperCase()} Balance'
-                        : isReviewing
-                            ? 'Confirm Sell — ${NumberFormat.currency(symbol: '\$').format(totalReturn)}'
-                            : 'Continue',
+                    ? 'Insufficient ${selectedCoin.symbol.toUpperCase()} Balance'
+                    : isReviewing
+                    ? 'Confirm Sell — ${NumberFormat.currency(symbol: '\$').format(totalReturn)}'
+                    : 'Continue',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
