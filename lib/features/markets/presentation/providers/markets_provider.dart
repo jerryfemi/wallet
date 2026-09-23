@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart';
+import 'package:wallet/features/markets/data/sources/market_local_datasource.dart';
 import 'package:wallet/features/markets/data/repositories/market_repository.dart';
 import 'package:wallet/core/network/dio_client.dart';
 import 'package:wallet/features/markets/data/sources/coinbase_websocket_datasource.dart';
@@ -32,10 +33,16 @@ CoinbaseWebSocketDataSource coinbaseWebSocketDataSource(Ref ref) {
 }
 
 @riverpod
+MarketLocalDataSource marketLocalDataSource(Ref ref) {
+  return MarketLocalDataSource();
+}
+
+@riverpod
 MarketRepository marketRepository(Ref ref) {
   final apiService = ref.watch(coinGeckoApiServiceProvider);
   final wsDataSource = ref.watch(coinbaseWebSocketDataSourceProvider);
-  return MarketRepository(apiService, wsDataSource);
+  final localDataSource = ref.watch(marketLocalDataSourceProvider);
+  return MarketRepository(apiService, wsDataSource, localDataSource);
 }
 
 @Riverpod(keepAlive: true)
@@ -86,17 +93,38 @@ class LivePrices extends _$LivePrices {
 class Markets extends _$Markets {
   @override
   Future<List<CoinEntity>> build() async {
-    return _fetchMarkets();
-  }
-
-  Future<List<CoinEntity>> _fetchMarkets() async {
     final repository = ref.watch(marketRepositoryProvider);
+
+    // 1. Try loading from disk cache for an instant render (no skeleton).
+    final cached = await repository.getCachedCoins();
+    if (cached != null && cached.isNotEmpty) {
+      // Kick off a silent background refresh — don't await here so the UI
+      // returns immediately with cached data.
+      _revalidateInBackground(repository);
+      return cached;
+    }
+
+    // 2. No cache (very first launch): full network fetch with skeleton.
     return await repository.getTopCoins();
   }
 
+  /// Silently fetches fresh data from the API and swaps it into state.
+  /// If the fetch fails (offline / rate-limited), the cached data stays.
+  Future<void> _revalidateInBackground(MarketRepository repository) async {
+    try {
+      final fresh = await repository.getTopCoins();
+      state = AsyncData(fresh);
+    } catch (_) {
+      // Offline or rate-limited — keep showing cached data, no error.
+    }
+  }
+
+  /// Pull-to-refresh: fetches fresh data without blanking the UI.
+  /// The [RefreshIndicator] widget already shows its own spinner, so we
+  /// do NOT set `state = AsyncLoading()` which would flash skeletons.
   Future<void> refresh() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _fetchMarkets());
+    final repository = ref.read(marketRepositoryProvider);
+    state = await AsyncValue.guard(() => repository.getTopCoins());
   }
 }
 

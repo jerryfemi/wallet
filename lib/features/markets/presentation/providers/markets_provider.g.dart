@@ -147,6 +147,54 @@ final class CoinbaseWebSocketDataSourceProvider
 String _$coinbaseWebSocketDataSourceHash() =>
     r'30d7c38e8d3faa325fe56e17aa7d7e159b8fe3fb';
 
+@ProviderFor(marketLocalDataSource)
+final marketLocalDataSourceProvider = MarketLocalDataSourceProvider._();
+
+final class MarketLocalDataSourceProvider
+    extends
+        $FunctionalProvider<
+          MarketLocalDataSource,
+          MarketLocalDataSource,
+          MarketLocalDataSource
+        >
+    with $Provider<MarketLocalDataSource> {
+  MarketLocalDataSourceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'marketLocalDataSourceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$marketLocalDataSourceHash();
+
+  @$internal
+  @override
+  $ProviderElement<MarketLocalDataSource> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  MarketLocalDataSource create(Ref ref) {
+    return marketLocalDataSource(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MarketLocalDataSource value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MarketLocalDataSource>(value),
+    );
+  }
+}
+
+String _$marketLocalDataSourceHash() =>
+    r'3d7961b40ed0d0bbd18b09eec76da3e22e31ff7d';
+
 @ProviderFor(marketRepository)
 final marketRepositoryProvider = MarketRepositoryProvider._();
 
@@ -191,7 +239,7 @@ final class MarketRepositoryProvider
   }
 }
 
-String _$marketRepositoryHash() => r'baf3119c160d85ddff7c7470c62f3cee7575f5ad';
+String _$marketRepositoryHash() => r'7380092e2d6a12c60aa7cb39fb2a047f280a3cee';
 
 @ProviderFor(LivePrices)
 final livePricesProvider = LivePricesProvider._();
@@ -227,7 +275,7 @@ final class LivePricesProvider
   }
 }
 
-String _$livePricesHash() => r'b719cd0359873ee1ce38781805f9b59336959123';
+String _$livePricesHash() => r'77d64466acef2226037763484a82df80223fb8a2';
 
 abstract class _$LivePrices extends $Notifier<Map<String, TickerUpdateEntity>> {
   Map<String, TickerUpdateEntity> build();
@@ -279,7 +327,7 @@ final class MarketsProvider
   Markets create() => Markets();
 }
 
-String _$marketsHash() => r'f33e4668345914825edd1902bbb372f59cc56ec3';
+String _$marketsHash() => r'da328ec76b4a914d4467740fa308cf1274610e43';
 
 abstract class _$Markets extends $AsyncNotifier<List<CoinEntity>> {
   FutureOr<List<CoinEntity>> build();
