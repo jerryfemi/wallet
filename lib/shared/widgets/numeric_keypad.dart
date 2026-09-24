@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Compact custom numeric keypad that avoids the native keyboard entirely.
 /// Used by both Deposit and Buy flows for consistent input UX.
@@ -33,7 +34,10 @@ class NumericKeypad extends StatelessWidget {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () => onKeyTap(key),
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        onKeyTap(key);
+                      },
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         height: 48,
