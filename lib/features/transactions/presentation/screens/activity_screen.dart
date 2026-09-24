@@ -30,14 +30,13 @@ class ActivityScreen extends HookConsumerWidget {
                 children: [
                   Text(
                     'Activity',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: Theme.of(context).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            
+
             // Filter Chips
             const Padding(
               padding: EdgeInsets.only(bottom: 16),
@@ -48,7 +47,10 @@ class ActivityScreen extends HookConsumerWidget {
             Expanded(
               child: transactionsStream.when(
                 data: (transactions) {
-                  final filteredTransactions = _filterTransactions(transactions, activeFilter);
+                  final filteredTransactions = _filterTransactions(
+                    transactions,
+                    activeFilter,
+                  );
 
                   if (filteredTransactions.isEmpty) {
                     return _buildEmptyState(context, activeFilter);
@@ -57,11 +59,8 @@ class ActivityScreen extends HookConsumerWidget {
                   return ListView.separated(
                     padding: const EdgeInsets.only(bottom: 32),
                     itemCount: filteredTransactions.length,
-                    separatorBuilder: (context, index) => const Divider(
-                      height: 1,
-                      indent: 72,
-                      endIndent: 20,
-                    ),
+                    separatorBuilder: (context, index) =>
+                        const Divider(height: 1, indent: 65, endIndent: 20),
                     itemBuilder: (context, index) {
                       return TransactionListTile(
                         transaction: filteredTransactions[index],
@@ -78,7 +77,8 @@ class ActivityScreen extends HookConsumerWidget {
                     itemCount: 10,
                     itemBuilder: (context, index) {
                       return TransactionListTile(
-                        transaction: _getDummyData()[index % _getDummyData().length],
+                        transaction:
+                            _getDummyData()[index % _getDummyData().length],
                       );
                     },
                   ),
@@ -108,20 +108,33 @@ class ActivityScreen extends HookConsumerWidget {
     );
   }
 
-  List<TransactionEntity> _filterTransactions(List<TransactionEntity> transactions, TransactionFilter filter) {
+  List<TransactionEntity> _filterTransactions(
+    List<TransactionEntity> transactions,
+    TransactionFilter filter,
+  ) {
     switch (filter) {
       case TransactionFilter.all:
         return transactions;
       case TransactionFilter.buys:
-        return transactions.where((t) => t.type == TransactionType.buy).toList();
+        return transactions
+            .where((t) => t.type == TransactionType.buy)
+            .toList();
       case TransactionFilter.sells:
-        return transactions.where((t) => t.type == TransactionType.sell).toList();
+        return transactions
+            .where((t) => t.type == TransactionType.sell)
+            .toList();
       case TransactionFilter.deposits:
-        return transactions.where((t) => t.type == TransactionType.deposit).toList();
+        return transactions
+            .where((t) => t.type == TransactionType.deposit)
+            .toList();
       case TransactionFilter.withdrawals:
-        return transactions.where((t) => t.type == TransactionType.withdraw).toList();
+        return transactions
+            .where((t) => t.type == TransactionType.withdraw)
+            .toList();
       case TransactionFilter.transfers:
-        return transactions.where((t) => t.type == TransactionType.transfer).toList();
+        return transactions
+            .where((t) => t.type == TransactionType.transfer)
+            .toList();
     }
   }
 
@@ -144,8 +157,8 @@ class ActivityScreen extends HookConsumerWidget {
           Text(
             message,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -181,4 +194,3 @@ class ActivityScreen extends HookConsumerWidget {
     ];
   }
 }
-
