@@ -95,6 +95,8 @@ class MarketsScreen extends HookConsumerWidget {
                 child: SizedBox(
                   height: 64, // Increased height to prevent bottom overflow
                   child: topMoversState.when(
+                    skipLoadingOnRefresh: true,
+                    skipLoadingOnReload: true,
                     data: (movers) => ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       scrollDirection: Axis.horizontal,
@@ -103,6 +105,7 @@ class MarketsScreen extends HookConsumerWidget {
                           const SizedBox(width: 10),
                       itemBuilder: (context, index) {
                         return TopMoverChip(
+                          key: ValueKey(movers[index].id),
                           coin: movers[index],
                           onTap: () {
                             // TODO: open details
@@ -165,11 +168,16 @@ class MarketsScreen extends HookConsumerWidget {
 
               // Main List
               filteredMarketsState.when(
+                skipLoadingOnRefresh: true,
+                skipLoadingOnReload: true,
                 data: (coins) => SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => CoinListTile(coin: coins[index]),
+                      (context, index) => CoinListTile(
+                        key: ValueKey(coins[index].id),
+                        coin: coins[index],
+                      ),
                       childCount: coins.length,
                     ),
                   ),
