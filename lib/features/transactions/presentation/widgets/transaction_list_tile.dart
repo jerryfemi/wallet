@@ -7,40 +7,40 @@ class TransactionListTile extends StatelessWidget {
   final TransactionEntity transaction;
   final VoidCallback? onTap;
 
-  const TransactionListTile({
-    super.key,
-    required this.transaction,
-    this.onTap,
-  });
+  const TransactionListTile({super.key, required this.transaction, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
-    final bool isPositive = transaction.type == TransactionType.buy || 
-                            transaction.type == TransactionType.deposit ||
-                            transaction.type == TransactionType.transfer; // Assuming transfers in are positive for now, could refine later
+
+    final bool isPositive =
+        transaction.type == TransactionType.buy ||
+        transaction.type == TransactionType.deposit ||
+        transaction.type == TransactionType.transfer; // Assuming transfers in are positive for now, could refine later
 
     final IconData iconData = _getIconData();
     final Color iconColor = _getIconColor(colorScheme);
     final Color iconBgColor = iconColor.withValues(alpha: 0.15);
-    
+
     final String title = _getTitle();
-    
+
     final dateFormat = DateFormat('MMM d, yyyy • h:mm a');
     final String formattedDate = dateFormat.format(transaction.timestamp);
-    
+
     // Format crypto amount (e.g. "+0.05 BTC")
     final String sign = isPositive ? '+' : '-';
-    final String cryptoText = '$sign${Formatters.formatCrypto(transaction.amount)} ${transaction.assetSymbol}';
-    
+    final String cryptoText =
+        '$sign${Formatters.formatCrypto(transaction.amount)} ${transaction.assetSymbol}';
+
     // Format fiat amount (e.g. "$3,200.00")
-    final String fiatText = Formatters.formatFiat(transaction.fiatValue.toDouble());
+    final String fiatText = Formatters.formatFiat(
+      transaction.fiatValue.toDouble(),
+    );
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      // borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -53,14 +53,10 @@ class TransactionListTile extends StatelessWidget {
                 color: iconBgColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                iconData,
-                color: iconColor,
-                size: 24,
-              ),
+              child: Icon(iconData, color: iconColor, size: 24),
             ),
             const SizedBox(width: 16),
-            
+
             // Title & Date
             Expanded(
               child: Column(
@@ -84,7 +80,7 @@ class TransactionListTile extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Amounts
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -93,7 +89,9 @@ class TransactionListTile extends StatelessWidget {
                   cryptoText,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: isPositive ? Colors.green.shade400 : colorScheme.onSurface,
+                    color: isPositive
+                        ? Colors.green.shade400
+                        : colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -140,7 +138,7 @@ class TransactionListTile extends StatelessWidget {
         return Icons.swap_horiz_rounded;
     }
   }
-  
+
   Color _getIconColor(ColorScheme colorScheme) {
     switch (transaction.type) {
       case TransactionType.buy:
