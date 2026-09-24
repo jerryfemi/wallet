@@ -6,6 +6,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
+import 'package:wallet/core/utils/dev_logs.dart';
 
 /// Live prices from the public Coinbase Exchange feed.
 ///
@@ -303,6 +304,7 @@ class CoinbaseWebSocketDataSource {
 
   void _log(String message) {
     if (kDebugMode) debugPrint('[CoinbaseWS] $message');
+    DevLogs.log(message);
   }
 
   void dispose() {
