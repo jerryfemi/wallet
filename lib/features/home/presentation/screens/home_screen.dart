@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -264,14 +265,46 @@ class HomeScreen extends HookConsumerWidget {
               return ValueListenableBuilder<List<String>>(
                 valueListenable: DevLogs.logs,
                 builder: (context, logs, child) {
-                  return ListView.builder(
-                    itemCount: logs.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(logs[index], style: const TextStyle(fontSize: 12)),
-                      );
-                    },
+                  return SafeArea(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Dev Logs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                              TextButton.icon(
+                                onPressed: () {
+                                  final allLogs = logs.join('\n');
+                                  Clipboard.setData(ClipboardData(text: allLogs));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Logs copied to clipboard!')),
+                                  );
+                                },
+                                icon: const Icon(Icons.copy, size: 18),
+                                label: const Text('Copy All'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: logs.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                                child: Text(
+                                  logs[index],
+                                  style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               );
