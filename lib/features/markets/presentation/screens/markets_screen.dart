@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:decimal/decimal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -264,6 +265,7 @@ class _FilterPill extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
+        HapticFeedback.selectionClick();
         ref.read(activeMarketFilterProvider.notifier).setFilter(filter);
       },
       child: AnimatedContainer(
