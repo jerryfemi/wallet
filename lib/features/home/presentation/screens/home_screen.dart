@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -11,7 +10,6 @@ import 'package:wallet/features/home/presentation/widgets/section_header.dart';
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:decimal/decimal.dart';
-import 'package:wallet/core/utils/dev_logs.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -256,62 +254,6 @@ class HomeScreen extends HookConsumerWidget {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return ValueListenableBuilder<List<String>>(
-                valueListenable: DevLogs.logs,
-                builder: (context, logs, child) {
-                  return SafeArea(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Dev Logs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                              TextButton.icon(
-                                onPressed: () {
-                                  final allLogs = logs.join('\n');
-                                  Clipboard.setData(ClipboardData(text: allLogs));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Logs copied to clipboard!')),
-                                  );
-                                },
-                                icon: const Icon(Icons.copy, size: 18),
-                                label: const Text('Copy All'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Divider(height: 1),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: logs.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                                child: Text(
-                                  logs[index],
-                                  style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
-        child: const Icon(Icons.bug_report),
       ),
     );
   }
