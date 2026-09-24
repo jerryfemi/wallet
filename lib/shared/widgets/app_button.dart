@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 enum AppButtonType { primary, secondary, outline }
 
@@ -54,7 +55,10 @@ class AppButton extends StatelessWidget {
     switch (type) {
       case AppButtonType.primary:
         button = FilledButton(
-          onPressed: isLoading ? null : onPressed,
+          onPressed: isLoading || onPressed == null ? null : () {
+            HapticFeedback.mediumImpact();
+            onPressed!();
+          },
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             shape: RoundedRectangleBorder(
@@ -66,7 +70,10 @@ class AppButton extends StatelessWidget {
         break;
       case AppButtonType.secondary:
         button = FilledButton.tonal(
-          onPressed: isLoading ? null : onPressed,
+          onPressed: isLoading || onPressed == null ? null : () {
+            HapticFeedback.mediumImpact();
+            onPressed!();
+          },
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             shape: RoundedRectangleBorder(
@@ -78,7 +85,10 @@ class AppButton extends StatelessWidget {
         break;
       case AppButtonType.outline:
         button = OutlinedButton(
-          onPressed: isLoading ? null : onPressed,
+          onPressed: isLoading || onPressed == null ? null : () {
+            HapticFeedback.mediumImpact();
+            onPressed!();
+          },
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             shape: RoundedRectangleBorder(
