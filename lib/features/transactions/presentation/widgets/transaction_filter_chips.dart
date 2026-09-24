@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/features/transactions/presentation/providers/transactions_provider.dart';
 
@@ -43,6 +44,7 @@ class _FilterPill extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
+        HapticFeedback.selectionClick();
         ref.read(activeTransactionFilterProvider.notifier).setFilter(filter);
       },
       child: AnimatedContainer(
