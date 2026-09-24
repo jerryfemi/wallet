@@ -10,6 +10,7 @@ import 'package:wallet/features/home/presentation/widgets/section_header.dart';
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:decimal/decimal.dart';
+import 'package:wallet/core/utils/dev_logs.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -42,6 +43,8 @@ class HomeScreen extends HookConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: totalValueAsync.when(
+                    skipLoadingOnRefresh: true,
+                    skipLoadingOnReload: true,
                     data: (totalValue) {
                       final change = totalChangeAsync.value ?? 0.0;
                       return TotalBalanceCard(
@@ -88,6 +91,8 @@ class HomeScreen extends HookConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: assetsAsync.when(
+                    skipLoadingOnRefresh: true,
+                    skipLoadingOnReload: true,
                     data: (assets) {
                       if (assets.isEmpty) {
                         return Container(
@@ -133,6 +138,7 @@ class HomeScreen extends HookConsumerWidget {
                         children: topAssets
                             .map(
                               (asset) => Padding(
+                                key: ValueKey(asset.coinId),
                                 padding: const EdgeInsets.only(bottom: 12),
                                 child: AssetBalanceTile(
                                   name: asset.name,
@@ -190,6 +196,8 @@ class HomeScreen extends HookConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: transactionsAsync.when(
+                    skipLoadingOnRefresh: true,
+                    skipLoadingOnReload: true,
                     data: (transactions) {
                       if (transactions.isEmpty) {
                         return const Padding(
@@ -211,8 +219,8 @@ class HomeScreen extends HookConsumerWidget {
                           final formattedAmount = NumberFormat.currency(symbol: '\$').format(tx.amount.toDouble());
                           final formattedDate = DateFormat('MMM d, y, h:mm a').format(tx.timestamp);
                           final typeName = tx.type.name[0].toUpperCase() + tx.type.name.substring(1);
-                          
                           return ListTile(
+                            key: ValueKey(tx.id),
                             contentPadding: EdgeInsets.zero,
                             leading: CircleAvatar(
                               backgroundColor: isDeposit ? Colors.green.withValues(alpha: 0.15) : Colors.red.withValues(alpha: 0.15),
@@ -247,6 +255,30 @@ class HomeScreen extends HookConsumerWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return ValueListenableBuilder<List<String>>(
+                valueListenable: DevLogs.logs,
+                builder: (context, logs, child) {
+                  return ListView.builder(
+                    itemCount: logs.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(logs[index], style: const TextStyle(fontSize: 12)),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.bug_report),
       ),
     );
   }
