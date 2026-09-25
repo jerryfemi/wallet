@@ -19,39 +19,23 @@ class MarketsScreen extends HookConsumerWidget {
     final topMoversState = ref.watch(topMoversProvider);
 
     return Scaffold(
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(marketsProvider.notifier).refresh();
-          },
-          child: CustomScrollView(
-            slivers: [
-              // Top Bar
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Markets',
-                        style: Theme.of(context).textTheme.titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const CircleAvatar(
-                        radius: 20,
-                        // Placeholder for profile image
-                        child: Icon(Icons.person),
-                      ),
-                    ],
-                  ),
-                ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(marketsProvider.notifier).refresh();
+        },
+        child: CustomScrollView(
+          slivers: [
+            // Top Bar + Search Bar
+            SliverAppBar.medium(
+              pinned: true,
+              title: const Text(
+                'Markets',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-
-              // Search Bar
-              SliverToBoxAdapter(
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(68.0),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                   child: TextField(
                     onChanged: (value) {
                       ref.read(searchQueryProvider.notifier).updateQuery(value);
@@ -81,6 +65,7 @@ class MarketsScreen extends HookConsumerWidget {
                   ),
                 ),
               ),
+            ),
 
               // Top Movers
               const SliverToBoxAdapter(
@@ -136,28 +121,28 @@ class MarketsScreen extends HookConsumerWidget {
               ),
 
               // Filter Pills
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _FilterPillsDelegate(
                   child: SizedBox(
                     height: 40,
                     child: ListView(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _FilterPill(label: 'All', filter: MarketFilter.all),
+                        const _FilterPill(label: 'All', filter: MarketFilter.all),
                         const SizedBox(width: 8),
-                        _FilterPill(
+                        const _FilterPill(
                           label: 'Gainers',
                           filter: MarketFilter.gainers,
                         ),
                         const SizedBox(width: 8),
-                        _FilterPill(
+                        const _FilterPill(
                           label: 'Losers',
                           filter: MarketFilter.losers,
                         ),
                         const SizedBox(width: 8),
-                        _FilterPill(
+                        const _FilterPill(
                           label: 'Volume',
                           filter: MarketFilter.volume,
                         ),
@@ -229,8 +214,7 @@ class MarketsScreen extends HookConsumerWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   List<CoinEntity> _getDummyData() {
@@ -246,10 +230,36 @@ class MarketsScreen extends HookConsumerWidget {
         marketCapRank: 1,
         totalVolume: Decimal.parse('10000.0'),
         priceChangePercentage24h: Decimal.parse('5.0'),
-        sparkline: [1, 2, 1, 3, 2, 4, 3, 5],
+        sparkline: const [1, 2, 1, 3, 2, 4, 3, 5],
       ),
     );
   }
+}
+
+class _FilterPillsDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _FilterPillsDelegate({required this.child});
+
+  @override
+  double get minExtent => 56.0;
+
+  @override
+  double get maxExtent => 56.0;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      alignment: Alignment.center,
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _FilterPillsDelegate oldDelegate) =>
+      oldDelegate.child != child;
 }
 
 class _FilterPill extends HookConsumerWidget {
