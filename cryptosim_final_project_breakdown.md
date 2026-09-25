@@ -1,5 +1,26 @@
 # CryptoSim — Project Specification & Build Reference
 
+## 0. Project Evolution & Current State
+
+*This section summarizes the real-world architectural pivots and UI changes we have made beyond the initial specification.*
+
+### UI & Architecture Pivot (iOS-first feel)
+We have intentionally moved away from the default boxy/elevated Material 3 aesthetics in favor of a sleek, iOS-inspired layered design.
+- **Sliver Architecture:** The core screens (Home, Markets, Wallet, Activity) have been completely refactored to use `CustomScrollView` with `SliverAppBar.medium` or `.large`. This gives a premium collapsing-title effect when scrolling.
+- **Global Theme Overhaul:** We configured a global `AppBarTheme` where `backgroundColor` is `scaffoldBackgroundColor` (rendering it invisible when unscrolled) and the `surfaceTintColor` is specifically mapped to the dark `surfaceContainer`. When the user scrolls, the app bar gracefully cross-fades into a deep, native gray rather than the default Material bluish-purple tint.
+- **Pinned Headers:** Search bars and filter chips (like on the Markets and Activity screens) are implemented using `SliverPersistentHeader`, allowing them to snap elegantly to the top of the screen right below the collapsed App Bar.
+- **Bottom Sheets:** We use `StupidSimpleCupertinoSheetRoute` globally for Buy/Sell/Deposit flows and Success/Error alerts. We increased the initial snapping config from `0.5` to `0.6` to ensure buttons aren't cut off on smaller devices (like the iPhone 8).
+
+### Market Data Strategy (Coinbase + CoinGecko)
+We employ a dual-provider strategy for cryptocurrency data:
+- **Coinbase WebSocket:** Used exclusively for the live ticker feed (`wss://ws-feed.exchange.coinbase.com`). *Why?* It provides ultra-low latency, real-time price updates for our top movers without strict unauthenticated rate limits. *(Note: Users on specific cellular networks like MTN Nigeria may experience blockages on this WebSocket port, requiring a future fallback).*
+- **CoinGecko REST API:** Used for historical chart data and deep market metadata. *Why?* CoinGecko provides rich sparklines, market caps, and historical price matrices that Coinbase does not easily expose to unauthenticated clients.
+
+### Auth Enhancements
+- Fixed Firebase Auth race conditions where `displayName` was not being updated correctly on sign-up. The `firebase_auth_repository` now explicitly awaits `user.updateDisplayName()` upon registration.
+
+---
+
 ## 1. Project Definition
 
 CryptoSim is a realistic simulated cryptocurrency exchange and wallet application built with Flutter and Firebase.
