@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wallet/core/utils/formatters.dart';
 import 'package:decimal/decimal.dart';
@@ -49,8 +50,8 @@ class AssetBalanceTile extends StatelessWidget {
                   color: theme.colorScheme.surfaceContainer,
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: iconUrl.isNotEmpty 
-                    ? Image.network(iconUrl, fit: BoxFit.cover)
+                child: iconUrl.isNotEmpty
+                    ? CachedNetworkImage(fit: BoxFit.cover, imageUrl: iconUrl)
                     : Center(
                         child: Text(
                           symbol.isNotEmpty ? symbol[0] : '?',
@@ -59,7 +60,7 @@ class AssetBalanceTile extends StatelessWidget {
                       ),
               ),
               const SizedBox(width: 12),
-              
+
               // Name & Crypto amount
               Expanded(
                 child: Column(
