@@ -52,6 +52,8 @@ class FirebaseAuthRepository implements AuthRepository {
 
     final user = userCredential.user;
     if (user != null) {
+      await user.updateDisplayName(displayName);
+      
       final userProfileModel = UserProfileModel(
         uid: user.uid,
         displayName: displayName,
