@@ -26,7 +26,7 @@ class TradingSheet extends StatelessWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
-        snappingConfig: SheetSnappingConfig([0.5, 0.9], initialSnap: 0.5),
+        snappingConfig: SheetSnappingConfig([0.6, 0.9], initialSnap: 0.6),
         child: TradingSheet(child: child),
       ),
     );
