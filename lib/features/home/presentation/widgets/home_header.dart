@@ -20,8 +20,11 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName ?? 'Trader';
-    final firstName = displayName.split(' ').first;
+    String rawName = user?.displayName ?? '';
+    if (rawName.trim().isEmpty) {
+      rawName = 'Trader';
+    }
+    final firstName = rawName.split(' ').first;
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
