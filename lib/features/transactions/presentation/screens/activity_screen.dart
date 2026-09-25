@@ -18,92 +18,102 @@ class ActivityScreen extends HookConsumerWidget {
     final transactionsStream = ref.watch(transactionsStreamProvider);
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Activity',
-                    style: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
+      body: CustomScrollView(
+        slivers: [
+          // Header
+          const SliverAppBar.medium(
+            pinned: true,
+            title: Text(
+              'Activity',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+
+          // Filter Chips
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _TransactionFilterDelegate(
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: TransactionFilterChips(),
               ),
             ),
+          ),
 
-            // Filter Chips
-            const Padding(
-              padding: EdgeInsets.only(bottom: 16),
-              child: TransactionFilterChips(),
-            ),
+          // Main Feed
+          transactionsStream.when(
+            data: (transactions) {
+              final filteredTransactions = _filterTransactions(
+                transactions,
+                activeFilter,
+              );
 
-            // Main Feed
-            Expanded(
-              child: transactionsStream.when(
-                data: (transactions) {
-                  final filteredTransactions = _filterTransactions(
-                    transactions,
-                    activeFilter,
-                  );
+              if (filteredTransactions.isEmpty) {
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyState(context, activeFilter),
+                );
+              }
 
-                  if (filteredTransactions.isEmpty) {
-                    return _buildEmptyState(context, activeFilter);
-                  }
-
-                  return ListView.separated(
-                    padding: const EdgeInsets.only(bottom: 32),
-                    itemCount: filteredTransactions.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 1, indent: 65, endIndent: 20),
-                    itemBuilder: (context, index) {
-                      return TransactionListTile(
-                        transaction: filteredTransactions[index],
-                        onTap: () {
-                          // TODO: Open transaction details screen
-                        },
-                      );
+              return SliverPadding(
+                padding: const EdgeInsets.only(bottom: 32),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final itemIndex = index ~/ 2;
+                      if (index.isEven) {
+                        return TransactionListTile(
+                          transaction: filteredTransactions[itemIndex],
+                          onTap: () {
+                            // TODO: Open transaction details screen
+                          },
+                        );
+                      }
+                      return const Divider(height: 1, indent: 65, endIndent: 20);
                     },
-                  );
-                },
-                loading: () => Skeletonizer(
-                  enabled: true,
-                  child: ListView.builder(
-                    itemCount: 10,
-                    itemBuilder: (context, index) {
-                      return TransactionListTile(
-                        transaction:
-                            _getDummyData()[index % _getDummyData().length],
-                      );
-                    },
+                    childCount: filteredTransactions.length * 2 - 1,
                   ),
                 ),
-                error: (error, stack) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline_rounded,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.error,
+              );
+            },
+            loading: () => SliverPadding(
+              padding: const EdgeInsets.only(bottom: 32),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return Skeletonizer(
+                      enabled: true,
+                      child: TransactionListTile(
+                        transaction: _getDummyData()[index % _getDummyData().length],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Failed to load transactions',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
+                  childCount: 10,
                 ),
               ),
             ),
-          ],
-        ),
+            error: (error, stack) => SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline_rounded,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Failed to load transactions',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -193,4 +203,30 @@ class ActivityScreen extends HookConsumerWidget {
       ),
     ];
   }
+}
+
+class _TransactionFilterDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _TransactionFilterDelegate({required this.child});
+
+  @override
+  double get minExtent => 56.0;
+
+  @override
+  double get maxExtent => 56.0;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      alignment: Alignment.centerLeft,
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _TransactionFilterDelegate oldDelegate) =>
+      oldDelegate.child != child;
 }
