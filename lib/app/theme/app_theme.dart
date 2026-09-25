@@ -54,8 +54,10 @@ class AppTheme {
     ),
   );
 
+
+
   static ThemeData get lightTheme {
-    return FlexThemeData.light(
+    final theme = FlexThemeData.light(
       colors: FlexSchemeColor.from(primary: _primary),
       keyColors: const FlexKeyColors(useKeyColors: false),
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
@@ -70,14 +72,21 @@ class AppTheme {
       fontFamily: 'Inter',
       subThemesData: _subThemesData,
       textTheme: _textTheme,
-    ).copyWith(
+    );
+
+    return theme.copyWith(
       extensions: const [AppSemanticColors.light],
       inputDecorationTheme: _inputDecorationTheme,
+      appBarTheme: theme.appBarTheme.copyWith(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: theme.colorScheme.surfaceContainer,
+        scrolledUnderElevation: 3.0,
+      ),
     );
   }
 
   static ThemeData get darkTheme {
-    return FlexThemeData.dark(
+    final theme = FlexThemeData.dark(
       colors: FlexSchemeColor.from(primary: _primary),
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
       blendLevel: 0,
@@ -91,9 +100,16 @@ class AppTheme {
       fontFamily: 'Inter',
       subThemesData: _subThemesData,
       textTheme: _textTheme,
-    ).copyWith(
+    );
+
+    return theme.copyWith(
       extensions: const [AppSemanticColors.dark],
       inputDecorationTheme: _inputDecorationTheme,
+      appBarTheme: theme.appBarTheme.copyWith(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: theme.colorScheme.surfaceContainer,
+        scrolledUnderElevation: 3.0,
+      ),
     );
   }
 }
