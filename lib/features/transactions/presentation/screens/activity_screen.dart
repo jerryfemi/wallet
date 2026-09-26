@@ -23,10 +23,7 @@ class ActivityScreen extends HookConsumerWidget {
           // Header
           const SliverAppBar.medium(
             pinned: true,
-            title: Text(
-              'Activity',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            title: Text('Activity'),
           ),
 
           // Filter Chips
