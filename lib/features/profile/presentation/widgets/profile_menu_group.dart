@@ -38,7 +38,7 @@ class ProfileMenuGroup extends StatelessWidget {
               Divider(
                 height: 1,
                 thickness: 1,
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
                 indent: 56,
                 endIndent: 16,
               ),
@@ -54,7 +54,7 @@ class ProfileMenuGroup extends StatelessWidget {
       child: InkWell(
         onTap: option.onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
               Container(
