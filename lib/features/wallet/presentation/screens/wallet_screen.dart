@@ -25,10 +25,7 @@ class WalletScreen extends HookConsumerWidget {
             SliverAppBar(
               pinned: true,
               expandedHeight: 220.0,
-              title: const Text(
-                'My Wallet',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              title: const Text('My Wallet'),
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0),
