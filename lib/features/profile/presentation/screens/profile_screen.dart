@@ -18,10 +18,7 @@ class ProfileScreen extends HookConsumerWidget {
           // 1. Collapsing App Bar
           const SliverAppBar.medium(
             pinned: true,
-            title: Text(
-              'Profile',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            title: Text('Profile'),
           ),
 
           // 2. User Info Header
