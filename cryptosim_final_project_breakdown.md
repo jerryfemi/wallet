@@ -177,6 +177,14 @@ The UI never directly calls Firestore or makes HTTP requests. It interacts only 
 
 The domain layer (entities, repository interfaces) has zero dependency on Firebase or any external package. The data layer adapts external data into domain entities.
 
+### Domain vs Data Layer
+- **Domain Layer**: Contains the core business logic and rules of the app. It houses `Entities` (pure Dart objects that represent our business models) and `Repositories` (abstract interfaces that define what data operations can be performed, without specifying *how*). It is completely independent of external libraries or frameworks like Firebase.
+- **Data Layer**: Contains the concrete implementation of the repository interfaces defined in the domain layer. It interacts with `DataSources` (like Firestore, CoinGecko REST API, Coinbase WebSocket) and uses `Models` (DTOs that map external JSON/Firestore data into our pure Domain Entities).
+
+### Freezed & Riverpod
+- **Freezed**: We use Freezed extensively for both our Domain Entities and Data Models. It provides robust immutable state classes, pattern matching, and deep copy capabilities (`copyWith`). By using Freezed, we eliminate boilerplate code for `==` operators and `hashCode` overrides. We also combine it with `json_serializable` in the Data layer for automated JSON encoding/decoding.
+- **Riverpod**: Our entire state management and dependency injection tree is built on Riverpod using the modern `@riverpod` code-generation syntax. We use it to inject repositories, manage asynchronous streams (like the live WebSocket ticker and Firestore snapshots), and handle complex UI states (like the simulated trade flow stages). The code generation ensures type safety and reduces human error in provider configuration.
+
 ---
 
 ## 4. Clean Architecture & Folder Structure
