@@ -16,7 +16,7 @@ class LogoutConfirmationSheet extends StatelessWidget {
   }) {
     return Navigator.of(context, rootNavigator: true).push(
       StupidSimpleCupertinoSheetRoute(
-        snappingConfig: SheetSnappingConfig([0.6]),
+        snappingConfig: SheetSnappingConfig([0.55]),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
@@ -32,14 +32,28 @@ class LogoutConfirmationSheet extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Material(
-        type: MaterialType.transparency,
+        color: colorScheme.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Drag Handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
                 // Warning icon
                 Container(
                   width: 72,
