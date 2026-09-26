@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
+import 'package:wallet/features/profile/presentation/widgets/currency_selection_sheet.dart';
 import 'package:wallet/features/profile/presentation/widgets/logout_confirmation_sheet.dart';
 import 'package:wallet/features/profile/presentation/widgets/profile_menu_group.dart';
 
@@ -15,20 +17,17 @@ class ProfileScreen extends HookConsumerWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // 1. Collapsing App Bar
-          const SliverAppBar.medium(
-            pinned: true,
-            title: Text('Profile'),
-          ),
+          // 1. Pinned App Bar (Compact, no title)
+          const SliverAppBar(pinned: true),
 
           // 2. User Info Header
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.only(top: 8, bottom: 24),
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 44,
+                    radius: 60,
                     backgroundColor: Theme.of(context)
                         .colorScheme
                         .surfaceContainer,
@@ -79,8 +78,8 @@ class ProfileScreen extends HookConsumerWidget {
                       MenuOption(
                         iconAsset: 'assets/icons/currency.svg',
                         title: 'Preferred Currency',
-                        trailingText: 'USD',
-                        onTap: () {},
+                        trailingText: ref.watch(currencyProvider).code,
+                        onTap: () => CurrencySelectionSheet.show(context),
                       ),
                       MenuOption(
                         iconAsset: 'assets/icons/bell.svg',
