@@ -153,9 +153,20 @@ Future<double> portfolioTotalChange24h(Ref ref) async {
 }
 
 @riverpod
-Future<void> simulateDeposit(Ref ref, double amount) async {
-  final user = ref.read(authStateProvider).value;
-  if (user == null) return;
-  final repository = ref.read(walletRepositoryProvider);
-  await repository.simulateDeposit(user.uid, amount);
+class DepositController extends _$DepositController {
+  @override
+  FutureOr<void> build() {}
+
+  Future<void> simulateDeposit(double amount) async {
+    final user = ref.read(authStateProvider).value;
+    if (user == null) return;
+    final repository = ref.read(walletRepositoryProvider);
+    state = const AsyncValue.loading();
+    try {
+      await repository.simulateDeposit(user.uid, amount);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
 }

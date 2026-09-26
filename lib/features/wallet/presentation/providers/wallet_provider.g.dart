@@ -245,71 +245,46 @@ final class PortfolioTotalChange24hProvider
 String _$portfolioTotalChange24hHash() =>
     r'efcaa746143b03ed7671d8caf86038391a2bfa25';
 
-@ProviderFor(simulateDeposit)
-final simulateDepositProvider = SimulateDepositFamily._();
+@ProviderFor(DepositController)
+final depositControllerProvider = DepositControllerProvider._();
 
-final class SimulateDepositProvider
-    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
-    with $FutureModifier<void>, $FutureProvider<void> {
-  SimulateDepositProvider._({
-    required SimulateDepositFamily super.from,
-    required double super.argument,
-  }) : super(
-         retry: null,
-         name: r'simulateDepositProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$simulateDepositHash();
+final class DepositControllerProvider
+    extends $AsyncNotifierProvider<DepositController, void> {
+  DepositControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'depositControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
-  String toString() {
-    return r'simulateDepositProvider'
-        ''
-        '($argument)';
-  }
+  String debugGetCreateSourceHash() => _$depositControllerHash();
 
   @$internal
   @override
-  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<void> create(Ref ref) {
-    final argument = this.argument as double;
-    return simulateDeposit(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SimulateDepositProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
+  DepositController create() => DepositController();
 }
 
-String _$simulateDepositHash() => r'293895158092173098c3d7349d338d5e79786883';
+String _$depositControllerHash() => r'76208fe902c695c981fe7988124d070b154809ea';
 
-final class SimulateDepositFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<void>, double> {
-  SimulateDepositFamily._()
-    : super(
-        retry: null,
-        name: r'simulateDepositProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  SimulateDepositProvider call(double amount) =>
-      SimulateDepositProvider._(argument: amount, from: this);
-
+abstract class _$DepositController extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
   @override
-  String toString() => r'simulateDepositProvider';
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
 }
