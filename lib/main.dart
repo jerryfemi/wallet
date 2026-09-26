@@ -46,7 +46,7 @@ class CryptoSimApp extends ConsumerWidget {
       title: 'CryptoSim',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.dark,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
