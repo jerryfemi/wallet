@@ -8,10 +8,7 @@ import 'package:wallet/shared/widgets/app_button.dart';
 class LogoutConfirmationSheet extends StatelessWidget {
   final VoidCallback onConfirm;
 
-  const LogoutConfirmationSheet({
-    super.key,
-    required this.onConfirm,
-  });
+  const LogoutConfirmationSheet({super.key, required this.onConfirm});
 
   static Future<void> show(
     BuildContext context, {
@@ -69,9 +66,7 @@ class LogoutConfirmationSheet extends StatelessWidget {
                 Text(
                   'Log Out?',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
+                  style: Theme.of(context).textTheme.titleLarge
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -81,9 +76,9 @@ class LogoutConfirmationSheet extends StatelessWidget {
                   'Are you sure you want to log out of your account? You can always log back in anytime.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        height: 1.5,
-                      ),
+                    color: colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
                 ),
                 const SizedBox(height: 32),
 
