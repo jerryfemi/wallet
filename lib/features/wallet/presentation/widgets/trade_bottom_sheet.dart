@@ -55,7 +55,8 @@ class TradeBottomSheet extends HookConsumerWidget {
         switch (flowState.stage) {
           case TradeFlowStage.assetSelection:
           case TradeFlowStage.input:
-            target = (flowState.type == TradeFlowType.buy ||
+            target =
+                (flowState.type == TradeFlowType.buy ||
                     flowState.type == TradeFlowType.sell)
                 ? 0.9
                 : 0.85;
@@ -90,7 +91,9 @@ class TradeBottomSheet extends HookConsumerWidget {
       referenceNumber.value = generateRef();
       tradeTime.value = DateTime.now();
       ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
-      await ref.read(depositControllerProvider.notifier).simulateDeposit(amount);
+      await ref
+          .read(depositControllerProvider.notifier)
+          .simulateDeposit(amount);
     }
 
     Future<void> onBuyConfirm(
@@ -126,10 +129,12 @@ class TradeBottomSheet extends HookConsumerWidget {
 
           ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
         } catch (e) {
-          ref.read(tradeFlowProvider.notifier).setStage(
-            TradeFlowStage.failed,
-            errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
-          );
+          ref
+              .read(tradeFlowProvider.notifier)
+              .setStage(
+                TradeFlowStage.failed,
+                errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
+              );
         }
       }
     }
@@ -167,10 +172,12 @@ class TradeBottomSheet extends HookConsumerWidget {
 
           ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
         } catch (e) {
-          ref.read(tradeFlowProvider.notifier).setStage(
-            TradeFlowStage.failed,
-            errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
-          );
+          ref
+              .read(tradeFlowProvider.notifier)
+              .setStage(
+                TradeFlowStage.failed,
+                errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
+              );
         }
       }
     }
@@ -179,6 +186,12 @@ class TradeBottomSheet extends HookConsumerWidget {
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeIn,
+      layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[...previousChildren, ?currentChild],
+        );
+      },
       child: _buildCurrentStage(
         context,
         flowState: flowState,
@@ -206,7 +219,8 @@ class TradeBottomSheet extends HookConsumerWidget {
     required DateTime tradeTime,
     required Future<void> Function(double) onDepositSubmit,
     required Future<void> Function(String, String, double, double) onBuyConfirm,
-    required Future<void> Function(String, String, double, double) onSellConfirm,
+    required Future<void> Function(String, String, double, double)
+    onSellConfirm,
   }) {
     final marketsState = ref.watch(marketsProvider);
     final markets = marketsState.value ?? [];
@@ -289,7 +303,9 @@ class TradeBottomSheet extends HookConsumerWidget {
           title: 'Trade Unsuccessful',
           message: flowState.errorMessage ?? 'An error occurred.',
           onTryAgain: () {
-            ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.review);
+            ref
+                .read(tradeFlowProvider.notifier)
+                .setStage(TradeFlowStage.review);
           },
           onDismiss: () => Navigator.of(context).pop(),
         );
