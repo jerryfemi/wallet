@@ -62,7 +62,7 @@ class AppTheme {
       keyColors: const FlexKeyColors(useKeyColors: false),
       surfaceMode: FlexSurfaceMode.highScaffoldLevelSurface,
       blendLevel: 0,
-      appBarStyle: FlexAppBarStyle.primary,
+      appBarStyle: FlexAppBarStyle.background,
       transparentStatusBar: true,
       tabBarStyle: FlexTabBarStyle.forAppBar,
       tooltipsMatchBackground: true,
