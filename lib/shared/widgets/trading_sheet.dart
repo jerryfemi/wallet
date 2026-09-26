@@ -39,8 +39,29 @@ class TradingSheet extends StatelessWidget {
       left: false,
       right: false,
       child: Material(
-        type: MaterialType.transparency,
-        child: SafeArea(top: false, child: child),
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              // Drag Handle
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant
+                      .withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Expanded(child: child),
+            ],
+          ),
+        ),
       ),
     );
   }
