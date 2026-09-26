@@ -90,8 +90,7 @@ class TradeBottomSheet extends HookConsumerWidget {
       referenceNumber.value = generateRef();
       tradeTime.value = DateTime.now();
       ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
-      await Future.delayed(const Duration(milliseconds: 300));
-      await ref.read(simulateDepositProvider(amount).future);
+      await ref.read(depositControllerProvider.notifier).simulateDeposit(amount);
     }
 
     Future<void> onBuyConfirm(
