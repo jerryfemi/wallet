@@ -76,7 +76,10 @@ class AssetPickerSheet extends HookConsumerWidget {
       left: false,
       right: false,
       child: Material(
-        type: MaterialType.transparency,
+        color: colorScheme.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         child: Column(
           children: [
             // Drag handle
@@ -86,7 +89,7 @@ class AssetPickerSheet extends HookConsumerWidget {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
