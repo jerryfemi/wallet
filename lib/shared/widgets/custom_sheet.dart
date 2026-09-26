@@ -64,15 +64,28 @@ class CustomSheet extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Material(
-        type: MaterialType.transparency,
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         child: SafeArea(
           top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Lottie.asset(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag Handle
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Lottie.asset(
                   type.animationPath,
                   width: 120,
                   height: 120,
