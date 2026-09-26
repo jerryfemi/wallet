@@ -30,14 +30,13 @@ class CurrencySelectionSheet extends ConsumerWidget {
     return SafeArea(
       bottom: false,
       child: Material(
-        color: colorScheme.surface,
+        color: colorScheme.surfaceContainer,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         child: SafeArea(
           top: false,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Drag Handle ─────────────────────────────────────────
@@ -67,7 +66,6 @@ class CurrencySelectionSheet extends ConsumerWidget {
               // ── Currency List ───────────────────────────────────────
               Expanded(
                 child: ListView.separated(
-                  shrinkWrap: true,
                   padding: const EdgeInsets.only(bottom: 32),
                   itemCount: AppCurrency.supported.length,
                   separatorBuilder: (_, _) => Divider(
