@@ -75,18 +75,23 @@ class BuyTradeView extends HookConsumerWidget {
     );
     final usdtBalance = usdtAsset.amount.toDouble();
 
+    final rates = ref.watch(exchangeRatesProvider).value ?? {};
+    final fxRate = rates[activeCurrency.code] ?? 1.0;
+
     final inputAmount = double.tryParse(amountString.value) ?? 0.0;
 
     // What the user types is the fiat value (cost of crypto)
     final fiatValue = inputAmount;
-    final feeAmount = fiatValue * 0.01;
-    final totalCost = fiatValue + feeAmount;
+    final usdCost = fiatValue / fxRate;
+    
+    final feeAmountUsd = usdCost * 0.01;
+    final totalCostUsd = usdCost + feeAmountUsd;
     final estimatedCrypto = executionPrice > 0
-        ? (fiatValue / executionPrice)
+        ? (usdCost / executionPrice)
         : 0.0;
 
-    final isBelowMin = inputAmount > 0 && inputAmount < 1.0;
-    final isAboveMax = totalCost > usdtBalance;
+    final isBelowMin = usdCost > 0 && usdCost < 1.0;
+    final isAboveMax = totalCostUsd > usdtBalance;
 
     // Format the display amount
     final displayAmount = amountString.value.isEmpty
@@ -123,9 +128,10 @@ class BuyTradeView extends HookConsumerWidget {
       ref.read(tradeFlowProvider.notifier).setInputAmount(parsed);
     }
 
-    void setQuickAmount(double amount) {
-      amountString.value = amount.toStringAsFixed(2);
-      ref.read(tradeFlowProvider.notifier).setInputAmount(amount);
+    void setQuickAmount(double amountUsd) {
+      final amountLocal = amountUsd * fxRate;
+      amountString.value = amountLocal.toStringAsFixed(2);
+      ref.read(tradeFlowProvider.notifier).setInputAmount(amountLocal);
     }
 
     return SingleChildScrollView(
@@ -301,7 +307,7 @@ class BuyTradeView extends HookConsumerWidget {
                     ),
                   ),
                   Text(
-                    '${formatFiat(usdtBalance)} USDT',
+                    formatFiat(usdtBalance),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -338,7 +344,7 @@ class BuyTradeView extends HookConsumerWidget {
                               const SizedBox(height: 12),
                               _buildFeeRow(
                                 'Network Fee',
-                                formatFiat(feeAmount),
+                                formatFiat(feeAmountUsd),
                                 theme,
                               ),
                               const SizedBox(height: 12),
@@ -346,7 +352,7 @@ class BuyTradeView extends HookConsumerWidget {
                               const SizedBox(height: 12),
                               _buildFeeRow(
                                 'Total',
-                                formatFiat(totalCost),
+                                formatFiat(totalCostUsd),
                                 theme,
                                 isTotal: true,
                               ),
@@ -440,7 +446,7 @@ class BuyTradeView extends HookConsumerWidget {
                     : isAboveMax
                         ? 'Insufficient USDT Balance'
                         : isReviewing
-                            ? 'Confirm Buy — ${formatFiat(totalCost)}'
+                            ? 'Confirm Buy — ${formatFiat(totalCostUsd)}'
                             : 'Continue',
                 style: const TextStyle(
                   fontSize: 18,
