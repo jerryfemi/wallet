@@ -81,62 +81,94 @@ class CoinLineChart extends ConsumerWidget {
             maxX: spots.length.toDouble() - 1,
             minY: minY - yPadding,
             maxY: maxY + yPadding,
-            lineTouchData: LineTouchData(
-              handleBuiltInTouches: true,
-              touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
-                if (!context.mounted) return;
-                
-                if (!event.isInterestedForInteractions ||
-                    response == null ||
-                    response.lineBarSpots == null) {
-                  // User stopped scrubbing, clear scrubbed data
-                  ref.read(scrubbedChartDataProvider.notifier).clear();
-                  return;
-                }
-                final spotIndex = response.lineBarSpots!.first.spotIndex;
-                final candle = reversedCandles[spotIndex];
+              extraLinesData: ExtraLinesData(
+                horizontalLines: [
+                  HorizontalLine(
+                    y: firstCandle.open,
+                    color: Colors.white24,
+                    strokeWidth: 1,
+                    dashArray: [4, 4],
+                  ),
+                ],
+              ),
+              lineTouchData: LineTouchData(
+                handleBuiltInTouches: true,
+                touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+                  if (!context.mounted) return;
+                  
+                  if (!event.isInterestedForInteractions ||
+                      response == null ||
+                      response.lineBarSpots == null) {
+                    // User stopped scrubbing, clear scrubbed data
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) {
+                        ref.read(scrubbedChartDataProvider.notifier).clear();
+                      }
+                    });
+                    return;
+                  }
+                  final spotIndex = response.lineBarSpots!.first.spotIndex;
+                  final candle = reversedCandles[spotIndex];
 
-                // Update the state provider so the header updates instantly
-                ref
-                    .read(scrubbedChartDataProvider.notifier)
-                    .setScrubbed(
-                      candle.close,
-                      candle.date,
-                      openPrice: firstCandle.open, // Keep base open price for accurate total % calculation during scrub
-                      index: spotIndex,
-                    );
-              },
-              getTouchedSpotIndicator:
-                  (LineChartBarData barData, List<int> spotIndexes) {
-                    return spotIndexes.map((index) {
-                      return TouchedSpotIndicatorData(
-                        const FlLine(
-                          color: Colors.white24,
-                          strokeWidth: 1,
-                          dashArray: [4, 4],
-                        ),
-                        FlDotData(
-                          show: true,
-                          getDotPainter: (spot, percent, barData, index) {
-                            return FlDotCirclePainter(
-                              radius: 4,
-                              color: chartColor,
-                              strokeWidth: 2,
-                              strokeColor: Colors.white,
-                            );
-                          },
+                  // Update the state provider so the header updates instantly
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) {
+                      ref
+                          .read(scrubbedChartDataProvider.notifier)
+                          .setScrubbed(
+                            candle.close,
+                            candle.date,
+                            openPrice: firstCandle.open,
+                            index: spotIndex,
+                          );
+                    }
+                  });
+                },
+                getTouchedSpotIndicator:
+                    (LineChartBarData barData, List<int> spotIndexes) {
+                      return spotIndexes.map((index) {
+                        return TouchedSpotIndicatorData(
+                          const FlLine(
+                            color: Colors.white54,
+                            strokeWidth: 1.5,
+                            // Solid vertical line
+                          ),
+                          FlDotData(
+                            show: true,
+                            getDotPainter: (spot, percent, barData, index) {
+                              return FlDotCirclePainter(
+                                radius: 4,
+                                color: chartColor,
+                                strokeWidth: 2,
+                                strokeColor: Colors.white,
+                              );
+                            },
+                          ),
+                        );
+                      }).toList();
+                    },
+                touchTooltipData: LineTouchTooltipData(
+                  getTooltipColor: (touchedSpot) => Colors.transparent,
+                  tooltipPadding: const EdgeInsets.only(bottom: 8),
+                  tooltipMargin: 8,
+                  getTooltipItems: (touchedSpots) {
+                    return touchedSpots.map((spot) {
+                      final date = reversedCandles[spot.spotIndex].date;
+                      // Format like "2:32 PM"
+                      final timeString = "${date.hour > 12 ? date.hour - 12 : (date.hour == 0 ? 12 : date.hour)}:${date.minute.toString().padLeft(2, '0')} ${date.hour >= 12 ? 'PM' : 'AM'}";
+                      
+                      return LineTooltipItem(
+                        timeString,
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
                       );
                     }).toList();
                   },
-              touchTooltipData: LineTouchTooltipData(
-                getTooltipItems: (touchedSpots) {
-                  // Return nulls to disable the default floating tooltip,
-                  // since we display the price in the massive header instead!
-                  return touchedSpots.map((e) => null).toList();
-                },
+                ),
               ),
-            ),
             lineBarsData: [
               LineChartBarData(
                 spots: spots,
