@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/core/utils/formatters.dart';
@@ -16,10 +17,10 @@ class MarketStatsSection extends StatelessWidget {
     final marketCap = coin.marketCap.toDouble();
     final volume = coin.totalVolume.toDouble();
     final circulatingSupply = currentPrice > 0 ? marketCap / currentPrice : 0.0;
-    
+
     double high24h = currentPrice;
     double low24h = currentPrice;
-    
+
     if (coin.sparkline.isNotEmpty) {
       high24h = coin.sparkline.reduce(max);
       low24h = coin.sparkline.reduce(min);
@@ -35,9 +36,8 @@ class MarketStatsSection extends StatelessWidget {
       children: [
         Text(
           'Market Stats',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(context).textTheme.titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -60,7 +60,8 @@ class MarketStatsSection extends StatelessWidget {
             ),
             _StatCard(
               title: 'CIRCULATING SUPPLY',
-              value: '${compactNumberFormat.format(circulatingSupply)} ${coin.symbol.toUpperCase()}',
+              value:
+                  '${compactNumberFormat.format(circulatingSupply)} ${coin.symbol.toUpperCase()}',
             ),
             _RangeStatCard(
               title: '24H RANGE',
@@ -80,21 +81,19 @@ class _StatCard extends StatelessWidget {
   final String value;
   final String? badgeText;
 
-  const _StatCard({
-    required this.title,
-    required this.value,
-    this.badgeText,
-  });
+  const _StatCard({required this.title, required this.value, this.badgeText});
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: onSurface.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: onSurface.withValues(alpha: 0.08),
           width: 0.5,
         ),
       ),
@@ -107,7 +106,7 @@ class _StatCard extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: onSurface.withValues(alpha: 0.5),
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
@@ -116,15 +115,18 @@ class _StatCard extends StatelessWidget {
               if (badgeText != null) ...[
                 const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: onSurface.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     badgeText!,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: onSurface,
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                     ),
@@ -136,8 +138,8 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: onSurface,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -167,16 +169,14 @@ class _RangeStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final range = high - low;
     final ratio = range == 0 ? 0.5 : ((current - low) / range).clamp(0.0, 1.0);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: onSurface.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.08),
-          width: 0.5,
-        ),
+        border: Border.all(color: onSurface.withValues(alpha: 0.08), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +185,7 @@ class _RangeStatCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: onSurface.withValues(alpha: 0.5),
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
@@ -205,7 +205,7 @@ class _RangeStatCard extends StatelessWidget {
                     height: 4,
                     width: barWidth,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: onSurface.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -215,12 +215,12 @@ class _RangeStatCard extends StatelessWidget {
                     child: Container(
                       height: 8,
                       width: 8,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration: BoxDecoration(
+                        color: onSurface,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.white,
+                            color: onSurface,
                             blurRadius: 4,
                             spreadRadius: 1,
                           ),
@@ -240,7 +240,7 @@ class _RangeStatCard extends StatelessWidget {
               Text(
                 Formatters.formatCompactFiat(low),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: onSurface.withValues(alpha: 0.5),
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
@@ -248,7 +248,7 @@ class _RangeStatCard extends StatelessWidget {
               Text(
                 Formatters.formatCompactFiat(high),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: onSurface.withValues(alpha: 0.5),
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
