@@ -6,6 +6,7 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/domain/entities/news_article_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_details_provider.dart';
 import 'package:wallet/app/theme/semantic_colors.dart';
+import 'package:wallet/core/presentation/widgets/bouncy_touch.dart';
 
 class CoinNewsSection extends ConsumerWidget {
   final CoinEntity coin;
@@ -15,16 +16,16 @@ class CoinNewsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final newsAsync = ref.watch(coinNewsProvider(coin.symbol));
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'News',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+          'Related News',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 16),
         newsAsync.when(
@@ -34,20 +35,55 @@ class CoinNewsSection extends ConsumerWidget {
                 child: Text(
                   'No recent news available.',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               );
             }
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              itemCount: articles.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                return _NewsCard(article: articles[index]);
-              },
+            
+            // Calculate sentiment stats for subtitle
+            int bullish = articles.where((a) => a.sentiment.toLowerCase() == 'bullish').length;
+            int bearish = articles.where((a) => a.sentiment.toLowerCase() == 'bearish').length;
+            String overallSentiment = bullish >= bearish ? 'Bullish' : 'Bearish';
+            Color sentimentColor = overallSentiment == 'Bullish' 
+                ? (theme.extension<AppSemanticColors>()?.positive ?? AppSemanticColors.light.positive)
+                : (theme.extension<AppSemanticColors>()?.negative ?? AppSemanticColors.light.negative);
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      '${articles.length} Sources • ',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      overallSentiment,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: sentimentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  itemCount: articles.length,
+                  separatorBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+                  ),
+                  itemBuilder: (context, index) {
+                    return _NewsCard(article: articles[index]);
+                  },
+                ),
+              ],
             );
           },
           loading: () => const Center(
@@ -59,7 +95,7 @@ class CoinNewsSection extends ConsumerWidget {
           error: (error, stack) => Center(
             child: Text(
               'Failed to load news.',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: TextStyle(color: theme.colorScheme.error),
             ),
           ),
         ),
@@ -102,19 +138,10 @@ class _NewsCard extends StatelessWidget {
         ? (semanticColors?.positive ?? AppSemanticColors.light.positive) 
         : (semanticColors?.negative ?? AppSemanticColors.light.negative);
 
-    return InkWell(
+    return BouncyTouch(
       onTap: _launchUrl,
-      borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: onSurface.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: onSurface.withValues(alpha: 0.08),
-            width: 0.5,
-          ),
-        ),
+        color: Colors.transparent, // Ensures the whole row is clickable
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
