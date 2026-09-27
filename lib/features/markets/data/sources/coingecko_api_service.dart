@@ -59,45 +59,35 @@ class CoinGeckoApiService {
   Future<List<NewsArticleEntity>> getCoinNews(String symbol) async {
     try {
       // Since most crypto news APIs require a paid API key now (CoinGecko, CryptoCompare),
-      // we parse the public RSS feed of CoinTelegraph to get 100% real, live news for free.
+      // we use rss2json to parse the public RSS feed of CoinTelegraph to get 100% real, live news for free
+      // and bypass CORS/Cloudflare restrictions on the direct RSS XML endpoint.
       final response = await _dioClient.dio.get(
-        'https://cointelegraph.com/rss',
-        options: Options(responseType: ResponseType.plain),
+        'https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss',
       );
 
-      final String xmlData = response.data.toString();
+      final List<dynamic> items = response.data['items'] ?? [];
       final List<NewsArticleEntity> articles = [];
 
-      // Simple RegEx parser for RSS <item> tags
-      final itemRegExp = RegExp(r'<item>(.*?)</item>', dotAll: true);
-      final titleRegExp = RegExp(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', dotAll: true);
-      final linkRegExp = RegExp(r'<link>(.*?)</link>', dotAll: true);
-      final pubDateRegExp = RegExp(r'<pubDate>(.*?)</pubDate>', dotAll: true);
-      final imgRegExp = RegExp(r'<media:content[^>]*url="(.*?)"', dotAll: true);
-
-      final matches = itemRegExp.allMatches(xmlData);
-
-      for (final match in matches) {
+      for (final item in items) {
         if (articles.length >= 15) break; 
         
-        final itemStr = match.group(1) ?? '';
-        final title = titleRegExp.firstMatch(itemStr)?.group(1)?.trim() ?? 'Crypto News';
-        final url = linkRegExp.firstMatch(itemStr)?.group(1)?.trim() ?? 'https://cointelegraph.com';
-        final pubDateStr = pubDateRegExp.firstMatch(itemStr)?.group(1)?.trim() ?? '';
+        final title = item['title'] ?? 'Crypto News';
+        final url = item['link'] ?? 'https://cointelegraph.com';
+        final pubDateStr = item['pubDate'] ?? '';
         
         DateTime publishedAt = DateTime.now();
         try {
-          // Attempt basic parsing, RSS pubDate is usually RFC 822/1123
-          // Dart's DateTime doesn't natively parse RFC 822 perfectly if it has timezones like 'EST', 
-          // but we can try parsing or fallback to now.
-          // For safety in this regex fallback, we'll try to parse just the date part if it fails.
           publishedAt = DateTime.parse(pubDateStr);
         } catch (_) {
-           // If it fails, we just use DateTime.now() so the app doesn't crash.
+           // If it fails, we just use DateTime.now()
         }
 
-        final imageUrl = imgRegExp.firstMatch(itemStr)?.group(1)?.trim() ?? 
-            'https://images.cryptocompare.com/news/default/coindesk.png';
+        String imageUrl = 'https://images.cryptocompare.com/news/default/coindesk.png';
+        if (item['enclosure'] != null && item['enclosure']['link'] != null) {
+          imageUrl = item['enclosure']['link'];
+        } else if (item['thumbnail'] != null && item['thumbnail'].toString().isNotEmpty) {
+          imageUrl = item['thumbnail'];
+        }
 
         articles.add(NewsArticleEntity(
           title: title,

@@ -108,7 +108,7 @@ class CustomSheet extends StatelessWidget {
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const Spacer(),
                 AppButton(
                   text: buttonText,
                   onPressed: () {
