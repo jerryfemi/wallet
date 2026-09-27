@@ -15,6 +15,7 @@ class Routes {
 
   // Sub-routes
   static const String coinDetails = 'coin-details';
+  static const String aboutCoin = 'about';
   static const String assetDetail = 'detail/:coinId';
   static const String send = 'send';
   static const String receive = 'receive';
