@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 
-class TradeReceiptView extends StatelessWidget {
+class TradeReceiptView extends ConsumerWidget {
   final TradeFlowType type;
   final String title;
   final double cryptoAmount;
@@ -31,10 +34,12 @@ class TradeReceiptView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
+    
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final formattedFiatAmount = NumberFormat.currency(symbol: '\$').format(fiatAmount);
+    final formattedFiatAmount = formatFiat(fiatAmount);
     final formattedDate = DateFormat('MMM d, y, h:mm a').format(tradeTime);
 
     return SafeArea(
