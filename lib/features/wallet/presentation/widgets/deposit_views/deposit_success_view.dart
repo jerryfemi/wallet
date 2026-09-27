@@ -1,12 +1,15 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 
-class DepositSuccessView extends HookWidget {
+class DepositSuccessView extends HookConsumerWidget {
   final double amount;
   final String referenceNumber;
   final DateTime depositTime;
@@ -21,7 +24,9 @@ class DepositSuccessView extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
+    
     final confettiController = useMemoized(
       () => ConfettiController(duration: const Duration(milliseconds: 1500)),
     );
@@ -76,7 +81,7 @@ class DepositSuccessView extends HookWidget {
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final formattedAmount = NumberFormat.currency(symbol: '\$').format(amount);
+    final formattedAmount = formatFiat(amount);
     final formattedDate = DateFormat('MMM d, y, h:mm a').format(depositTime);
 
     return Stack(
