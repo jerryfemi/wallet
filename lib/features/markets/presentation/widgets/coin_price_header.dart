@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:decimal/decimal.dart';
 
@@ -45,6 +46,7 @@ class CoinPriceHeader extends HookConsumerWidget {
       children: [
         GestureDetector(
           onTap: () {
+            HapticFeedback.lightImpact();
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -58,15 +60,16 @@ class CoinPriceHeader extends HookConsumerWidget {
             children: [
               Text(
                 coin.name,
-                style: Theme.of(context).textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.w600),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
               Icon(
-                Icons.keyboard_arrow_down,
-                color: Theme.of(context).colorScheme.onSurface
-                    .withValues(alpha: 0.5),
-                size: 20,
+                Icons.keyboard_arrow_down_rounded,
+                color: Theme.of(context).colorScheme.onSurface,
+                size: 24,
               ),
             ],
           ),
