@@ -14,8 +14,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:wallet/firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
   try {
     DevicePreview.enable(enabled: kDebugMode);
   } catch (e) {
@@ -24,13 +22,8 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   
-  final prefs = await SharedPreferences.getInstance();
-
-  runApp(ProviderScope(
-    overrides: [
-      sharedPreferencesProvider.overrideWithValue(prefs),
-    ],
-    child: const CryptoSimApp(),
+  runApp(const ProviderScope(
+    child: CryptoSimApp(),
   ));
 
   if (kDebugMode) {

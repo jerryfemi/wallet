@@ -5,6 +5,7 @@ class MenuOption {
   final String iconAsset;
   final String title;
   final String? trailingText;
+  final Widget? trailingWidget;
   final VoidCallback onTap;
   final Color? iconColor;
 
@@ -12,6 +13,7 @@ class MenuOption {
     required this.iconAsset,
     required this.title,
     this.trailingText,
+    this.trailingWidget,
     required this.onTap,
     this.iconColor,
   });
@@ -88,21 +90,25 @@ class ProfileMenuGroup extends StatelessWidget {
                   ),
                 ),
               ),
-              if (option.trailingText != null) ...[
-                Text(
-                  option.trailingText!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 13,
+              if (option.trailingWidget != null)
+                option.trailingWidget!
+              else ...[
+                if (option.trailingText != null) ...[
+                  Text(
+                    option.trailingText!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
                   ),
+                  const SizedBox(width: 8),
+                ],
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 8),
               ],
-              Icon(
-                Icons.chevron_right_rounded,
-                size: 20,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
             ],
           ),
         ),

@@ -82,13 +82,15 @@ class ProfileScreen extends HookConsumerWidget {
                         onTap: () => CurrencySelectionSheet.show(context),
                       ),
                       MenuOption(
-                        iconAsset: 'assets/icons/shield.svg', // Assuming we don't have a specific theme/moon icon yet, shield or another placeholder is fine, let's use a standard Flutter Icon if we can, but MenuOption requires SVG.
-                        // Actually, wait, let's just use a custom row or if MenuOption supports widgets.
-                        // Wait, MenuOption doesn't natively support a Switch. I'll add the switch inside a custom trailing widget if possible, but MenuOption only has `trailingText`.
-                        // For now, I'll just use a tap to toggle theme.
-                        iconAsset: 'assets/icons/edit.svg', // Let's just put something for now, the user can change it. 
+                        iconAsset: 'assets/icons/edit.svg', // Still waiting on a moon/theme icon, edit is placeholder
                         title: 'Dark Mode',
-                        trailingText: ref.watch(themeModeProvider) == ThemeMode.dark ? 'On' : 'Off',
+                        trailingWidget: Switch.adaptive(
+                          value: ref.watch(themeModeProvider) == ThemeMode.dark,
+                          onChanged: (value) {
+                            ref.read(themeModeProvider.notifier).toggleTheme();
+                          },
+                          activeColor: Theme.of(context).colorScheme.primary,
+                        ),
                         onTap: () => ref.read(themeModeProvider.notifier).toggleTheme(),
                       ),
                       MenuOption(
