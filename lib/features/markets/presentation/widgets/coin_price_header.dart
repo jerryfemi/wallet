@@ -4,7 +4,6 @@ import 'package:decimal/decimal.dart';
 
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_chart_state_provider.dart';
-import 'package:wallet/core/providers/exchange_rates_provider.dart';
 
 class CoinPriceHeader extends HookConsumerWidget {
   final CoinEntity coin;
@@ -14,7 +13,6 @@ class CoinPriceHeader extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scrubbedData = ref.watch(scrubbedChartDataProvider);
-    final formatFiat = ref.watch(fiatFormatterProvider);
 
     // Determine current display values
     final double displayPrice =
@@ -43,23 +41,59 @@ class CoinPriceHeader extends HookConsumerWidget {
           children: [
             Text(
               coin.name,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: Theme.of(context).textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(width: 4),
             Icon(
               Icons.keyboard_arrow_down,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              color: Theme.of(context).colorScheme.onSurface
+                  .withValues(alpha: 0.5),
               size: 20,
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Text(
-          formatFiat(displayPrice),
-          style: Theme.of(context).textTheme.displaySmall
-              ?.copyWith(fontWeight: FontWeight.bold),
+        // Custom per-character Odometer instead of external package to avoid network/CORS issues
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: _formatOdometer(displayPrice).split('').asMap().entries.map(
+            (entry) {
+              final index = entry.key;
+              final char = entry.value;
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  final inAnimation = Tween<Offset>(
+                    begin: const Offset(0.0, 0.5),
+                    end: Offset.zero,
+                  ).animate(animation);
+
+                  final outAnimation = Tween<Offset>(
+                    begin: const Offset(0.0, -0.5),
+                    end: Offset.zero,
+                  ).animate(animation);
+
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: child.key == ValueKey(char)
+                          ? inAnimation
+                          : outAnimation,
+                      child: child,
+                    ),
+                  );
+                },
+                child: Text(
+                  char,
+                  // Combine index and character to force animation only on changed digits
+                  key: ValueKey('$index$char'),
+                  style: Theme.of(context).textTheme.displaySmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              );
+            },
+          ).toList(),
         ),
         const SizedBox(height: 8),
         Row(
@@ -92,5 +126,17 @@ class CoinPriceHeader extends HookConsumerWidget {
   String _formatTime(DateTime time) {
     // Simple format: e.g. "Oct 12, 14:30"
     return '${time.month}/${time.day} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _formatOdometer(double price) {
+    // Convert to string with 2 decimal places and add commas
+    final parts = price.toStringAsFixed(2).split('.');
+    final whole = parts[0];
+    final decimal = parts[1];
+
+    final RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    final formattedWhole = whole.replaceAllMapped(reg, (Match m) => '${m[1]},');
+
+    return '\$$formattedWhole.$decimal';
   }
 }
