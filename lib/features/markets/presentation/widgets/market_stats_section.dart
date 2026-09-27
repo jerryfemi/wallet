@@ -47,9 +47,13 @@ class MarketStatsSection extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(
-                    'About ${coin.name}',
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: Text(
+                      'About ${coin.name}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(width: 4),
                   Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurfaceVariant),

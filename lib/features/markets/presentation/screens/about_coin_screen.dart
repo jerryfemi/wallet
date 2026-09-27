@@ -22,6 +22,8 @@ class AboutCoinScreen extends HookConsumerWidget {
             pinned: true,
             title: Text(
               'About ${coin.name}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
