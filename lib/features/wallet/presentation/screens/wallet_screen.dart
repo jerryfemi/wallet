@@ -28,8 +28,16 @@ class WalletScreen extends HookConsumerWidget {
           return [
             SliverAppBar(
               pinned: true,
+              centerTitle: false,
               expandedHeight: 250.0,
-              title: const Text('My Wallet'),
+              title: Text(
+                'Wallet',
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
               actions: const [],
               flexibleSpace: FlexibleSpaceBar(
                 background: SafeArea(
