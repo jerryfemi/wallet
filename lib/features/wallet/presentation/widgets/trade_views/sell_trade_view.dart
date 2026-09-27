@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
+
 
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/asset_picker_sheet.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
 import 'package:wallet/shared/widgets/numeric_keypad.dart';
@@ -22,6 +24,8 @@ class SellTradeView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
+    final activeCurrency = ref.watch(currencyProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -198,8 +202,7 @@ class SellTradeView extends HookConsumerWidget {
                     ),
                     const Spacer(),
                     Text(
-                      NumberFormat.currency(symbol: '\$')
-                          .format(executionPrice),
+                      formatFiat(executionPrice),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -257,7 +260,7 @@ class SellTradeView extends HookConsumerWidget {
             // Fiat equivalent estimate
             Center(
               child: Text(
-                '≈ ${NumberFormat.currency(symbol: '\$').format(fiatValue)} USDT',
+                '≈ ${formatFiat(fiatValue)} USDT',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -332,6 +335,7 @@ class SellTradeView extends HookConsumerWidget {
                       totalReturn: totalReturn,
                       executionPrice: executionPrice,
                       theme: theme,
+                      formatFiat: formatFiat,
                     )
                   : NumericKeypad(
                       key: const ValueKey('keypad_section'),
@@ -376,11 +380,11 @@ class SellTradeView extends HookConsumerWidget {
                     },
               child: Text(
                 isBelowMin
-                    ? 'Minimum \$1.00'
+                    ? 'Minimum ${activeCurrency.symbol}1.00'
                     : isAboveMax
                     ? 'Insufficient ${selectedCoin.symbol.toUpperCase()} Balance'
                     : isReviewing
-                    ? 'Confirm Sell — ${NumberFormat.currency(symbol: '\$').format(totalReturn)}'
+                    ? 'Confirm Sell — ${formatFiat(totalReturn)}'
                     : 'Continue',
                 style: const TextStyle(
                   fontSize: 18,
@@ -438,6 +442,7 @@ class SellTradeView extends HookConsumerWidget {
     required double totalReturn,
     required double executionPrice,
     required ThemeData theme,
+    required String Function(double) formatFiat,
   }) {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -449,26 +454,26 @@ class SellTradeView extends HookConsumerWidget {
         children: [
           _buildReviewRow(
             'Execution Price',
-            NumberFormat.currency(symbol: '\$').format(executionPrice),
+            formatFiat(executionPrice),
             theme,
           ),
           const Divider(height: 32),
           _buildReviewRow(
             'Gross Fiat Value',
-            NumberFormat.currency(symbol: '\$').format(fiatValue),
+            formatFiat(fiatValue),
             theme,
           ),
           const SizedBox(height: 16),
           _buildReviewRow(
             'Fee (1%)',
-            '-${NumberFormat.currency(symbol: '\$').format(feeAmount)}',
+            '-${formatFiat(feeAmount)}',
             theme,
             valueColor: theme.colorScheme.error,
           ),
           const Divider(height: 32),
           _buildReviewRow(
             'Total Return',
-            NumberFormat.currency(symbol: '\$').format(totalReturn),
+            formatFiat(totalReturn),
             theme,
             isTotal: true,
           ),
