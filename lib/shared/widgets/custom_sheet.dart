@@ -73,7 +73,7 @@ class CustomSheet extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   // Drag Handle
                   Container(
