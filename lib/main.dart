@@ -8,9 +8,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:wallet/app/router/app_router.dart';
 import 'package:wallet/app/theme/app_theme.dart';
 
-import 'package:wallet/app/theme/theme_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:wallet/app/theme/theme_provider.dart';
 import 'package:wallet/firebase_options.dart';
 
 void main() async {
@@ -21,10 +20,8 @@ void main() async {
   }
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  runApp(const ProviderScope(
-    child: CryptoSimApp(),
-  ));
+
+  runApp(const ProviderScope(child: CryptoSimApp()));
 
   if (kDebugMode) {
     Future.microtask(() async {
