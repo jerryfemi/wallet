@@ -8,7 +8,9 @@ import 'package:wallet/features/auth/presentation/screens/login_screen.dart';
 import 'package:wallet/features/auth/presentation/screens/register_screen.dart';
 import 'package:wallet/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:wallet/features/home/presentation/screens/home_screen.dart';
+import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/screens/markets_screen.dart';
+import 'package:wallet/features/markets/presentation/screens/coin_details_screen.dart';
 import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
@@ -58,6 +60,15 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.markets,
                 builder: (context, state) => const MarketsScreen(),
+                routes: [
+                  GoRoute(
+                    path: Routes.coinDetails,
+                    builder: (context, state) {
+                      final coin = state.extra as CoinEntity;
+                      return CoinDetailsScreen(coin: coin);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
