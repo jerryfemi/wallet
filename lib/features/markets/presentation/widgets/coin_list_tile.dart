@@ -7,6 +7,9 @@ import 'package:decimal/decimal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import 'package:go_router/go_router.dart';
+
+import 'package:wallet/app/router/routes.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
@@ -28,8 +31,7 @@ class CoinListTile extends HookConsumerWidget {
 
     final currentPrice = ticker?.price ?? coin.currentPrice;
     final priceChange =
-        ticker?.priceChangePercentage24h ??
-        coin.priceChangePercentage24h;
+        ticker?.priceChangePercentage24h ?? coin.priceChangePercentage24h;
 
     final isPositive = priceChange >= Decimal.zero;
     final color = isPositive ? Colors.greenAccent : Colors.redAccent;
@@ -39,21 +41,26 @@ class CoinListTile extends HookConsumerWidget {
     ref.listen(
       livePricesProvider.select((map) => map[coin.symbol.toUpperCase()]),
       (previous, next) {
-      final nextPrice = next?.price;
-      final prevPrice = previous?.price ?? coin.currentPrice;
+        final nextPrice = next?.price;
+        final prevPrice = previous?.price ?? coin.currentPrice;
 
-      if (nextPrice != null && nextPrice != prevPrice) {
-        flashColor.value = nextPrice > prevPrice
-            ? Colors.greenAccent
-            : Colors.redAccent;
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (context.mounted) flashColor.value = null;
-        });
-      }
-    });
+        if (nextPrice != null && nextPrice != prevPrice) {
+          flashColor.value = nextPrice > prevPrice
+              ? Colors.greenAccent
+              : Colors.redAccent;
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (context.mounted) flashColor.value = null;
+          });
+        }
+      },
+    );
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+    return InkWell(
+      onTap: () {
+        context.push('${Routes.markets}/${Routes.coinDetails}', extra: coin);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Theme.of(context).dividerColor),
@@ -155,9 +162,8 @@ class CoinListTile extends HookConsumerWidget {
                     alignment: Alignment.centerRight,
                     child: Text(
                       '${walletAmount!.toStringAsFixed(6).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")} ${coin.symbol.toUpperCase()}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -240,14 +246,18 @@ class CoinListTile extends HookConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        isPositive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                        isPositive
+                            ? Icons.arrow_drop_up
+                            : Icons.arrow_drop_down,
                         color: color,
                         size: 18,
                       ),
                       Text(
                         '${priceChange.abs().toStringAsFixed(2)}%',
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(color: color, fontWeight: FontWeight.w600),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
@@ -257,6 +267,6 @@ class CoinListTile extends HookConsumerWidget {
           ],
         ],
       ),
-    );
+    ));
   }
 }
