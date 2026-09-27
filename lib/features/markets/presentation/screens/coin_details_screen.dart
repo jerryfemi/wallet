@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
+import 'package:wallet/features/markets/presentation/widgets/coin_price_header.dart';
+import 'package:wallet/features/markets/presentation/widgets/coin_chart_section.dart';
 
 class CoinDetailsScreen extends HookConsumerWidget {
   final CoinEntity coin;
@@ -55,25 +57,12 @@ class CoinDetailsScreen extends HookConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Placeholder for Dynamic Price Header
-                  Text(
-                    '\$${coin.currentPrice.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                  // Dynamic Price Header
+                  CoinPriceHeader(coin: coin),
                   const SizedBox(height: 32),
                   
-                  // Placeholder for Charts
-                  Container(
-                    height: 250,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Center(child: Text('Chart Placeholder')),
-                  ),
+                  // Charts
+                  CoinChartSection(coin: coin),
                   const SizedBox(height: 32),
 
                   // Placeholder for Stats
