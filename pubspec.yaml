@@ -62,6 +62,7 @@ dependencies:
   confetti: ^0.8.0
   web_socket_channel: ^3.0.3
   candlesticks: ^3.0.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

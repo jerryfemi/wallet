@@ -4,6 +4,7 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_chart_section.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_sliver_header_delegate.dart';
 import 'package:wallet/features/markets/presentation/widgets/market_stats_section.dart';
+import 'package:wallet/features/markets/presentation/widgets/coin_news_section.dart';
 
 class CoinDetailsScreen extends HookConsumerWidget {
   final CoinEntity coin;
@@ -39,8 +40,8 @@ class CoinDetailsScreen extends HookConsumerWidget {
                   MarketStatsSection(coin: coin),
                   const SizedBox(height: 32),
 
-                  // Placeholder for News
-                  Text('News', style: Theme.of(context).textTheme.titleLarge),
+                  CoinNewsSection(coin: coin),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
