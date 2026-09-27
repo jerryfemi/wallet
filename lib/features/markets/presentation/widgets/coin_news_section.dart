@@ -216,35 +216,6 @@ class _NewsCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 16),
-            // Thumbnail
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                width: 80,
-                height: 80,
-                color: onSurface.withValues(alpha: 0.1),
-                child: CachedNetworkImage(
-                  imageUrl: article.imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: onSurface.withValues(alpha: 0.3),
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Icon(
-                    Icons.image_not_supported_rounded,
-                    color: onSurface.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
