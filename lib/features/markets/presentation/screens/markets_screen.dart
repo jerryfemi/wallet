@@ -28,8 +28,10 @@ class MarketsScreen extends HookConsumerWidget {
             // Top Bar
             SliverAppBar(
               pinned: true,
+              centerTitle: false,
               expandedHeight: 112, // Standard height for a large/medium app bar
               flexibleSpace: FlexibleSpaceBar(
+                centerTitle: false,
                 expandedTitleScale: 1.1, // Matches default M3 expanded size (~24px)
                 titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
                 title: Text(
