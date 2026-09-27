@@ -9,6 +9,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
 
 class CoinListTile extends HookConsumerWidget {
   final CoinEntity coin;
@@ -23,6 +24,7 @@ class CoinListTile extends HookConsumerWidget {
     final ticker = ref.watch(
       livePricesProvider.select((map) => map[coin.symbol.toUpperCase()]),
     );
+    final formatFiat = ref.watch(fiatFormatterProvider);
 
     final currentPrice = ticker?.price ?? coin.currentPrice;
     final priceChange =
@@ -109,7 +111,7 @@ class CoinListTile extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${coin.symbol} • \$${currentPrice.toDouble().toStringAsFixed(2)}',
+                    '${coin.symbol} • ${formatFiat(currentPrice.toDouble())}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -156,7 +158,7 @@ class CoinListTile extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '≈ \$${(walletAmount! * currentPrice.toDouble()).toStringAsFixed(2)}',
+                    '≈ ${formatFiat(walletAmount! * currentPrice.toDouble())}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -219,7 +221,7 @@ class CoinListTile extends HookConsumerWidget {
                           flashColor.value ??
                           Theme.of(context).textTheme.titleMedium?.color,
                     ),
-                    child: Text('\$${currentPrice.toStringAsFixed(2)}'),
+                    child: Text(formatFiat(currentPrice.toDouble())),
                   ),
                   const SizedBox(height: 4),
                   Row(
