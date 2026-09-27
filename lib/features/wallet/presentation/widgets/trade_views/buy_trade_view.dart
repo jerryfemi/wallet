@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
+
 
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/asset_picker_sheet.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
 import 'package:wallet/shared/widgets/numeric_keypad.dart';
@@ -22,6 +24,8 @@ class BuyTradeView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
+    final activeCurrency = ref.watch(currencyProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -86,8 +90,8 @@ class BuyTradeView extends HookConsumerWidget {
 
     // Format the display amount
     final displayAmount = amountString.value.isEmpty
-        ? '\$0'
-        : '\$${amountString.value}';
+        ? '${activeCurrency.symbol}0'
+        : '${activeCurrency.symbol}${amountString.value}';
 
     void onKeyTap(String key) {
       String current = amountString.value;
@@ -185,8 +189,7 @@ class BuyTradeView extends HookConsumerWidget {
                     ),
                     const Spacer(),
                     Text(
-                      NumberFormat.currency(symbol: '\$')
-                          .format(executionPrice),
+                      formatFiat(executionPrice),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -298,7 +301,7 @@ class BuyTradeView extends HookConsumerWidget {
                     ),
                   ),
                   Text(
-                    '${NumberFormat.currency(symbol: '\$').format(usdtBalance)} USDT',
+                    '${formatFiat(usdtBalance)} USDT',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -329,15 +332,13 @@ class BuyTradeView extends HookConsumerWidget {
                             children: [
                               _buildFeeRow(
                                 'Price',
-                                NumberFormat.currency(symbol: '\$')
-                                    .format(executionPrice),
+                                formatFiat(executionPrice),
                                 theme,
                               ),
                               const SizedBox(height: 12),
                               _buildFeeRow(
                                 'Network Fee',
-                                NumberFormat.currency(symbol: '\$')
-                                    .format(feeAmount),
+                                formatFiat(feeAmount),
                                 theme,
                               ),
                               const SizedBox(height: 12),
@@ -345,8 +346,7 @@ class BuyTradeView extends HookConsumerWidget {
                               const SizedBox(height: 12),
                               _buildFeeRow(
                                 'Total',
-                                NumberFormat.currency(symbol: '\$')
-                                    .format(totalCost),
+                                formatFiat(totalCost),
                                 theme,
                                 isTotal: true,
                               ),
@@ -436,11 +436,11 @@ class BuyTradeView extends HookConsumerWidget {
                     },
               child: Text(
                 isBelowMin
-                    ? 'Minimum \$1.00'
+                    ? 'Minimum ${activeCurrency.symbol}1.00'
                     : isAboveMax
                         ? 'Insufficient USDT Balance'
                         : isReviewing
-                            ? 'Confirm Buy — ${NumberFormat.currency(symbol: '\$').format(totalCost)}'
+                            ? 'Confirm Buy — ${formatFiat(totalCost)}'
                             : 'Continue',
                 style: const TextStyle(
                   fontSize: 18,
