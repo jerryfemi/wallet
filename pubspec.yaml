@@ -61,6 +61,7 @@ dependencies:
   decimal: ^3.2.6
   confetti: ^0.8.0
   web_socket_channel: ^3.0.3
+  candlesticks: ^3.0.1
 
 dev_dependencies:
   flutter_test:
