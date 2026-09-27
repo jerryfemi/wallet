@@ -18,7 +18,7 @@ class CryptoCompareApiService {
       NewsArticleEntity(
         title: 'US spot ${symbol.toUpperCase()} ETFs received significant inflows recently, turning year-to-date performance positive.',
         source: 'Market Insights',
-        url: 'https://example.com',
+        url: 'https://cointelegraph.com',
         imageUrl: 'https://images.cryptocompare.com/news/default/coindesk.png',
         publishedAt: DateTime.now().subtract(const Duration(minutes: 44)),
         sentiment: 'Bullish',
@@ -26,7 +26,7 @@ class CryptoCompareApiService {
       NewsArticleEntity(
         title: 'Strategy Adds 950 ${symbol.toUpperCase()} to 846,000 Holdings as Corporate Purchases Resume',
         source: 'CoinDesk',
-        url: 'https://example.com',
+        url: 'https://www.coindesk.com',
         imageUrl: 'https://images.cryptocompare.com/news/default/coindesk.png',
         publishedAt: DateTime.now().subtract(const Duration(hours: 2)),
         sentiment: 'Bullish',
@@ -34,7 +34,7 @@ class CryptoCompareApiService {
       NewsArticleEntity(
         title: 'Senate fails to advance CLARITY Act in 49-50 vote, falling short as crypto markets react.',
         source: 'Decrypt',
-        url: 'https://example.com',
+        url: 'https://decrypt.co',
         imageUrl: 'https://images.cryptocompare.com/news/default/decrypt.png',
         publishedAt: DateTime.now().subtract(const Duration(hours: 5)),
         sentiment: 'Bearish',
