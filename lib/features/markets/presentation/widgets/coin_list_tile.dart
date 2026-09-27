@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -62,6 +63,7 @@ class CoinListTile extends HookConsumerWidget {
 
     return InkWell(
       onTap: () {
+        HapticFeedback.lightImpact();
         context.push('${Routes.markets}/${Routes.coinDetails}', extra: coin);
       },
       child: Container(
