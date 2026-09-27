@@ -216,6 +216,7 @@ class _NewsCard extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
           ],
         ),
       ),
