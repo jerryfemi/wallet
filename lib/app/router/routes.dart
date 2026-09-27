@@ -12,6 +12,7 @@ class Routes {
   static const String wallet = '/wallet';
   static const String activity = '/activity';
   static const String profile = '/profile';
+  static const String editProfile = 'edit-profile';
 
   // Sub-routes
   static const String coinDetails = 'coin-details';

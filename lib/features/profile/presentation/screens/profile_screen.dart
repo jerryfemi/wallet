@@ -7,7 +7,8 @@ import 'package:wallet/features/profile/presentation/widgets/currency_selection_
 import 'package:wallet/features/profile/presentation/widgets/logout_confirmation_sheet.dart';
 import 'package:wallet/features/profile/presentation/widgets/profile_menu_group.dart';
 import 'package:wallet/app/theme/theme_provider.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:wallet/app/router/routes.dart';
 class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -30,11 +31,14 @@ class ProfileScreen extends HookConsumerWidget {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                    backgroundImage: user?.photoURL != null && user!.photoURL!.isNotEmpty 
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainer,
+                    backgroundImage:
+                        user?.photoURL != null && user!.photoURL!.isNotEmpty
                         ? CachedNetworkImageProvider(user.photoURL!)
                         : CachedNetworkImageProvider(
-                            'https://api.dicebear.com/7.x/micah/png?seed=${user?.uid ?? 'Trader'}&backgroundColor=transparent'
+                            'https://api.dicebear.com/7.x/micah/png?seed=${user?.uid ?? 'Trader'}&backgroundColor=transparent',
                           ) as ImageProvider,
                   ),
                   const SizedBox(height: 16),
@@ -67,7 +71,9 @@ class ProfileScreen extends HookConsumerWidget {
                       MenuOption(
                         iconAsset: 'assets/icons/edit.svg',
                         title: 'Edit Profile',
-                        onTap: () {}, // Will navigate to Edit Profile Screen soon
+                        onTap: () {
+                          context.go('${Routes.profile}/${Routes.editProfile}');
+                        },
                       ),
                       MenuOption(
                         iconAsset: 'assets/icons/key.svg',
@@ -89,9 +95,11 @@ class ProfileScreen extends HookConsumerWidget {
                           onChanged: (value) {
                             ref.read(themeModeProvider.notifier).toggleTheme();
                           },
-                          activeColor: Theme.of(context).colorScheme.primary,
+                          activeColor: Theme.of(context).colorScheme.primary
+                              .withValues(alpha: 0.05),
                         ),
-                        onTap: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+                        onTap: () =>
+                            ref.read(themeModeProvider.notifier).toggleTheme(),
                       ),
                       MenuOption(
                         iconAsset: 'assets/icons/bell.svg',

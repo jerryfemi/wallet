@@ -15,6 +15,7 @@ import 'package:wallet/features/markets/presentation/screens/about_coin_screen.d
 import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
+import 'package:wallet/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:wallet/shared/widgets/app_shell.dart';
 import 'package:wallet/app/router/routes.dart';
 
@@ -103,6 +104,12 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.profile,
                 builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: Routes.editProfile,
+                    builder: (context, state) => const EditProfileScreen(),
+                  ),
+                ],
               ),
             ],
           ),

@@ -19,7 +19,7 @@ AuthRepository authRepository(Ref ref) {
 
 @riverpod
 Stream<User?> authState(Ref ref) {
-  return FirebaseAuth.instance.authStateChanges();
+  return FirebaseAuth.instance.userChanges();
 }
 
 @riverpod
@@ -65,6 +65,21 @@ class AuthController extends _$AuthController {
       // instantly redirects us and disposes this controller before it finishes!
     } catch (e, st) {
       debugPrint('Firebase Sign Up Error: $e');
+      state = AsyncError(e, st);
+    }
+  }
+
+  Future<void> updateProfile({String? displayName, String? photoUrl}) async {
+    state = const AsyncLoading();
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        if (displayName != null) await user.updateDisplayName(displayName);
+        if (photoUrl != null) await user.updatePhotoURL(photoUrl);
+        await user.reload(); // Forces a refresh of userChanges
+      }
+      state = const AsyncData(null);
+    } catch (e, st) {
       state = AsyncError(e, st);
     }
   }
