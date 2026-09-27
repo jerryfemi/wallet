@@ -64,7 +64,7 @@ final class CoinCandlesProvider
   }
 }
 
-String _$coinCandlesHash() => r'618504d34b85df61875c46b7d1d2dd4c7fe9ace1';
+String _$coinCandlesHash() => r'e0d1cd1b89a7724e49b2dd82cb99a48ca1de71f6';
 
 final class CoinCandlesFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Candle>>, (String, String)> {
@@ -141,7 +141,7 @@ final class CoinNewsProvider
   }
 }
 
-String _$coinNewsHash() => r'18c2b01e8b4ff44abd06e958e495ac25d1efd313';
+String _$coinNewsHash() => r'ddd2e1c49db378c2145c551cec562720b0ded031';
 
 final class CoinNewsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<NewsArticleEntity>>, String> {
