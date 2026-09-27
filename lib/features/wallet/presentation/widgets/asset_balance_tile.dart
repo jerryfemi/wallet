@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wallet/core/utils/formatters.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
 import 'package:decimal/decimal.dart';
 
-class AssetBalanceTile extends StatelessWidget {
+class AssetBalanceTile extends ConsumerWidget {
   final String name;
   final String symbol;
   final Decimal cryptoAmount;
@@ -24,7 +26,8 @@ class AssetBalanceTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
     final theme = Theme.of(context);
     final isPositive = changePercentage >= 0;
 
@@ -89,7 +92,7 @@ class AssetBalanceTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    Formatters.formatFiat(fiatAmount),
+                    formatFiat(fiatAmount),
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
