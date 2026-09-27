@@ -76,7 +76,11 @@ class MarketRepository {
   }
 
   Future<List<NewsArticleEntity>> getCoinNews(String symbol) async {
-    return await _cryptoCompareApiService.getCoinNews(symbol);
+    return await _apiService.getCoinNews(symbol);
+  }
+
+  Future<Map<String, dynamic>> getCoinDetails(String coinId) async {
+    return await _apiService.getCoinDetails(coinId);
   }
 }
 
