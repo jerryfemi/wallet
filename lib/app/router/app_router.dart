@@ -11,6 +11,7 @@ import 'package:wallet/features/home/presentation/screens/home_screen.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/screens/markets_screen.dart';
 import 'package:wallet/features/markets/presentation/screens/coin_details_screen.dart';
+import 'package:wallet/features/markets/presentation/screens/about_coin_screen.dart';
 import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
@@ -67,6 +68,15 @@ GoRouter goRouter(Ref ref) {
                       final coin = state.extra as CoinEntity;
                       return CoinDetailsScreen(coin: coin);
                     },
+                    routes: [
+                      GoRoute(
+                        path: Routes.aboutCoin,
+                        builder: (context, state) {
+                          final coin = state.extra as CoinEntity;
+                          return AboutCoinScreen(coin: coin);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
