@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
@@ -98,8 +99,8 @@ class _NewsCard extends StatelessWidget {
     final semanticColors = Theme.of(context).extension<AppSemanticColors>();
     final isBullish = article.sentiment.toLowerCase() == 'bullish';
     final sentimentColor = isBullish 
-        ? (semanticColors?.positive ?? Colors.green) 
-        : (semanticColors?.negative ?? Colors.red);
+        ? (semanticColors?.positive ?? AppSemanticColors.light.positive) 
+        : (semanticColors?.negative ?? AppSemanticColors.light.negative);
 
     return InkWell(
       onTap: _launchUrl,
@@ -197,10 +198,20 @@ class _NewsCard extends StatelessWidget {
                 width: 80,
                 height: 80,
                 color: onSurface.withValues(alpha: 0.1),
-                child: Image.network(
-                  article.imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: article.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Icon(
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: onSurface.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Icon(
                     Icons.image_not_supported_rounded,
                     color: onSurface.withValues(alpha: 0.3),
                   ),

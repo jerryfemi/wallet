@@ -84,6 +84,8 @@ class CoinLineChart extends ConsumerWidget {
             lineTouchData: LineTouchData(
               handleBuiltInTouches: true,
               touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+                if (!context.mounted) return;
+                
                 if (!event.isInterestedForInteractions ||
                     response == null ||
                     response.lineBarSpots == null) {
