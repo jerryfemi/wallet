@@ -6,8 +6,9 @@ class ScrubbedData {
   final double price;
   final DateTime time;
   final double? openPrice; // For percentage change calculation
+  final int? index; // The index of the scrubbed candle for chart masking
 
-  ScrubbedData(this.price, this.time, {this.openPrice});
+  ScrubbedData(this.price, this.time, {this.openPrice, this.index});
 }
 
 @riverpod
@@ -15,8 +16,8 @@ class ScrubbedChartData extends _$ScrubbedChartData {
   @override
   ScrubbedData? build() => null;
 
-  void setScrubbed(double price, DateTime time, {double? openPrice}) {
-    state = ScrubbedData(price, time, openPrice: openPrice);
+  void setScrubbed(double price, DateTime time, {double? openPrice, int? index}) {
+    state = ScrubbedData(price, time, openPrice: openPrice, index: index);
   }
 
   void clear() {
