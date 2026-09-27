@@ -41,7 +41,7 @@ final class ScrubbedChartDataProvider
   }
 }
 
-String _$scrubbedChartDataHash() => r'4c0d0fd9ec803644b0403f091184d2c27efdbe2a';
+String _$scrubbedChartDataHash() => r'bc230dd01f65f0d272db064bba7204e71264af93';
 
 abstract class _$ScrubbedChartData extends $Notifier<ScrubbedData?> {
   ScrubbedData? build();
