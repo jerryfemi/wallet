@@ -37,6 +37,25 @@ class CoinPriceHeader extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              coin.name,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              size: 20,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
         Text(
           formatFiat(displayPrice),
           style: Theme.of(context).textTheme.displaySmall
