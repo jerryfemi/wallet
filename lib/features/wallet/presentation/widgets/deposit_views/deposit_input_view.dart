@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 import 'package:wallet/shared/widgets/numeric_keypad.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 
-class DepositInputView extends HookWidget {
+class DepositInputView extends HookConsumerWidget {
   final Future<void> Function(double) onSubmit;
 
-  const DepositInputView({
-    super.key,
-    required this.onSubmit,
-  });
+  const DepositInputView({super.key, required this.onSubmit});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final activeCurrency = ref.watch(currencyProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -20,8 +22,9 @@ class DepositInputView extends HookWidget {
     final amountString = useState('');
 
     final inputAmount = double.tryParse(amountString.value) ?? 0.0;
-    final displayAmount =
-        amountString.value.isEmpty ? '\$0' : '\$${amountString.value}';
+    final displayAmount = amountString.value.isEmpty
+        ? '${activeCurrency.symbol}0'
+        : '${activeCurrency.symbol}${amountString.value}';
 
     void onKeyTap(String key) {
       String current = amountString.value;
@@ -82,10 +85,9 @@ class DepositInputView extends HookWidget {
 
             // Fixed Asset (Tether)
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainer,
+                color: colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -142,8 +144,7 @@ class DepositInputView extends HookWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [100, 500, 1000, 5000].map((amount) {
                 return ActionChip(
-                  label:
-                      Text('\$${NumberFormat.compact().format(amount)}'),
+                  label: Text('${activeCurrency.symbol}${NumberFormat.compact().format(amount)}'),
                   onPressed: () => setQuickAmount(amount.toDouble()),
                 );
               }).toList(),
