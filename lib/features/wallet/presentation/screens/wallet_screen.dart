@@ -7,8 +7,8 @@ import 'package:wallet/features/wallet/presentation/providers/wallet_provider.da
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/home/presentation/widgets/quick_actions_row.dart';
 import 'package:wallet/features/home/presentation/widgets/section_header.dart';
-import 'package:wallet/core/utils/formatters.dart';
 
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
 class WalletScreen extends HookConsumerWidget {
   const WalletScreen({super.key});
 
@@ -16,6 +16,7 @@ class WalletScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final assetsAsync = ref.watch(portfolioAssetsProvider);
     final totalValueAsync = ref.watch(portfolioTotalValueProvider);
+    final formatFiat = ref.watch(fiatFormatterProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -26,26 +27,7 @@ class WalletScreen extends HookConsumerWidget {
               pinned: true,
               expandedHeight: 220.0,
               title: const Text('My Wallet'),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: theme.colorScheme.surfaceContainer,
-                      border: Border.all(
-                        color: theme.colorScheme.outlineVariant,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.person_outline,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ],
+              actions: const [],
               flexibleSpace: FlexibleSpaceBar(
                 background: SafeArea(
                   bottom: false,
@@ -63,17 +45,21 @@ class WalletScreen extends HookConsumerWidget {
                         const SizedBox(height: 8),
                         totalValueAsync.when(
                           data: (value) => Text(
-                            Formatters.formatFiat(value),
+                            formatFiat(value),
                             style: theme.textTheme.displayLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 44,
                               color: theme.colorScheme.onSurface,
+                              letterSpacing: -1.5,
                             ),
                           ),
                           loading: () => Skeletonizer(
                             child: Text(
                               '\$10,000.00',
                               style: theme.textTheme.displayLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 44,
+                                letterSpacing: -1.5,
                               ),
                             ),
                           ),
