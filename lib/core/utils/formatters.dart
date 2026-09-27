@@ -24,4 +24,20 @@ class Formatters {
     final formatter = NumberFormat('#,##0.########');
     return formatter.format(value.toDouble());
   }
+
+  static String formatCompactFiat(
+    double usdValue, {
+    AppCurrency? currency,
+    double fxRate = 1.0,
+  }) {
+    final targetCurrency = currency ?? AppCurrency.usd;
+    final convertedValue = usdValue * fxRate;
+    
+    final formatter = NumberFormat.compactCurrency(
+      locale: 'en_US',
+      symbol: targetCurrency.symbol,
+      decimalDigits: 2,
+    );
+    return formatter.format(convertedValue);
+  }
 }
