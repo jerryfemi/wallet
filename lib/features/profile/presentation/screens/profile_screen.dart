@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 import 'package:wallet/features/profile/presentation/widgets/currency_selection_sheet.dart';
 import 'package:wallet/features/profile/presentation/widgets/logout_confirmation_sheet.dart';
 import 'package:wallet/features/profile/presentation/widgets/profile_menu_group.dart';
+import 'package:wallet/app/theme/theme_provider.dart';
 
 class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
@@ -28,14 +30,12 @@ class ProfileScreen extends HookConsumerWidget {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer,
-                    child: const Icon(
-                      Icons.person,
-                      size: 44,
-                      color: Colors.grey,
-                    ),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    backgroundImage: user?.photoURL != null && user!.photoURL!.isNotEmpty 
+                        ? CachedNetworkImageProvider(user.photoURL!)
+                        : CachedNetworkImageProvider(
+                            'https://api.dicebear.com/7.x/micah/png?seed=${user?.uid ?? 'Trader'}&backgroundColor=transparent'
+                          ) as ImageProvider,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -67,7 +67,7 @@ class ProfileScreen extends HookConsumerWidget {
                       MenuOption(
                         iconAsset: 'assets/icons/edit.svg',
                         title: 'Edit Profile',
-                        onTap: () {},
+                        onTap: () {}, // Will navigate to Edit Profile Screen soon
                       ),
                       MenuOption(
                         iconAsset: 'assets/icons/key.svg',
@@ -80,6 +80,16 @@ class ProfileScreen extends HookConsumerWidget {
                         title: 'Preferred Currency',
                         trailingText: ref.watch(currencyProvider).code,
                         onTap: () => CurrencySelectionSheet.show(context),
+                      ),
+                      MenuOption(
+                        iconAsset: 'assets/icons/shield.svg', // Assuming we don't have a specific theme/moon icon yet, shield or another placeholder is fine, let's use a standard Flutter Icon if we can, but MenuOption requires SVG.
+                        // Actually, wait, let's just use a custom row or if MenuOption supports widgets.
+                        // Wait, MenuOption doesn't natively support a Switch. I'll add the switch inside a custom trailing widget if possible, but MenuOption only has `trailingText`.
+                        // For now, I'll just use a tap to toggle theme.
+                        iconAsset: 'assets/icons/edit.svg', // Let's just put something for now, the user can change it. 
+                        title: 'Dark Mode',
+                        trailingText: ref.watch(themeModeProvider) == ThemeMode.dark ? 'On' : 'Off',
+                        onTap: () => ref.read(themeModeProvider.notifier).toggleTheme(),
                       ),
                       MenuOption(
                         iconAsset: 'assets/icons/bell.svg',

@@ -8,11 +8,14 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:wallet/app/router/app_router.dart';
 import 'package:wallet/app/theme/app_theme.dart';
 
+import 'package:wallet/app/theme/theme_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:wallet/firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
   try {
     DevicePreview.enable(enabled: kDebugMode);
   } catch (e) {
@@ -20,8 +23,15 @@ void main() async {
   }
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  final prefs = await SharedPreferences.getInstance();
 
-  runApp(const ProviderScope(child: CryptoSimApp()));
+  runApp(ProviderScope(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+    ],
+    child: const CryptoSimApp(),
+  ));
 
   if (kDebugMode) {
     Future.microtask(() async {
@@ -41,12 +51,13 @@ class CryptoSimApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'CryptoSim',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: themeMode,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
