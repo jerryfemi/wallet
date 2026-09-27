@@ -173,7 +173,7 @@ class CoinListTile extends HookConsumerWidget {
                 flex: 3,
                 child: Container(
                   height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: Skeleton.ignore(
                     child: LineChart(
                       LineChartData(
