@@ -5,6 +5,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_details_provider.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_chart_state_provider.dart';
+import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
+import 'package:candlesticks/candlesticks.dart';
 
 class CoinLineChart extends ConsumerWidget {
   final CoinEntity coin;
@@ -14,6 +16,8 @@ class CoinLineChart extends ConsumerWidget {
   // Map timeframe to Coinbase granularity (in seconds)
   String _mapTimeframeToGranularity(String timeframe) {
     switch (timeframe) {
+      case 'Live':
+        return '60'; // 1m
       case '1D':
         return '900'; // 15m
       case '1W':
@@ -34,6 +38,7 @@ class CoinLineChart extends ConsumerWidget {
     final timeframe = ref.watch(chartTimeframeProvider);
     final granularity = _mapTimeframeToGranularity(timeframe);
     final scrubbedData = ref.watch(scrubbedChartDataProvider);
+    final livePrice = ref.watch(livePricesProvider)[coin.symbol]?.price;
     
     // We use coin.symbol since Coinbase expects something like BTC-USD
     final candlesAsync = ref.watch(
@@ -48,6 +53,20 @@ class CoinLineChart extends ConsumerWidget {
 
         // Coinbase returns newest first. Reverse for fl_chart (oldest to newest on X axis).
         final reversedCandles = candles.reversed.toList();
+        
+        // If Live mode, we inject the latest real-time tick to the newest candle
+        if (timeframe == 'Live' && livePrice != null) {
+          final last = reversedCandles.last;
+          final current = livePrice.toDouble();
+          reversedCandles[reversedCandles.length - 1] = Candle(
+            date: last.date,
+            high: current > last.high ? current : last.high,
+            low: current < last.low ? current : last.low,
+            open: last.open,
+            close: current,
+            volume: last.volume,
+          );
+        }
 
         // Determine color based on open/close of the entire visible period
         final firstCandle = reversedCandles.first;
@@ -84,41 +103,45 @@ class CoinLineChart extends ConsumerWidget {
             maxY: maxY + yPadding,
               extraLinesData: ExtraLinesData(
                 horizontalLines: [
+                  // Base open price line
                   HorizontalLine(
                     y: firstCandle.open,
                     color: Colors.white24,
                     strokeWidth: 1,
                     dashArray: [4, 4],
                   ),
+                  // Scrubbed crosshair horizontal line
+                  if (scrubbedData != null)
+                    HorizontalLine(
+                      y: scrubbedData.price,
+                      color: Colors.white54,
+                      strokeWidth: 1,
+                      dashArray: [4, 4],
+                    ),
                 ],
               ),
               lineTouchData: LineTouchData(
                 handleBuiltInTouches: true,
                 touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
-                  if (!context.mounted) return;
-                  
                   if (!event.isInterestedForInteractions ||
                       response == null ||
                       response.lineBarSpots == null) {
                     // User stopped scrubbing, clear scrubbed data
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (context.mounted) {
+                    if (scrubbedData != null) {
+                      Future.microtask(() {
                         ref.read(scrubbedChartDataProvider.notifier).clear();
-                      }
-                    });
+                      });
+                    }
                     return;
                   }
+                  
                   final spotIndex = response.lineBarSpots!.first.spotIndex;
                   final candle = reversedCandles[spotIndex];
                   
                   final currentScrubbedIndex = ref.read(scrubbedChartDataProvider)?.index;
                   if (currentScrubbedIndex != spotIndex) {
                     HapticFeedback.selectionClick();
-                  }
-
-                  // Update the state provider so the header updates instantly
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (context.mounted) {
+                    Future.microtask(() {
                       ref
                           .read(scrubbedChartDataProvider.notifier)
                           .setScrubbed(
@@ -127,8 +150,8 @@ class CoinLineChart extends ConsumerWidget {
                             openPrice: firstCandle.open,
                             index: spotIndex,
                           );
-                    }
-                  });
+                    });
+                  }
                 },
                 getTouchedSpotIndicator:
                     (LineChartBarData barData, List<int> spotIndexes) {
@@ -136,8 +159,8 @@ class CoinLineChart extends ConsumerWidget {
                         return TouchedSpotIndicatorData(
                           const FlLine(
                             color: Colors.white54,
-                            strokeWidth: 1.5,
-                            // Solid vertical line
+                            strokeWidth: 1,
+                            dashArray: [4, 4],
                           ),
                           FlDotData(
                             show: true,
