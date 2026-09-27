@@ -5,6 +5,8 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/core/utils/formatters.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:wallet/app/router/routes.dart';
 import 'package:wallet/core/presentation/widgets/bouncy_touch.dart';
 
 class MarketStatsSection extends StatelessWidget {
@@ -38,7 +40,7 @@ class MarketStatsSection extends StatelessWidget {
       children: [
         BouncyTouch(
           onTap: () {
-            // Future feature: Open detailed "About" modal or page
+            context.push('/markets/${Routes.coinDetails}/${Routes.aboutCoin}', extra: coin);
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
