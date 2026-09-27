@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wallet/features/markets/data/models/binance_ticker_model.dart';
@@ -13,7 +14,7 @@ class BinanceWebSocketDataSource {
   /// Returns a stream of lists containing the parsed Binance ticker models
   Stream<List<BinanceTickerModel>> get liveTickerStream {
     if (_channel == null) {
-      print('Binance WS: Connecting to $_url...');
+      debugPrint('Binance WS: Connecting to $_url...');
       _channel = WebSocketChannel.connect(Uri.parse(_url));
       _broadcastStream = _channel!.stream
           .map((event) {
@@ -28,12 +29,12 @@ class BinanceWebSocketDataSource {
                   )
                   .toList();
             } catch (e) {
-              print('Binance WS: Error parsing JSON: $e');
+              debugPrint('Binance WS: Error parsing JSON: $e');
               return <BinanceTickerModel>[];
             }
           })
           .handleError((error) {
-            print('Binance WS: Stream Error: $error');
+            debugPrint('Binance WS: Stream Error: $error');
           })
           .asBroadcastStream();
     }

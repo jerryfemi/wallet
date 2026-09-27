@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:wallet/app/theme/chart_colors.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';

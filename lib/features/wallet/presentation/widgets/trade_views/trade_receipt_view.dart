@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
-import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 
 class TradeReceiptView extends ConsumerWidget {
   final TradeFlowType type;
@@ -36,7 +35,7 @@ class TradeReceiptView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatFiat = ref.watch(fiatFormatterProvider);
-    
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final formattedFiatAmount = formatFiat(fiatAmount);
@@ -74,15 +73,17 @@ class TradeReceiptView extends ConsumerWidget {
 
             // Deposit/Buy icon
             Center(
-              child: customIcon ?? CircleAvatar(
-                backgroundColor: colorScheme.primary,
-                radius: 28,
-                child: const Icon(
-                  Icons.receipt_long,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
+              child:
+                  customIcon ??
+                  CircleAvatar(
+                    backgroundColor: colorScheme.primary,
+                    radius: 28,
+                    child: const Icon(
+                      Icons.receipt_long,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
             ),
             const SizedBox(height: 16),
 
@@ -155,10 +156,18 @@ class TradeReceiptView extends ConsumerWidget {
                   ReceiptRow(label: 'Asset', value: coinName),
                   if (type != TradeFlowType.deposit) ...[
                     const SizedBox(height: 12),
-                    ReceiptRow(label: 'Crypto Amount', value: '${cryptoAmount.toStringAsFixed(6)} $coinSymbol'),
+                    ReceiptRow(
+                      label: 'Crypto Amount',
+                      value: '${cryptoAmount.toStringAsFixed(6)} $coinSymbol',
+                    ),
                   ],
                   const SizedBox(height: 12),
-                  ReceiptRow(label: type == TradeFlowType.deposit ? 'Amount' : 'Fiat Value', value: formattedFiatAmount),
+                  ReceiptRow(
+                    label: type == TradeFlowType.deposit
+                        ? 'Amount'
+                        : 'Fiat Value',
+                    value: formattedFiatAmount,
+                  ),
                   const SizedBox(height: 12),
                   ReceiptRow(label: 'Method', value: method),
                 ],

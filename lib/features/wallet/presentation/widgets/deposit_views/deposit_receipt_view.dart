@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
-import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
+
 class DepositReceiptView extends ConsumerWidget {
   final double amount;
   final String referenceNumber;
@@ -20,7 +20,7 @@ class DepositReceiptView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatFiat = ref.watch(fiatFormatterProvider);
-    
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final formattedAmount = formatFiat(amount);

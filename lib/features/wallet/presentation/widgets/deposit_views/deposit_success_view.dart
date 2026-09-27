@@ -7,7 +7,6 @@ import 'package:lottie/lottie.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
-import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
 
 class DepositSuccessView extends HookConsumerWidget {
   final double amount;
@@ -26,7 +25,7 @@ class DepositSuccessView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatFiat = ref.watch(fiatFormatterProvider);
-    
+
     final confettiController = useMemoized(
       () => ConfettiController(duration: const Duration(milliseconds: 1500)),
     );

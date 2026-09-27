@@ -36,7 +36,7 @@ class AuthController extends _$AuthController {
       await repository.signInWithEmailAndPassword(email, password);
       state = const AsyncData(null);
     } catch (e, st) {
-      print('Firebase Sign In Error: $e'); // Debugging raw error
+      debugPrint('Firebase Sign In Error: $e'); // Debugging raw error
       state = AsyncError(e, st);
     }
   }
