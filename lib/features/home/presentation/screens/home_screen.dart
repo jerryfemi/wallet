@@ -10,12 +10,14 @@ import 'package:wallet/features/home/presentation/widgets/section_header.dart';
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:decimal/decimal.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
     final assetsAsync = ref.watch(portfolioAssetsProvider);
     final totalValueAsync = ref.watch(portfolioTotalValueProvider);
     final totalChangeAsync = ref.watch(portfolioTotalChange24hProvider);
@@ -222,9 +224,7 @@ class HomeScreen extends HookConsumerWidget {
                     return Column(
                       children: topTransactions.map((tx) {
                         final isDeposit = tx.type.name == 'deposit';
-                        final formattedAmount = NumberFormat.currency(
-                          symbol: '\$',
-                        ).format(tx.amount.toDouble());
+                        final formattedAmount = formatFiat(tx.amount.toDouble());
                         final formattedDate = DateFormat('MMM d, y, h:mm a')
                             .format(tx.timestamp);
                         final typeName =
