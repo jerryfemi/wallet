@@ -98,6 +98,102 @@ final class CoinGeckoApiServiceProvider
 String _$coinGeckoApiServiceHash() =>
     r'8526d98bf0c2a78dadf0c27ab962a40a0e8fa556';
 
+@ProviderFor(coinbaseApiService)
+final coinbaseApiServiceProvider = CoinbaseApiServiceProvider._();
+
+final class CoinbaseApiServiceProvider
+    extends
+        $FunctionalProvider<
+          CoinbaseApiService,
+          CoinbaseApiService,
+          CoinbaseApiService
+        >
+    with $Provider<CoinbaseApiService> {
+  CoinbaseApiServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'coinbaseApiServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$coinbaseApiServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<CoinbaseApiService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CoinbaseApiService create(Ref ref) {
+    return coinbaseApiService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CoinbaseApiService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CoinbaseApiService>(value),
+    );
+  }
+}
+
+String _$coinbaseApiServiceHash() =>
+    r'804fcd1aed6e9acfff9eea686253e113406ff01f';
+
+@ProviderFor(cryptoCompareApiService)
+final cryptoCompareApiServiceProvider = CryptoCompareApiServiceProvider._();
+
+final class CryptoCompareApiServiceProvider
+    extends
+        $FunctionalProvider<
+          CryptoCompareApiService,
+          CryptoCompareApiService,
+          CryptoCompareApiService
+        >
+    with $Provider<CryptoCompareApiService> {
+  CryptoCompareApiServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cryptoCompareApiServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cryptoCompareApiServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<CryptoCompareApiService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CryptoCompareApiService create(Ref ref) {
+    return cryptoCompareApiService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CryptoCompareApiService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CryptoCompareApiService>(value),
+    );
+  }
+}
+
+String _$cryptoCompareApiServiceHash() =>
+    r'6c42132fb558fbeb4d0ae74782789d0e31227601';
+
 @ProviderFor(coinbaseWebSocketDataSource)
 final coinbaseWebSocketDataSourceProvider =
     CoinbaseWebSocketDataSourceProvider._();
@@ -239,7 +335,7 @@ final class MarketRepositoryProvider
   }
 }
 
-String _$marketRepositoryHash() => r'7380092e2d6a12c60aa7cb39fb2a047f280a3cee';
+String _$marketRepositoryHash() => r'baf6e084400a1f38c9cc720bec3b1a9f364bd045';
 
 @ProviderFor(LivePrices)
 final livePricesProvider = LivePricesProvider._();

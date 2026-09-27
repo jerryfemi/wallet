@@ -9,6 +9,8 @@ import 'package:wallet/features/markets/data/repositories/market_repository.dart
 import 'package:wallet/core/network/dio_client.dart';
 import 'package:wallet/features/markets/data/sources/coinbase_websocket_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
+import 'package:wallet/features/markets/data/sources/coinbase_api_service.dart';
+import 'package:wallet/features/markets/data/sources/cryptocompare_api_service.dart';
 
 part 'markets_provider.g.dart';
 
@@ -21,6 +23,18 @@ DioClient dioClient(Ref ref) {
 CoinGeckoApiService coinGeckoApiService(Ref ref) {
   final dioClient = ref.watch(dioClientProvider);
   return CoinGeckoApiService(dioClient);
+}
+
+@riverpod
+CoinbaseApiService coinbaseApiService(Ref ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return CoinbaseApiService(dioClient.dio);
+}
+
+@riverpod
+CryptoCompareApiService cryptoCompareApiService(Ref ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return CryptoCompareApiService(dioClient.dio);
 }
 
 @riverpod
@@ -42,7 +56,16 @@ MarketRepository marketRepository(Ref ref) {
   final apiService = ref.watch(coinGeckoApiServiceProvider);
   final wsDataSource = ref.watch(coinbaseWebSocketDataSourceProvider);
   final localDataSource = ref.watch(marketLocalDataSourceProvider);
-  return MarketRepository(apiService, wsDataSource, localDataSource);
+  final coinbaseApiService = ref.watch(coinbaseApiServiceProvider);
+  final cryptoCompareApiService = ref.watch(cryptoCompareApiServiceProvider);
+  
+  return MarketRepository(
+    apiService, 
+    wsDataSource, 
+    localDataSource,
+    coinbaseApiService,
+    cryptoCompareApiService,
+  );
 }
 
 @Riverpod(keepAlive: true)

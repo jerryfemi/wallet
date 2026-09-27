@@ -4,13 +4,26 @@ import 'package:wallet/features/markets/data/sources/coingecko_api_service.dart'
 import 'package:wallet/features/markets/data/sources/coinbase_websocket_datasource.dart';
 import 'package:wallet/features/markets/data/sources/market_local_datasource.dart';
 import 'package:wallet/features/markets/domain/entities/ticker_update_entity.dart';
+import 'package:wallet/features/markets/data/sources/coinbase_api_service.dart';
+import 'package:wallet/features/markets/data/sources/cryptocompare_api_service.dart';
+import 'package:candlesticks/candlesticks.dart';
+import 'package:wallet/features/markets/domain/entities/news_article_entity.dart';
 
 class MarketRepository {
   final CoinGeckoApiService _apiService;
   final CoinbaseWebSocketDataSource _webSocketDataSource;
   final MarketLocalDataSource _localDataSource;
 
-  MarketRepository(this._apiService, this._webSocketDataSource, this._localDataSource);
+  final CoinbaseApiService _coinbaseApiService;
+  final CryptoCompareApiService _cryptoCompareApiService;
+
+  MarketRepository(
+    this._apiService, 
+    this._webSocketDataSource, 
+    this._localDataSource,
+    this._coinbaseApiService,
+    this._cryptoCompareApiService,
+  );
 
   /// Fetches top coins from CoinGecko and persists them to the local cache.
   Future<List<CoinEntity>> getTopCoins() async {
@@ -56,6 +69,14 @@ class MarketRepository {
   
   void reconnectLiveTickers() {
     _webSocketDataSource.reconnect();
+  }
+
+  Future<List<Candle>> getHistoricalCandles(String symbol, String granularity) async {
+    return await _coinbaseApiService.getHistoricalCandles(symbol, granularity);
+  }
+
+  Future<List<NewsArticleEntity>> getCoinNews(String symbol) async {
+    return await _cryptoCompareApiService.getCoinNews(symbol);
   }
 }
 
