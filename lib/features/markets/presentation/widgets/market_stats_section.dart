@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/core/utils/formatters.dart';
 import 'package:intl/intl.dart';
@@ -8,14 +9,16 @@ import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wallet/app/router/routes.dart';
 import 'package:wallet/core/presentation/widgets/bouncy_touch.dart';
+import 'package:wallet/features/markets/presentation/providers/coin_details_provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class MarketStatsSection extends StatelessWidget {
+class MarketStatsSection extends ConsumerWidget {
   final CoinEntity coin;
 
   const MarketStatsSection({super.key, required this.coin});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Derived values
     final currentPrice = coin.currentPrice.toDouble();
     final marketCap = coin.marketCap.toDouble();
@@ -34,6 +37,8 @@ class MarketStatsSection extends StatelessWidget {
 
     final compactNumberFormat = NumberFormat.compact(locale: 'en_US');
     final theme = Theme.of(context);
+    
+    final coinDetailsAsync = ref.watch(coinDetailsProvider(coin.id));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,14 +65,38 @@ class MarketStatsSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                '${coin.name} is a decentralized digital asset and cryptocurrency that enables peer-to-peer transactions on its network without the need for a central authority.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  height: 1.5,
+              coinDetailsAsync.when(
+                data: (details) {
+                  final rawDesc = details['description']?['en'] ?? '';
+                  final cleanDesc = rawDesc.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('\r\n', '\n').trim();
+                  return Text(
+                    cleanDesc.isNotEmpty ? cleanDesc : 'No description available for ${coin.name}.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.5,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  );
+                },
+                loading: () => Skeletonizer(
+                  enabled: true,
+                  child: Text(
+                    '${coin.name} is a decentralized digital asset and cryptocurrency that enables peer-to-peer transactions on its network without the need for a central authority.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.5,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                error: (e, st) => Text(
+                  'Could not load description.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.error,
+                  ),
+                ),
               ),
             ],
           ),
