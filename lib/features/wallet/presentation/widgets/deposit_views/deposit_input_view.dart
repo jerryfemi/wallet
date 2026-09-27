@@ -15,6 +15,9 @@ class DepositInputView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     
     final activeCurrency = ref.watch(currencyProvider);
+    final rates = ref.watch(exchangeRatesProvider).value ?? {};
+    final fxRate = rates[activeCurrency.code] ?? 1.0;
+    
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -22,6 +25,8 @@ class DepositInputView extends HookConsumerWidget {
     final amountString = useState('');
 
     final inputAmount = double.tryParse(amountString.value) ?? 0.0;
+    final usdDeposit = inputAmount / fxRate;
+    
     final displayAmount = amountString.value.isEmpty
         ? '${activeCurrency.symbol}0'
         : '${activeCurrency.symbol}${amountString.value}';
@@ -142,10 +147,11 @@ class DepositInputView extends HookConsumerWidget {
             // Preset Chips
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [100, 500, 1000, 5000].map((amount) {
+              children: [100, 500, 1000, 5000].map((amountUsd) {
+                final localAmount = amountUsd * fxRate;
                 return ActionChip(
-                  label: Text('${activeCurrency.symbol}${NumberFormat.compact().format(amount)}'),
-                  onPressed: () => setQuickAmount(amount.toDouble()),
+                  label: Text('${activeCurrency.symbol}${NumberFormat.compact().format(localAmount)}'),
+                  onPressed: () => setQuickAmount(localAmount.toDouble()),
                 );
               }).toList(),
             ),
@@ -167,7 +173,7 @@ class DepositInputView extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              onPressed: inputAmount > 0 ? () => onSubmit(inputAmount) : null,
+              onPressed: inputAmount > 0 ? () => onSubmit(usdDeposit) : null,
               child: const Text(
                 'Deposit',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
