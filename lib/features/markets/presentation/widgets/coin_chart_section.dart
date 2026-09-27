@@ -39,7 +39,7 @@ class CoinChartSection extends HookConsumerWidget {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: ['1D', '1W', '1M', '1Y', 'ALL'].map((tf) {
+                  children: ['Live', '1D', '1W', '1M', '1Y', 'ALL'].map((tf) {
                     final isSelected = selectedTimeframe == tf;
                     return GestureDetector(
                       onTap: () {
