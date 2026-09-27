@@ -7,8 +7,10 @@ import 'package:wallet/features/wallet/presentation/providers/wallet_provider.da
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/home/presentation/widgets/quick_actions_row.dart';
 import 'package:wallet/features/home/presentation/widgets/section_header.dart';
+import 'package:wallet/features/wallet/presentation/widgets/portfolio_breakdown_card.dart';
 
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
+
 class WalletScreen extends HookConsumerWidget {
   const WalletScreen({super.key});
 
@@ -16,6 +18,7 @@ class WalletScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final assetsAsync = ref.watch(portfolioAssetsProvider);
     final totalValueAsync = ref.watch(portfolioTotalValueProvider);
+    final totalChangeAsync = ref.watch(portfolioTotalChange24hProvider);
     final formatFiat = ref.watch(fiatFormatterProvider);
     final theme = Theme.of(context);
 
@@ -25,7 +28,7 @@ class WalletScreen extends HookConsumerWidget {
           return [
             SliverAppBar(
               pinned: true,
-              expandedHeight: 220.0,
+              expandedHeight: 250.0,
               title: const Text('My Wallet'),
               actions: const [],
               flexibleSpace: FlexibleSpaceBar(
@@ -44,23 +47,74 @@ class WalletScreen extends HookConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         totalValueAsync.when(
-                          data: (value) => Text(
-                            formatFiat(value),
-                            style: theme.textTheme.displayLarge?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 44,
-                              color: theme.colorScheme.onSurface,
-                              letterSpacing: -1.5,
-                            ),
-                          ),
+                          data: (value) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  formatFiat(value),
+                                  style: theme.textTheme.displayLarge?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 44,
+                                    color: theme.colorScheme.onSurface,
+                                    letterSpacing: -1.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                totalChangeAsync.when(
+                                  data: (changePercent) {
+                                    final changeValue =
+                                        value * (changePercent / 100);
+                                    final isPositive = changePercent >= 0;
+                                    final color = isPositive
+                                        ? Colors.green
+                                        : Colors.red;
+                                    final icon = isPositive ? '▲' : '▼';
+                                    final prefix = isPositive ? '+' : '';
+
+                                    return Text(
+                                      '$icon $prefix${formatFiat(changeValue)} ($prefix${changePercent.toStringAsFixed(2)}%) today',
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            color: color,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    );
+                                  },
+                                  loading: () => Skeletonizer(
+                                    child: Text(
+                                      '▲ +\$0.00 (+0.00%) today',
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ),
+                                  error: (_, _) => const SizedBox(),
+                                ),
+                              ],
+                            );
+                          },
                           loading: () => Skeletonizer(
-                            child: Text(
-                              '\$10,000.00',
-                              style: theme.textTheme.displayLarge?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 44,
-                                letterSpacing: -1.5,
-                              ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '\$10,000.00',
+                                  style: theme.textTheme.displayLarge?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 44,
+                                    letterSpacing: -1.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '▲ +\$0.00 (+0.00%) today',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           error: (_, _) => const Text('Error'),
@@ -88,69 +142,14 @@ class WalletScreen extends HookConsumerWidget {
               ),
 
               // Allocation Placeholder
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SectionHeader(title: 'Allocation'),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Row(
-                          children: [
-                            // Placeholder for Donut Chart
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: theme.colorScheme.primary,
-                                  width: 12,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  assetsAsync.value?.length.toString() ?? '0',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 24),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Portfolio breakdown',
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Visual chart coming soon in the polish phase!',
-                                    style: theme.textTheme.labelMedium
-                                        ?.copyWith(
-                                          color: theme
-                                              .colorScheme
-                                              .onSurfaceVariant,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      SectionHeader(title: 'Allocation'),
+                      PortfolioBreakdownCard(),
                     ],
                   ),
                 ),
