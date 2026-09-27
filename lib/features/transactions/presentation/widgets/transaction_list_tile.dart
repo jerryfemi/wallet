@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/core/utils/formatters.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
 import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
 
-class TransactionListTile extends StatelessWidget {
+class TransactionListTile extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback? onTap;
 
   const TransactionListTile({super.key, required this.transaction, this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -34,7 +37,7 @@ class TransactionListTile extends StatelessWidget {
         '$sign${Formatters.formatCrypto(transaction.amount)} ${transaction.assetSymbol}';
 
     // Format fiat amount (e.g. "$3,200.00")
-    final String fiatText = Formatters.formatFiat(
+    final String fiatText = formatFiat(
       transaction.fiatValue.toDouble(),
     );
 
