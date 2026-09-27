@@ -5,6 +5,8 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/core/utils/formatters.dart';
 import 'package:intl/intl.dart';
 
+import 'package:wallet/core/presentation/widgets/bouncy_touch.dart';
+
 class MarketStatsSection extends StatelessWidget {
   final CoinEntity coin;
 
@@ -24,238 +26,103 @@ class MarketStatsSection extends StatelessWidget {
     if (coin.sparkline.isNotEmpty) {
       high24h = coin.sparkline.reduce(max);
       low24h = coin.sparkline.reduce(min);
-      // Ensure current price is within bounds (mock data can sometimes be slightly off)
       high24h = max(high24h, currentPrice);
       low24h = min(low24h, currentPrice);
     }
 
     final compactNumberFormat = NumberFormat.compact(locale: 'en_US');
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Market Stats',
-          style: Theme.of(context).textTheme.titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+        BouncyTouch(
+          onTap: () {
+            // Future feature: Open detailed "About" modal or page
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'About ${coin.name}',
+                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurfaceVariant),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '${coin.name} is a decentralized digital asset and cryptocurrency that enables peer-to-peer transactions on its network without the need for a central authority.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.5,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 16),
-        GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.6,
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            _StatCard(
-              title: 'MARKET CAP',
-              value: Formatters.formatCompactFiat(marketCap),
-              badgeText: '#${coin.marketCapRank}',
-            ),
-            _StatCard(
-              title: '24H VOLUME',
-              value: Formatters.formatCompactFiat(volume),
-            ),
-            _StatCard(
-              title: 'CIRCULATING SUPPLY',
-              value:
-                  '${compactNumberFormat.format(circulatingSupply)} ${coin.symbol.toUpperCase()}',
-            ),
-            _RangeStatCard(
-              title: '24H RANGE',
-              low: low24h,
-              high: high24h,
-              current: currentPrice,
-            ),
-          ],
+        const SizedBox(height: 24),
+        
+        // Stats List
+        _buildStatRow(
+          context,
+          label: 'Market cap',
+          value: Formatters.formatCompactFiat(marketCap),
+        ),
+        _buildStatRow(
+          context,
+          label: '24h Volume',
+          value: Formatters.formatCompactFiat(volume),
+        ),
+        _buildStatRow(
+          context,
+          label: 'Circulating Supply',
+          value: '${compactNumberFormat.format(circulatingSupply)} ${coin.symbol.toUpperCase()}',
+        ),
+        _buildStatRow(
+          context,
+          label: '24h Range',
+          value: '${Formatters.formatCompactFiat(low24h)} - ${Formatters.formatCompactFiat(high24h)}',
+        ),
+        _buildStatRow(
+          context,
+          label: 'Market Cap Rank',
+          value: '#${coin.marketCapRank}',
         ),
       ],
     );
   }
-}
 
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final String? badgeText;
-
-  const _StatCard({required this.title, required this.value, this.badgeText});
-
-  @override
-  Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: onSurface.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: onSurface.withValues(alpha: 0.08),
-          width: 0.5,
+  Widget _buildStatRow(BuildContext context, {required String label, required String value}) {
+    final theme = Theme.of(context);
+    return BouncyTouch(
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: onSurface.withValues(alpha: 0.5),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              if (badgeText != null) ...[
-                const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: onSurface.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    badgeText!,
-                    style: TextStyle(
-                      color: onSurface,
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              color: onSurface,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RangeStatCard extends StatelessWidget {
-  final String title;
-  final double low;
-  final double high;
-  final double current;
-
-  const _RangeStatCard({
-    required this.title,
-    required this.low,
-    required this.high,
-    required this.current,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final range = high - low;
-    final ratio = range == 0 ? 0.5 : ((current - low) / range).clamp(0.0, 1.0);
-    final onSurface = Theme.of(context).colorScheme.onSurface;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: onSurface.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: onSurface.withValues(alpha: 0.08), width: 0.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: onSurface.withValues(alpha: 0.5),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          // Range Bar
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final barWidth = constraints.maxWidth;
-              return Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.centerLeft,
-                children: [
-                  // Track
-                  Container(
-                    height: 4,
-                    width: barWidth,
-                    decoration: BoxDecoration(
-                      color: onSurface.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  // Progress indicator
-                  Positioned(
-                    left: (barWidth * ratio) - 4, // Center the dot
-                    child: Container(
-                      height: 8,
-                      width: 8,
-                      decoration: BoxDecoration(
-                        color: onSurface,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: onSurface,
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 8),
-          // High / Low labels
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                Formatters.formatCompactFiat(low),
-                style: TextStyle(
-                  color: onSurface.withValues(alpha: 0.5),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                Formatters.formatCompactFiat(high),
-                style: TextStyle(
-                  color: onSurface.withValues(alpha: 0.5),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
