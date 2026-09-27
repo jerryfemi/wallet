@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:wallet/features/wallet/presentation/widgets/deposit_views/deposit_receipt_row.dart';
-
-class DepositReceiptView extends StatelessWidget {
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/features/profile/presentation/providers/currency_provider.dart';
+class DepositReceiptView extends ConsumerWidget {
   final double amount;
   final String referenceNumber;
   final DateTime depositTime;
@@ -16,10 +18,12 @@ class DepositReceiptView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
+    
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final formattedAmount = NumberFormat.currency(symbol: '\$').format(amount);
+    final formattedAmount = formatFiat(amount);
     final formattedDate = DateFormat('MMM d, y, h:mm a').format(depositTime);
 
     return SafeArea(
