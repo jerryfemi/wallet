@@ -2,7 +2,6 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
 import 'package:wallet/app/theme/semantic_colors.dart';
-import 'package:wallet/app/theme/text_styles.dart';
 
 class AppTheme {
   static const _primary = Color(0xFF6C5CE7);
@@ -16,14 +15,6 @@ class AppTheme {
     cardRadius: 16.0,
   );
 
-  static const _textTheme = TextTheme(
-    displayLarge: AppTextStyles.h1,
-    titleLarge: AppTextStyles.h2,
-    titleMedium: AppTextStyles.subtitle,
-    bodyLarge: AppTextStyles.body,
-    bodyMedium: AppTextStyles.body,
-    labelSmall: AppTextStyles.caption,
-  );
 
   static final _inputDecorationTheme = InputDecorationTheme(
     filled: true,
@@ -71,7 +62,6 @@ class AppTheme {
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       fontFamily: 'Inter',
       subThemesData: _subThemesData,
-      textTheme: _textTheme,
     );
 
     return theme.copyWith(
@@ -99,7 +89,6 @@ class AppTheme {
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       fontFamily: 'Inter',
       subThemesData: _subThemesData,
-      textTheme: _textTheme,
     );
 
     return theme.copyWith(
