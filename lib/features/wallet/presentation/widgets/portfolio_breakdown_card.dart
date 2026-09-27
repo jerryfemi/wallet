@@ -23,6 +23,7 @@ class PortfolioBreakdownCard extends HookConsumerWidget {
         borderRadius: BorderRadius.circular(24),
       ),
       child: assetsAsync.when(
+        skipLoadingOnReload: true,
         data: (assets) {
           if (assets.isEmpty) {
             return const Center(
