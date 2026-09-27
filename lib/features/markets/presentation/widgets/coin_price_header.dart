@@ -19,14 +19,21 @@ class CoinPriceHeader extends HookConsumerWidget {
         scrubbedData?.price ?? coin.currentPrice.toDouble();
 
     Decimal displayChange;
+    Decimal displayDollarChange;
+
     if (scrubbedData != null &&
         scrubbedData.openPrice != null &&
         scrubbedData.openPrice! > 0) {
       final diff = scrubbedData.price - scrubbedData.openPrice!;
       final pct = (diff / scrubbedData.openPrice!) * 100;
       displayChange = Decimal.parse(pct.toStringAsFixed(2));
+      displayDollarChange = Decimal.parse(diff.toStringAsFixed(2));
     } else {
-      displayChange = coin.priceChangePercentage24h;
+      displayChange = Decimal.parse(coin.priceChangePercentage24h.toStringAsFixed(2));
+      final double price = coin.currentPrice.toDouble();
+      final double pctDouble = coin.priceChangePercentage24h.toDouble();
+      final double open = price / (1 + (pctDouble / 100));
+      displayDollarChange = Decimal.parse((price - open).toStringAsFixed(2));
     }
 
     final isPositive = displayChange >= Decimal.zero;
@@ -88,44 +95,21 @@ class CoinPriceHeader extends HookConsumerWidget {
                   char,
                   // Combine index and character to force animation only on changed digits
                   key: ValueKey('$index$char'),
-                  style: Theme.of(context).textTheme.displaySmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.displayLarge
+                      ?.copyWith(fontWeight: FontWeight.bold, fontSize: 44, letterSpacing: -1.5),
                 ),
               );
             },
           ).toList(),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(
-              isPositive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: color,
-            ),
-            Text(
-              '${displayChange.abs().toStringAsFixed(2)}%',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(color: color, fontWeight: FontWeight.w600),
-            ),
-            if (scrubbedData != null) ...[
-              const SizedBox(width: 12),
-              Text(
-                _formatTime(scrubbedData.time),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface
-                      .withValues(alpha: 0.6),
-                ),
-              ),
-            ],
-          ],
+        Text(
+          '${isPositive ? '+' : '-'}\$${displayDollarChange.abs().toDouble().toStringAsFixed(1)} (${isPositive ? '+' : ''}${displayChange.toDouble().toStringAsFixed(2)}%)',
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(color: color, fontWeight: FontWeight.w600),
         ),
       ],
     );
-  }
-
-  String _formatTime(DateTime time) {
-    // Simple format: e.g. "Oct 12, 14:30"
-    return '${time.month}/${time.day} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
   String _formatOdometer(double price) {
