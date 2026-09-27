@@ -68,31 +68,45 @@ class MarketStatsSection extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         
-        // Stats List
-        _buildStatRow(
-          context,
-          label: 'Market cap',
-          value: Formatters.formatCompactFiat(marketCap),
-        ),
-        _buildStatRow(
-          context,
-          label: '24h Volume',
-          value: Formatters.formatCompactFiat(volume),
-        ),
-        _buildStatRow(
-          context,
-          label: 'Circulating Supply',
-          value: '${compactNumberFormat.format(circulatingSupply)} ${coin.symbol.toUpperCase()}',
-        ),
-        _buildStatRow(
-          context,
-          label: '24h Range',
-          value: '${Formatters.formatCompactFiat(low24h)} - ${Formatters.formatCompactFiat(high24h)}',
-        ),
-        _buildStatRow(
-          context,
-          label: 'Market Cap Rank',
-          value: '#${coin.marketCapRank}',
+        // Stats List wrapped in a single BouncyTouch
+        BouncyTouch(
+          onTap: () {},
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                _buildStatRow(
+                  context,
+                  label: 'Market cap',
+                  value: Formatters.formatCompactFiat(marketCap),
+                ),
+                _buildStatRow(
+                  context,
+                  label: '24h Volume',
+                  value: Formatters.formatCompactFiat(volume),
+                ),
+                _buildStatRow(
+                  context,
+                  label: 'Circulating Supply',
+                  value: '${compactNumberFormat.format(circulatingSupply)} ${coin.symbol.toUpperCase()}',
+                ),
+                _buildStatRow(
+                  context,
+                  label: '24h Range',
+                  value: '${Formatters.formatCompactFiat(low24h)} - ${Formatters.formatCompactFiat(high24h)}',
+                ),
+                _buildStatRow(
+                  context,
+                  label: 'Market Cap Rank',
+                  value: '#${coin.marketCapRank}',
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -100,29 +114,26 @@ class MarketStatsSection extends StatelessWidget {
 
   Widget _buildStatRow(BuildContext context, {required String label, required String value}) {
     final theme = Theme.of(context);
-    return BouncyTouch(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
             ),
-            Text(
-              value,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
+          ),
+          Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
