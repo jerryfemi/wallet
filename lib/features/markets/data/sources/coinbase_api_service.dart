@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'dart:math' as math;
 import 'package:candlesticks/candlesticks.dart';
 
 class CoinbaseApiService {
@@ -35,21 +36,30 @@ class CoinbaseApiService {
       return _generateMockCandles(granularity);
     }
   }
-
   List<Candle> _generateMockCandles(String granularity) {
     final now = DateTime.now();
     int intervalSeconds = int.tryParse(granularity) ?? 3600;
     
     // Generate about 100 candles
     double currentPrice = 64000.0;
+    final random = math.Random();
+    
     return List.generate(100, (index) {
       final date = now.subtract(Duration(seconds: intervalSeconds * index));
-      // Simulate some random walk
-      final change = (index % 3 == 0) ? 200.0 : -100.0;
+      
+      // Simulate organic random walk with higher volatility
+      final volatility = 150.0 + random.nextDouble() * 300.0; // 150 to 450
+      final isUp = random.nextBool();
+      final change = isUp ? volatility : -volatility;
+      
       final open = currentPrice;
       final close = currentPrice + change;
-      final high = open > close ? open + 50 : close + 50;
-      final low = open < close ? open - 50 : close - 50;
+      
+      // Calculate realistic wicks (high/low)
+      final highestBody = open > close ? open : close;
+      final lowestBody = open < close ? open : close;
+      final high = highestBody + random.nextDouble() * 100.0;
+      final low = lowestBody - random.nextDouble() * 100.0;
       
       currentPrice = close; // setup next candle's base
       
@@ -59,7 +69,7 @@ class CoinbaseApiService {
         low: low,
         open: open,
         close: close,
-        volume: 1000.0,
+        volume: 1000.0 + random.nextDouble() * 5000.0,
       );
     });
   }
