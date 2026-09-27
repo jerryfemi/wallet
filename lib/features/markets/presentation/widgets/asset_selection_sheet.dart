@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
@@ -44,7 +45,10 @@ class AssetSelectionSheet extends HookConsumerWidget {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.of(context).pop();
+                        },
                       ),
                     ),
                     
@@ -64,7 +68,10 @@ class AssetSelectionSheet extends HookConsumerWidget {
                       ),
                       child: IconButton(
                         icon: Icon(Icons.check, color: theme.colorScheme.onPrimary),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.of(context).pop();
+                        },
                       ),
                     ),
                   ],
@@ -85,6 +92,7 @@ class AssetSelectionSheet extends HookConsumerWidget {
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             if (!isSelected) {
                               Navigator.of(context).pop();
                               // Replace the current details route with the new coin
