@@ -29,17 +29,25 @@ class ProfileScreen extends HookConsumerWidget {
               padding: const EdgeInsets.only(top: 8, bottom: 24),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer,
-                    backgroundImage:
-                        user?.photoURL != null && user!.photoURL!.isNotEmpty
-                        ? CachedNetworkImageProvider(user.photoURL!)
-                        : CachedNetworkImageProvider(
-                            'https://api.dicebear.com/7.x/micah/png?seed=${user?.uid ?? 'Trader'}&backgroundColor=transparent',
-                          ) as ImageProvider,
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: user?.photoURL != null && user!.photoURL!.isNotEmpty 
+                            ? user.photoURL!
+                            : 'https://api.dicebear.com/7.x/micah/png?seed=${user?.uid ?? 'Trader'}&backgroundColor=transparent',
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
