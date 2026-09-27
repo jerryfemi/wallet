@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
@@ -42,7 +43,10 @@ class CoinChartSection extends HookConsumerWidget {
                     final isSelected = selectedTimeframe == tf;
                     return GestureDetector(
                       onTap: () {
-                        ref.read(chartTimeframeProvider.notifier).setTimeframe(tf);
+                        if (!isSelected) {
+                          HapticFeedback.selectionClick();
+                          ref.read(chartTimeframeProvider.notifier).setTimeframe(tf);
+                        }
                       },
                       child: Container(
                         margin: const EdgeInsets.only(right: 8),
@@ -73,6 +77,7 @@ class CoinChartSection extends HookConsumerWidget {
             IconButton(
               icon: Icon(isCandle ? Icons.show_chart : Icons.candlestick_chart),
               onPressed: () {
+                HapticFeedback.lightImpact();
                 ref.read(isCandleChartProvider.notifier).toggle();
               },
             ),
