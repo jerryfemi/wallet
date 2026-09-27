@@ -20,10 +20,17 @@ class ActivityScreen extends HookConsumerWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Header
-          const SliverAppBar.medium(
+          SliverAppBar(
             pinned: true,
-            title: Text('Activity'),
+            centerTitle: false,
+            title: Text(
+              'Activity',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
           ),
 
           // Filter Chips
