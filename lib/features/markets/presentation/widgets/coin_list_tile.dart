@@ -13,6 +13,7 @@ import 'package:wallet/app/router/routes.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/app/theme/semantic_colors.dart';
 
 class CoinListTile extends HookConsumerWidget {
   final CoinEntity coin;
@@ -29,12 +30,16 @@ class CoinListTile extends HookConsumerWidget {
     );
     final formatFiat = ref.watch(fiatFormatterProvider);
 
+    final semanticColors = Theme.of(context).extension<AppSemanticColors>();
+    
     final currentPrice = ticker?.price ?? coin.currentPrice;
     final priceChange =
         ticker?.priceChangePercentage24h ?? coin.priceChangePercentage24h;
 
     final isPositive = priceChange >= Decimal.zero;
-    final color = isPositive ? Colors.greenAccent : Colors.redAccent;
+    final color = isPositive 
+        ? (semanticColors?.positive ?? AppSemanticColors.light.positive) 
+        : (semanticColors?.negative ?? AppSemanticColors.light.negative);
 
     final flashColor = useState<Color?>(null);
 
@@ -46,8 +51,8 @@ class CoinListTile extends HookConsumerWidget {
 
         if (nextPrice != null && nextPrice != prevPrice) {
           flashColor.value = nextPrice > prevPrice
-              ? Colors.greenAccent
-              : Colors.redAccent;
+              ? (semanticColors?.positive ?? AppSemanticColors.light.positive)
+              : (semanticColors?.negative ?? AppSemanticColors.light.negative);
           Future.delayed(const Duration(milliseconds: 500), () {
             if (context.mounted) flashColor.value = null;
           });
