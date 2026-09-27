@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_chart_state_provider.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_line_chart.dart';
+import 'package:wallet/features/markets/presentation/widgets/coin_candlestick_chart.dart';
 
 class CoinChartSection extends HookConsumerWidget {
   final CoinEntity coin;
@@ -22,7 +23,7 @@ class CoinChartSection extends HookConsumerWidget {
           height: 300,
           width: double.infinity,
           child: isCandle
-              ? const Center(child: Text('Candle Chart Placeholder'))
+              ? CoinCandlestickChart(coin: coin)
               : CoinLineChart(coin: coin),
         ),
         
