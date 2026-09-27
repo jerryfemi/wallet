@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
-import 'package:wallet/features/markets/presentation/widgets/coin_price_header.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_chart_section.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_sliver_header_delegate.dart';
 
