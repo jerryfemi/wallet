@@ -4,6 +4,7 @@ import 'package:decimal/decimal.dart';
 
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_chart_state_provider.dart';
+import 'package:wallet/features/markets/presentation/widgets/asset_selection_sheet.dart';
 
 class CoinPriceHeader extends HookConsumerWidget {
   final CoinEntity coin;
@@ -42,23 +43,33 @@ class CoinPriceHeader extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              coin.name,
-              style: Theme.of(context).textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: Theme.of(context).colorScheme.onSurface
-                  .withValues(alpha: 0.5),
-              size: 20,
-            ),
-          ],
+        GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => AssetSelectionSheet(currentCoin: coin),
+            );
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                coin.name,
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: Theme.of(context).colorScheme.onSurface
+                    .withValues(alpha: 0.5),
+                size: 20,
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 4),
         // Custom per-character Odometer instead of external package to avoid network/CORS issues
