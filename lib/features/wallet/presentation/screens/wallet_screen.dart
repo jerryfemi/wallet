@@ -47,6 +47,7 @@ class WalletScreen extends HookConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         totalValueAsync.when(
+                          skipLoadingOnReload: true,
                           data: (value) {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
@@ -62,6 +63,7 @@ class WalletScreen extends HookConsumerWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 totalChangeAsync.when(
+                                  skipLoadingOnReload: true,
                                   data: (changePercent) {
                                     final changeValue =
                                         value * (changePercent / 100);
@@ -164,6 +166,7 @@ class WalletScreen extends HookConsumerWidget {
                     children: [
                       const SectionHeader(title: 'Assets'),
                       assetsAsync.when(
+                        skipLoadingOnReload: true,
                         data: (assets) {
                           if (assets.isEmpty) {
                             return const Padding(
