@@ -160,3 +160,80 @@ final class CoinNewsFamily extends $Family
   @override
   String toString() => r'coinNewsProvider';
 }
+
+@ProviderFor(coinDetails)
+final coinDetailsProvider = CoinDetailsFamily._();
+
+final class CoinDetailsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, dynamic>>,
+          Map<String, dynamic>,
+          FutureOr<Map<String, dynamic>>
+        >
+    with
+        $FutureModifier<Map<String, dynamic>>,
+        $FutureProvider<Map<String, dynamic>> {
+  CoinDetailsProvider._({
+    required CoinDetailsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'coinDetailsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$coinDetailsHash();
+
+  @override
+  String toString() {
+    return r'coinDetailsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, dynamic>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, dynamic>> create(Ref ref) {
+    final argument = this.argument as String;
+    return coinDetails(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CoinDetailsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$coinDetailsHash() => r'b3fbcf028dd9e3daedf5bbff060745560ed10da6';
+
+final class CoinDetailsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Map<String, dynamic>>, String> {
+  CoinDetailsFamily._()
+    : super(
+        retry: null,
+        name: r'coinDetailsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CoinDetailsProvider call(String coinId) =>
+      CoinDetailsProvider._(argument: coinId, from: this);
+
+  @override
+  String toString() => r'coinDetailsProvider';
+}

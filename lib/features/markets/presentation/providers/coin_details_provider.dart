@@ -23,3 +23,12 @@ Future<List<NewsArticleEntity>> coinNews(
   final repository = ref.watch(marketRepositoryProvider);
   return repository.getCoinNews(symbol);
 }
+
+@riverpod
+Future<Map<String, dynamic>> coinDetails(
+  Ref ref,
+  String coinId,
+) async {
+  final repository = ref.watch(marketRepositoryProvider);
+  return repository.getCoinDetails(coinId);
+}
