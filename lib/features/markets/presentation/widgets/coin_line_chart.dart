@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
@@ -109,6 +110,11 @@ class CoinLineChart extends ConsumerWidget {
                   }
                   final spotIndex = response.lineBarSpots!.first.spotIndex;
                   final candle = reversedCandles[spotIndex];
+                  
+                  final currentScrubbedIndex = ref.read(scrubbedChartDataProvider)?.index;
+                  if (currentScrubbedIndex != spotIndex) {
+                    HapticFeedback.selectionClick();
+                  }
 
                   // Update the state provider so the header updates instantly
                   WidgetsBinding.instance.addPostFrameCallback((_) {
