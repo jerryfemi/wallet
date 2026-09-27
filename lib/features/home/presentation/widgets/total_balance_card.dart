@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:wallet/core/utils/formatters.dart';
+
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
 
 class TotalBalanceCard extends HookConsumerWidget {
   final double totalValue;
@@ -14,6 +15,7 @@ class TotalBalanceCard extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
     final theme = Theme.of(context);
     final isPositive = percentageChange >= 0;
 
@@ -35,7 +37,7 @@ class TotalBalanceCard extends HookConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            Formatters.formatFiat(totalValue),
+            formatFiat(totalValue),
             style: theme.textTheme.headlineLarge?.copyWith(
               fontWeight: FontWeight.w900,
               color: theme.colorScheme.onSurface,
