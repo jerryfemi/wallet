@@ -11,7 +11,7 @@ import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.d
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:decimal/decimal.dart';
 import 'package:wallet/core/providers/exchange_rates_provider.dart';
-
+import 'package:wallet/features/transactions/presentation/widgets/transaction_list_tile.dart';
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
@@ -223,41 +223,12 @@ class HomeScreen extends HookConsumerWidget {
 
                     return Column(
                       children: topTransactions.map((tx) {
-                        final isDeposit = tx.type.name == 'deposit';
-                        final formattedAmount = formatFiat(tx.amount.toDouble());
-                        final formattedDate = DateFormat('MMM d, y, h:mm a')
-                            .format(tx.timestamp);
-                        final typeName =
-                            tx.type.name[0].toUpperCase() +
-                            tx.type.name.substring(1);
-                        return ListTile(
+                        return TransactionListTile(
                           key: ValueKey(tx.id),
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            backgroundColor: isDeposit
-                                ? Colors.green.withValues(alpha: 0.15)
-                                : Colors.red.withValues(alpha: 0.15),
-                            child: Icon(
-                              isDeposit
-                                  ? Icons.arrow_downward
-                                  : Icons.arrow_upward,
-                              color: isDeposit
-                                  ? Colors.green.shade400
-                                  : Colors.red.shade400,
-                            ),
-                          ),
-                          title: Text('$typeName ${tx.assetSymbol}'),
-                          subtitle: Text(formattedDate),
-                          trailing: Text(
-                            '${isDeposit ? '+' : '-'}$formattedAmount',
-                            style: TextStyle(
-                              color: isDeposit
-                                  ? Colors.green.shade400
-                                  : Colors.red.shade400,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
+                          transaction: tx,
+                          onTap: () {
+                            // TODO: Open transaction details
+                          },
                         );
                       }).toList(),
                     );
