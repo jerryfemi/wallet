@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
+import 'package:wallet/core/providers/exchange_rates_provider.dart';
+import 'package:wallet/core/utils/formatters.dart';
 import 'package:intl/intl.dart';
 
-class TransactionDetailScreen extends StatelessWidget {
+class TransactionDetailScreen extends ConsumerWidget {
   final String transactionId;
-  final TransactionEntity? transaction; // Optional, might be passed from state
+  final TransactionEntity? transaction;
 
   const TransactionDetailScreen({
     super.key, 
@@ -13,7 +16,7 @@ class TransactionDetailScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     
     return Scaffold(
@@ -22,11 +25,12 @@ class TransactionDetailScreen extends StatelessWidget {
       ),
       body: transaction == null 
           ? const Center(child: CircularProgressIndicator())
-          : _buildDetails(context, theme),
+          : _buildDetails(context, theme, ref),
     );
   }
 
-  Widget _buildDetails(BuildContext context, ThemeData theme) {
+  Widget _buildDetails(BuildContext context, ThemeData theme, WidgetRef ref) {
+    final formatFiat = ref.watch(fiatFormatterProvider);
     final isPositive =
         transaction!.type == TransactionType.buy ||
         transaction!.type == TransactionType.deposit ||
@@ -58,7 +62,7 @@ class TransactionDetailScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              '$sign${transaction!.amount} ${transaction!.assetSymbol}',
+              '$sign${Formatters.formatCrypto(transaction!.amount)} ${transaction!.assetSymbol}',
               style: theme.textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: color,
@@ -68,7 +72,7 @@ class TransactionDetailScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Center(
             child: Text(
-              '≈ \$${transaction!.fiatValue.toStringAsFixed(2)}',
+              '≈ ${formatFiat(transaction!.fiatValue.toDouble())}',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

@@ -72,7 +72,22 @@ class MarketRepository {
   }
 
   Future<List<Candle>> getHistoricalCandles(String symbol, String granularity) async {
-    return await _coinbaseApiService.getHistoricalCandles(symbol, granularity);
+    // Try to get the fallback price from the locally cached CoinGecko data
+    double? fallbackPrice;
+    try {
+      final cachedCoins = await getCachedCoins();
+      if (cachedCoins != null) {
+        final coin = cachedCoins.firstWhere(
+          (c) => c.symbol.toUpperCase() == symbol.toUpperCase(),
+          orElse: () => cachedCoins.first, // Fallback to something if not found
+        );
+        fallbackPrice = coin.currentPrice.toDouble();
+      }
+    } catch (_) {
+      // Ignore cache errors
+    }
+
+    return await _coinbaseApiService.getHistoricalCandles(symbol, granularity, fallbackPrice: fallbackPrice);
   }
 
   Future<List<NewsArticleEntity>> getCoinNews(String symbol) async {
