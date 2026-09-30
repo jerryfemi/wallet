@@ -19,8 +19,14 @@ import 'package:wallet/app/theme/semantic_colors.dart';
 class CoinListTile extends HookConsumerWidget {
   final CoinEntity coin;
   final double? walletAmount;
+  final VoidCallback? onTap;
 
-  const CoinListTile({super.key, required this.coin, this.walletAmount});
+  const CoinListTile({
+    super.key, 
+    required this.coin, 
+    this.walletAmount,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,7 +68,7 @@ class CoinListTile extends HookConsumerWidget {
     );
 
     return InkWell(
-      onTap: () {
+      onTap: onTap ?? () {
         HapticFeedback.lightImpact();
         context.push('${Routes.markets}/${Routes.coinDetails}', extra: coin);
       },

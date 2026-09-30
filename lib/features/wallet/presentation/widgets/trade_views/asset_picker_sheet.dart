@@ -163,12 +163,10 @@ class AssetPickerSheet extends HookConsumerWidget {
                     final assetIndex = wallet?.assets.indexWhere((a) => a.coinId == coin.id) ?? -1;
                     final walletAmount = assetIndex >= 0 ? wallet!.assets[assetIndex].amount.toDouble() : 0.0;
 
-                    return InkWell(
+                    return CoinListTile(
+                      coin: coin,
+                      walletAmount: isSell ? walletAmount : null,
                       onTap: () => Navigator.of(context).pop(coin.id),
-                      child: CoinListTile(
-                        coin: coin,
-                        walletAmount: isSell ? walletAmount : null,
-                      ),
                     );
                   },
                 ),
