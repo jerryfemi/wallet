@@ -23,6 +23,7 @@ class ActivityScreen extends HookConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            pinned: true,
             centerTitle: false,
             title: Text(
               'Activity',
