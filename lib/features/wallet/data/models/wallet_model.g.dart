@@ -8,6 +8,7 @@ part of 'wallet_model.dart';
 
 _WalletModel _$WalletModelFromJson(Map<String, dynamic> json) => _WalletModel(
   userId: json['userId'] as String,
+  address: json['address'] as String? ?? '0xCS_LEGACY_WALLET_RECREATE_ACCOUNT',
   assets:
       (json['assets'] as List<dynamic>?)
           ?.map((e) => AssetModel.fromJson(e as Map<String, dynamic>))
@@ -16,4 +17,8 @@ _WalletModel _$WalletModelFromJson(Map<String, dynamic> json) => _WalletModel(
 );
 
 Map<String, dynamic> _$WalletModelToJson(_WalletModel instance) =>
-    <String, dynamic>{'userId': instance.userId, 'assets': instance.assets};
+    <String, dynamic>{
+      'userId': instance.userId,
+      'address': instance.address,
+      'assets': instance.assets,
+    };

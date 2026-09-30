@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WalletModel {
 
- String get userId; List<AssetModel> get assets;
+ String get userId; String get address; List<AssetModel> get assets;
 /// Create a copy of WalletModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $WalletModelCopyWith<WalletModel> get copyWith => _$WalletModelCopyWithImpl<Wall
 @override
 bool operator ==(Object other) {
   final _this = this as WalletModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletModel&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&const DeepCollectionEquality().equals(other.assets, _this.assets));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletModel&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.address, _this.address) || other.address == _this.address)&&const DeepCollectionEquality().equals(other.assets, _this.assets));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as WalletModel;
-  return Object.hash(runtimeType,_this.userId,const DeepCollectionEquality().hash(_this.assets));
+  return Object.hash(runtimeType,_this.userId,_this.address,const DeepCollectionEquality().hash(_this.assets));
 }
 
 @override
 String toString() {
   final _this = this as WalletModel;
-  return 'WalletModel(userId: ${_this.userId}, assets: ${_this.assets})';
+  return 'WalletModel(userId: ${_this.userId}, address: ${_this.address}, assets: ${_this.assets})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $WalletModelCopyWith<$Res>  {
   factory $WalletModelCopyWith(WalletModel value, $Res Function(WalletModel) _then) = _$WalletModelCopyWithImpl;
 @useResult
 $Res call({
- String userId, List<AssetModel> assets
+ String userId, String address, List<AssetModel> assets
 });
 
 
@@ -71,9 +71,10 @@ class _$WalletModelCopyWithImpl<$Res>
 
 /// Create a copy of WalletModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? assets = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? address = null,Object? assets = null,}) {
   return _then(WalletModel(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String,assets: null == assets ? _self.assets : assets // ignore: cast_nullable_to_non_nullable
 as List<AssetModel>,
   ));
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  List<AssetModel> assets)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String address,  List<AssetModel> assets)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WalletModel() when $default != null:
-return $default(_that.userId,_that.assets);case _:
+return $default(_that.userId,_that.address,_that.assets);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.userId,_that.assets);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  List<AssetModel> assets)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String address,  List<AssetModel> assets)  $default,) {final _that = this;
 switch (_that) {
 case _WalletModel():
-return $default(_that.userId,_that.assets);case _:
+return $default(_that.userId,_that.address,_that.assets);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.userId,_that.assets);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  List<AssetModel> assets)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String address,  List<AssetModel> assets)?  $default,) {final _that = this;
 switch (_that) {
 case _WalletModel() when $default != null:
-return $default(_that.userId,_that.assets);case _:
+return $default(_that.userId,_that.address,_that.assets);case _:
   return null;
 
 }
@@ -216,10 +217,11 @@ return $default(_that.userId,_that.assets);case _:
 @JsonSerializable()
 
 class _WalletModel extends WalletModel {
-  const _WalletModel({required this.userId,  List<AssetModel> assets = const []}): _assets = assets,super._();
+  const _WalletModel({required this.userId, this.address = '0xCS_LEGACY_WALLET_RECREATE_ACCOUNT',  List<AssetModel> assets = const []}): _assets = assets,super._();
   factory _WalletModel.fromJson(Map<String, dynamic> json) => _$WalletModelFromJson(json);
 
 @override final  String userId;
+@override@JsonKey() final  String address;
  final  List<AssetModel> _assets;
 @override@JsonKey() List<AssetModel> get assets {
   if (_assets is EqualUnmodifiableListView) return _assets;
@@ -241,18 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletModel&&(identical(other.userId, userId) || other.userId == userId)&&const DeepCollectionEquality().equals(other.assets, _assets));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other.assets, _assets));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,userId,const DeepCollectionEquality().hash(_assets));
+    return Object.hash(runtimeType,userId,address,const DeepCollectionEquality().hash(_assets));
 }
 
 @override
 String toString() {
-    return 'WalletModel(userId: $userId, assets: $assets)';
+    return 'WalletModel(userId: $userId, address: $address, assets: $assets)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$WalletModelCopyWith<$Res> implements $WalletModelCopyWith
   factory _$WalletModelCopyWith(_WalletModel value, $Res Function(_WalletModel) _then) = __$WalletModelCopyWithImpl;
 @override @useResult
 $Res call({
- String userId, List<AssetModel> assets
+ String userId, String address, List<AssetModel> assets
 });
 
 
@@ -280,9 +282,10 @@ class __$WalletModelCopyWithImpl<$Res>
 
 /// Create a copy of WalletModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? assets = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? address = null,Object? assets = null,}) {
   return _then(_WalletModel(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String,assets: null == assets ? _self._assets : assets // ignore: cast_nullable_to_non_nullable
 as List<AssetModel>,
   ));

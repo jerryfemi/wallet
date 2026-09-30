@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decimal/decimal.dart';
 
@@ -48,6 +49,13 @@ class WalletRepositoryImpl implements WalletRepository {
         });
   }
 
+  String _generateAddress() {
+    final random = Random.secure();
+    final chars = '0123456789abcdef';
+    final hexStr = List.generate(36, (index) => chars[random.nextInt(chars.length)]).join();
+    return '0xCS$hexStr';
+  }
+
   @override
   Future<void> createInitialWallet(String userId) async {
     final walletRef = _firestore
@@ -61,6 +69,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     final newWallet = WalletModel(
       userId: userId,
+      address: _generateAddress(),
       assets: [], // Start with an empty wallet
     );
 

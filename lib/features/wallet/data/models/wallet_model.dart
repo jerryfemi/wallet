@@ -12,6 +12,7 @@ abstract class WalletModel with _$WalletModel {
 
   const factory WalletModel({
     required String userId,
+    @Default('0xCS_LEGACY_WALLET_RECREATE_ACCOUNT') String address,
     @Default([]) List<AssetModel> assets,
   }) = _WalletModel;
 
@@ -20,6 +21,7 @@ abstract class WalletModel with _$WalletModel {
   factory WalletModel.fromEntity(WalletEntity entity) {
     return WalletModel(
       userId: entity.userId,
+      address: entity.address,
       assets: entity.assets.map((a) => AssetModel.fromEntity(a)).toList(),
     );
   }
@@ -29,6 +31,7 @@ extension WalletModelX on WalletModel {
   WalletEntity toEntity() {
     return WalletEntity(
       userId: userId,
+      address: address,
       assets: assets.map((a) => a.toEntity()).toList(),
     );
   }

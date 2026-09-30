@@ -3,10 +3,12 @@ import 'package:wallet/features/wallet/domain/entities/asset_entity.dart';
 
 class WalletEntity {
   final String userId;
+  final String address;
   final List<AssetEntity> assets;
 
   const WalletEntity({
     required this.userId,
+    required this.address,
     required this.assets,
   });
 
