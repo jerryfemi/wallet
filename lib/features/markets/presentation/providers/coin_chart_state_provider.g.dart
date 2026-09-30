@@ -93,7 +93,7 @@ final class ChartTimeframeProvider
   }
 }
 
-String _$chartTimeframeHash() => r'9b5d15bea22fecc4304451400adf108713c3807c';
+String _$chartTimeframeHash() => r'abfccb3f84b8d13744c487f72c581657a825aaa7';
 
 abstract class _$ChartTimeframe extends $Notifier<String> {
   String build();
