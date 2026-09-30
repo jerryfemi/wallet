@@ -28,7 +28,7 @@ class ScrubbedChartData extends _$ScrubbedChartData {
 @riverpod
 class ChartTimeframe extends _$ChartTimeframe {
   @override
-  String build() => '1D';
+  String build() => 'Live';
 
   void setTimeframe(String tf) {
     state = tf;

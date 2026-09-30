@@ -8,6 +8,8 @@ import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
 import 'package:wallet/features/transactions/presentation/providers/transactions_provider.dart';
 import 'package:wallet/features/transactions/presentation/widgets/transaction_filter_chips.dart';
 import 'package:wallet/features/transactions/presentation/widgets/transaction_list_tile.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wallet/app/router/routes.dart';
 
 class ActivityScreen extends HookConsumerWidget {
   const ActivityScreen({super.key});
@@ -21,7 +23,6 @@ class ActivityScreen extends HookConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            pinned: true,
             centerTitle: false,
             title: Text(
               'Activity',
@@ -62,38 +63,37 @@ class ActivityScreen extends HookConsumerWidget {
               return SliverPadding(
                 padding: const EdgeInsets.only(bottom: 32),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final itemIndex = index ~/ 2;
-                      if (index.isEven) {
-                        return TransactionListTile(
-                          transaction: filteredTransactions[itemIndex],
-                          onTap: () {
-                            // TODO: Open transaction details screen
-                          },
-                        );
-                      }
-                      return const Divider(height: 1, indent: 65, endIndent: 20);
-                    },
-                    childCount: filteredTransactions.length * 2 - 1,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final itemIndex = index ~/ 2;
+                    if (index.isEven) {
+                      return TransactionListTile(
+                        transaction: filteredTransactions[itemIndex],
+                        onTap: () {
+                          final tx = filteredTransactions[itemIndex];
+                          context.push(
+                            '${Routes.activity}/tx/${tx.id}',
+                            extra: tx,
+                          );
+                        },
+                      );
+                    }
+                    return const Divider(height: 1, indent: 65, endIndent: 20);
+                  }, childCount: filteredTransactions.length * 2 - 1),
                 ),
               );
             },
             loading: () => SliverPadding(
               padding: const EdgeInsets.only(bottom: 32),
               sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Skeletonizer(
-                      enabled: true,
-                      child: TransactionListTile(
-                        transaction: _getDummyData()[index % _getDummyData().length],
-                      ),
-                    );
-                  },
-                  childCount: 10,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return Skeletonizer(
+                    enabled: true,
+                    child: TransactionListTile(
+                      transaction:
+                          _getDummyData()[index % _getDummyData().length],
+                    ),
+                  );
+                }, childCount: 10),
               ),
             ),
             error: (error, stack) => SliverFillRemaining(
@@ -222,7 +222,10 @@ class _TransactionFilterDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       alignment: Alignment.centerLeft,

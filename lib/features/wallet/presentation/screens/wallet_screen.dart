@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:decimal/decimal.dart';
@@ -82,22 +83,36 @@ class WalletScreen extends HookConsumerWidget {
                                     final icon = isPositive ? '▲' : '▼';
                                     final prefix = isPositive ? '+' : '';
 
-                                    return Text(
-                                      '$icon $prefix${formatFiat(changeValue)} ($prefix${changePercent.toStringAsFixed(2)}%) today',
-                                      style: theme.textTheme.titleSmall
-                                          ?.copyWith(
-                                            color: color,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                    return Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          '$icon $prefix${formatFiat(changeValue)} ($prefix${changePercent.toStringAsFixed(2)}%)',
+                                          style: theme.textTheme.titleSmall
+                                              ?.copyWith(
+                                                color: color,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        _RangeSelector(color: color),
+                                      ],
                                     );
                                   },
                                   loading: () => Skeletonizer(
-                                    child: Text(
-                                      '▲ +\$0.00 (+0.00%) today',
-                                      style: theme.textTheme.titleSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          '▲ +\$0.00 (+0.00%)',
+                                          style: theme.textTheme.titleSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        _RangeSelector(color: theme.textTheme.titleSmall?.color ?? Colors.green),
+                                      ],
                                     ),
                                   ),
                                   error: (_, _) => const SizedBox(),
@@ -230,6 +245,38 @@ class WalletScreen extends HookConsumerWidget {
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RangeSelector extends HookWidget {
+  final Color color;
+  
+  const _RangeSelector({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final range = useState('today');
+    
+    return PopupMenuButton<String>(
+      initialValue: range.value,
+      padding: EdgeInsets.zero,
+      tooltip: 'Change time range',
+      onSelected: (value) => range.value = value,
+      itemBuilder: (context) => const [
+        PopupMenuItem(value: 'today', child: Text('Today')),
+        PopupMenuItem(value: 'this week', child: Text('This Week')),
+        PopupMenuItem(value: 'this month', child: Text('This Month')),
+      ],
+      child: Text(
+        range.value,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+          decoration: TextDecoration.underline,
+          decorationStyle: TextDecorationStyle.dashed,
         ),
       ),
     );

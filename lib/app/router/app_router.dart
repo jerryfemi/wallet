@@ -16,6 +16,8 @@ import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:wallet/features/transactions/presentation/screens/transaction_detail_screen.dart';
+import 'package:wallet/features/wallet/domain/entities/transaction_entity.dart';
 import 'package:wallet/shared/widgets/app_shell.dart';
 import 'package:wallet/app/router/routes.dart';
 
@@ -96,6 +98,18 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.activity,
                 builder: (context, state) => const ActivityScreen(),
+                routes: [
+                  GoRoute(
+                    path: Routes.transactionDetail,
+                    builder: (context, state) {
+                      final tx = state.extra as TransactionEntity?;
+                      return TransactionDetailScreen(
+                        transactionId: state.pathParameters['transactionId'] ?? '',
+                        transaction: tx,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
