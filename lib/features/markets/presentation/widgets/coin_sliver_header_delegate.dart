@@ -103,20 +103,34 @@ class CoinSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
 
-                // Top Right Action (Receive)
+                // Top Right Actions (Send & Receive)
                 Positioned(
                   top: 0,
                   right: 8,
                   height: collapsedHeight - MediaQuery.paddingOf(context).top,
                   child: Center(
-                    child: IconButton(
-                      icon: const Icon(Icons.qr_code_2_rounded),
-                      onPressed: () {
-                        context.push(
-                          '${Routes.receive}/${coin.id}',
-                          extra: coin,
-                        );
-                      },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.send_rounded),
+                          onPressed: () {
+                            context.push(
+                              '${Routes.send}/${coin.id}',
+                              extra: coin,
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.qr_code_2_rounded),
+                          onPressed: () {
+                            context.push(
+                              '${Routes.receive}/${coin.id}',
+                              extra: coin,
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),

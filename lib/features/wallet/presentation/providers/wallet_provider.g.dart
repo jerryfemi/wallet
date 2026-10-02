@@ -9,6 +9,47 @@ part of 'wallet_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(mempoolService)
+final mempoolServiceProvider = MempoolServiceProvider._();
+
+final class MempoolServiceProvider
+    extends $FunctionalProvider<MempoolService, MempoolService, MempoolService>
+    with $Provider<MempoolService> {
+  MempoolServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mempoolServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mempoolServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<MempoolService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  MempoolService create(Ref ref) {
+    return mempoolService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MempoolService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MempoolService>(value),
+    );
+  }
+}
+
+String _$mempoolServiceHash() => r'ffc1f28db295f1e87bf5d0aadf5ab38492b11789';
+
 @ProviderFor(walletRepository)
 final walletRepositoryProvider = WalletRepositoryProvider._();
 

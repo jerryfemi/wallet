@@ -15,6 +15,7 @@ import 'package:wallet/features/markets/presentation/screens/coin_details_screen
 import 'package:wallet/features/markets/presentation/screens/about_coin_screen.dart';
 import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:wallet/features/wallet/presentation/screens/receive_screen.dart';
+import 'package:wallet/features/wallet/presentation/screens/send_screen.dart';
 import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/edit_profile_screen.dart';
@@ -118,6 +119,13 @@ GoRouter goRouter(Ref ref) {
       ),
 
       // ── Full-screen flows (outside shell, no bottom nav) ───────────────
+      GoRoute(
+        path: '${Routes.send}/:coinId',
+        builder: (context, state) {
+          final coin = state.extra as CoinEntity;
+          return SendScreen(coin: coin);
+        },
+      ),
       GoRoute(
         path: '${Routes.receive}/:coinId',
         builder: (context, state) {

@@ -7,9 +7,17 @@ import 'package:wallet/features/wallet/domain/repositories/wallet_repository.dar
 import 'package:wallet/features/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
+import 'package:wallet/core/services/mempool_service.dart';
+import 'package:wallet/core/network/dio_client.dart';
 import 'package:decimal/decimal.dart';
 
 part 'wallet_provider.g.dart';
+
+@riverpod
+MempoolService mempoolService(Ref ref) {
+  // It's fine to just instantiate it here
+  return MempoolService(DioClient().dio);
+}
 
 @riverpod
 WalletRepository walletRepository(Ref ref) {
