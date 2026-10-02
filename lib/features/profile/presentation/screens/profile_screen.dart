@@ -9,6 +9,9 @@ import 'package:wallet/features/profile/presentation/widgets/profile_menu_group.
 import 'package:wallet/app/theme/theme_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wallet/app/router/routes.dart';
+import 'package:flutter/services.dart';
+import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -62,6 +65,9 @@ class ProfileScreen extends HookConsumerWidget {
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  // Wallet Address Chip
+                  const _AddressChip(),
                 ],
               ),
             ),
@@ -184,6 +190,102 @@ class ProfileScreen extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AddressChip extends HookConsumerWidget {
+  const _AddressChip();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final walletState = ref.watch(walletStreamProvider);
+    final address = walletState.value?.address;
+    final isCopied = useState(false);
+
+    if (address == null) return const SizedBox.shrink();
+
+    return InkWell(
+      onTap: () async {
+        Clipboard.setData(ClipboardData(text: address));
+        isCopied.value = true;
+        // Wait 2 seconds then revert back
+        await Future.delayed(const Duration(seconds: 2));
+        if (context.mounted) {
+          isCopied.value = false;
+        }
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SizeTransition(
+                sizeFactor: animation,
+                axis: Axis.horizontal,
+                child: child,
+              ),
+            );
+          },
+          child: isCopied.value
+              ? Row(
+                  key: const ValueKey('copied'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle_rounded,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Copied!',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  key: const ValueKey('address'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.wallet_rounded,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${address.substring(0, 6)}...${address.substring(address.length - 4)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.copy_rounded,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }
