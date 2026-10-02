@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wallet/app/router/routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_price_header.dart';
@@ -112,7 +113,7 @@ class CoinSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                       icon: const Icon(Icons.qr_code_2_rounded),
                       onPressed: () {
                         context.push(
-                          '/wallet/receive/${coin.id}',
+                          '${Routes.receive}/${coin.id}',
                           extra: coin,
                         );
                       },

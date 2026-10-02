@@ -86,7 +86,7 @@ class ProfileScreen extends HookConsumerWidget {
                         iconAsset: 'assets/icons/edit.svg',
                         title: 'Edit Profile',
                         onTap: () {
-                          context.go('${Routes.profile}/${Routes.editProfile}');
+                          context.push(Routes.editProfile);
                         },
                       ),
                       MenuOption(

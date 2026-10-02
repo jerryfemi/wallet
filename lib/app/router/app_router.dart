@@ -95,16 +95,6 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.wallet,
                 builder: (context, state) => const WalletScreen(),
-                routes: [
-                  GoRoute(
-                    path: '${Routes.receive}/:coinId',
-                    parentNavigatorKey: rootNavigatorKey,
-                    builder: (context, state) {
-                      final coin = state.extra as CoinEntity;
-                      return ReceiveScreen(coin: coin);
-                    },
-                  ),
-                ],
               ),
             ],
           ),
@@ -113,18 +103,6 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.activity,
                 builder: (context, state) => const ActivityScreen(),
-                routes: [
-                  GoRoute(
-                    path: Routes.transactionDetail,
-                    builder: (context, state) {
-                      final tx = state.extra as TransactionEntity?;
-                      return TransactionDetailScreen(
-                        transactionId: state.pathParameters['transactionId'] ?? '',
-                        transaction: tx,
-                      );
-                    },
-                  ),
-                ],
               ),
             ],
           ),
@@ -133,19 +111,36 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.profile,
                 builder: (context, state) => const ProfileScreen(),
-                routes: [
-                  GoRoute(
-                    path: Routes.editProfile,
-                    parentNavigatorKey: rootNavigatorKey,
-                    builder: (context, state) => const EditProfileScreen(),
-                  ),
-                ],
               ),
             ],
           ),
         ],
       ),
+
+      // ── Full-screen flows (outside shell, no bottom nav) ───────────────
+      GoRoute(
+        path: '${Routes.receive}/:coinId',
+        builder: (context, state) {
+          final coin = state.extra as CoinEntity;
+          return ReceiveScreen(coin: coin);
+        },
+      ),
+      GoRoute(
+        path: Routes.editProfile,
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: Routes.transactionDetail,
+        builder: (context, state) {
+          final tx = state.extra as TransactionEntity?;
+          return TransactionDetailScreen(
+            transactionId: state.pathParameters['transactionId'] ?? '',
+            transaction: tx,
+          );
+        },
+      ),
     ],
+
 
     // ── Redirect logic ──────────────────────────────────────────────────────
     redirect: (context, state) {

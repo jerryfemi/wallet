@@ -12,17 +12,17 @@ class Routes {
   static const String wallet = '/wallet';
   static const String activity = '/activity';
   static const String profile = '/profile';
-  static const String editProfile = 'edit-profile';
+  static const String editProfile = '/edit-profile';
 
   // Sub-routes
   static const String coinDetails = 'coin-details';
   static const String aboutCoin = 'about';
   static const String assetDetail = 'detail/:coinId';
   static const String send = 'send';
-  static const String receive = 'receive';
+  static const String receive = '/receive';
   static const String deposit = 'deposit';
   static const String withdraw = 'withdraw';
-  static const String transactionDetail = 'tx/:transactionId';
+  static const String transactionDetail = '/tx/:transactionId';
   
   // Full-screen flows outside the shell
   static const String buy = '/buy/:coinId';
