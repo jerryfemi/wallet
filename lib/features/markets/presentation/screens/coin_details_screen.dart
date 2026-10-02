@@ -9,6 +9,7 @@ import 'package:wallet/features/markets/presentation/widgets/coin_news_section.d
 import 'package:go_router/go_router.dart';
 import 'package:wallet/app/router/routes.dart';
 import 'package:wallet/features/markets/presentation/widgets/trade_bottom_bar.dart';
+import 'package:wallet/shared/widgets/action_pill.dart';
 
 class CoinDetailsScreen extends HookConsumerWidget {
   final CoinEntity coin;
@@ -47,7 +48,7 @@ class CoinDetailsScreen extends HookConsumerWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: _ActionPill(
+                            child: ActionPill(
                               label: 'Send',
                               icon: Icons.arrow_upward_rounded,
                               onTap: () {
@@ -57,7 +58,7 @@ class CoinDetailsScreen extends HookConsumerWidget {
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: _ActionPill(
+                            child: ActionPill(
                               label: 'Receive',
                               icon: Icons.arrow_downward_rounded,
                               onTap: () {
@@ -95,46 +96,4 @@ class CoinDetailsScreen extends HookConsumerWidget {
   }
 }
 
-class _ActionPill extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
 
-  const _ActionPill({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(100),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 20, color: colorScheme.onSurface),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
