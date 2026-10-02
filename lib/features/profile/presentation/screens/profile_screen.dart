@@ -109,8 +109,7 @@ class ProfileScreen extends HookConsumerWidget {
                           onChanged: (value) {
                             ref.read(themeModeProvider.notifier).toggleTheme();
                           },
-                          activeColor: Theme.of(context).colorScheme.primary
-                              .withValues(alpha: 0.05),
+                          activeTrackColor: Theme.of(context).colorScheme.primary,
                         ),
                         onTap: () =>
                             ref.read(themeModeProvider.notifier).toggleTheme(),
