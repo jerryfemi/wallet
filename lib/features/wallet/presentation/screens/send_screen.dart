@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
+import 'package:wallet/shared/widgets/numeric_keypad.dart';
 
 class SendScreen extends HookConsumerWidget {
   final CoinEntity coin;
@@ -270,15 +271,7 @@ class SendScreen extends HookConsumerWidget {
                 flex: 3,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _KeypadRow(keys: const ['1', '2', '3'], onPressed: handleKeyPress),
-                      _KeypadRow(keys: const ['4', '5', '6'], onPressed: handleKeyPress),
-                      _KeypadRow(keys: const ['7', '8', '9'], onPressed: handleKeyPress),
-                      _KeypadRow(keys: const ['.', '0', '<'], onPressed: handleKeyPress),
-                    ],
-                  ),
+                  child: NumericKeypad(onKeyTap: handleKeyPress),
                 ),
               ),
               
@@ -298,61 +291,7 @@ class SendScreen extends HookConsumerWidget {
   }
 }
 
-class _KeypadRow extends StatelessWidget {
-  final List<String> keys;
-  final Function(String) onPressed;
 
-  const _KeypadRow({required this.keys, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((k) {
-        return _KeypadButton(
-          keyLabel: k,
-          onPressed: () => onPressed(k),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _KeypadButton extends StatelessWidget {
-  final String keyLabel;
-  final VoidCallback onPressed;
-
-  const _KeypadButton({required this.keyLabel, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    final isBackspace = keyLabel == '<';
-    
-    return Expanded(
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(32),
-        splashFactory: InkRipple.splashFactory,
-        child: Container(
-          height: 72,
-          alignment: Alignment.center,
-          child: isBackspace
-              ? Icon(
-                  Icons.backspace_outlined,
-                  size: 28,
-                  color: Theme.of(context).colorScheme.onSurface,
-                )
-              : Text(
-                  keyLabel,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-        ),
-      ),
-    );
-  }
-}
 
 class _SlideToSendButton extends StatefulWidget {
   final bool isLoading;
