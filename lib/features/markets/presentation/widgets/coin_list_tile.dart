@@ -70,7 +70,7 @@ class CoinListTile extends HookConsumerWidget {
     return InkWell(
       onTap: onTap ?? () {
         HapticFeedback.lightImpact();
-        context.push('${Routes.markets}/${Routes.coinDetails}', extra: coin);
+        context.push(Routes.coinDetails, extra: coin);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
