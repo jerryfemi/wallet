@@ -96,7 +96,7 @@ class AssetSelectionSheet extends HookConsumerWidget {
                             if (!isSelected) {
                               Navigator.of(context).pop();
                               // Replace the current details route with the new coin
-                              context.pushReplacement('${Routes.markets}/${Routes.coinDetails}', extra: coin);
+                              context.pushReplacement(Routes.coinDetails, extra: coin);
                             }
                           },
                           leading: CircleAvatar(
