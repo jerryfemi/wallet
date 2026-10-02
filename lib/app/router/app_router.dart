@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +14,7 @@ import 'package:wallet/features/markets/presentation/screens/markets_screen.dart
 import 'package:wallet/features/markets/presentation/screens/coin_details_screen.dart';
 import 'package:wallet/features/markets/presentation/screens/about_coin_screen.dart';
 import 'package:wallet/features/wallet/presentation/screens/wallet_screen.dart';
+import 'package:wallet/features/wallet/presentation/screens/receive_screen.dart';
 import 'package:wallet/features/transactions/presentation/screens/activity_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/profile_screen.dart';
 import 'package:wallet/features/profile/presentation/screens/edit_profile_screen.dart';
@@ -23,11 +25,14 @@ import 'package:wallet/app/router/routes.dart';
 
 part 'app_router.g.dart';
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 @riverpod
 GoRouter goRouter(Ref ref) {
   final notifier = ref.watch(authGateProvider.notifier);
 
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: Routes.home,
     debugLogDiagnostics: kDebugMode,
     refreshListenable: notifier,
@@ -90,6 +95,16 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.wallet,
                 builder: (context, state) => const WalletScreen(),
+                routes: [
+                  GoRoute(
+                    path: '${Routes.receive}/:coinId',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (context, state) {
+                      final coin = state.extra as CoinEntity;
+                      return ReceiveScreen(coin: coin);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -121,6 +136,7 @@ GoRouter goRouter(Ref ref) {
                 routes: [
                   GoRoute(
                     path: Routes.editProfile,
+                    parentNavigatorKey: rootNavigatorKey,
                     builder: (context, state) => const EditProfileScreen(),
                   ),
                 ],
