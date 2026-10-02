@@ -32,41 +32,29 @@ class QuickActionsRow extends ConsumerWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _ActionBtn(
-            iconAsset: 'assets/icons/buy.svg',
-            label: 'Buy',
-            onTap: () {
-              ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.buy);
-              ref
-                  .read(tradeFlowProvider.notifier)
-                  .setStage(TradeFlowStage.input);
-              ref.read(tradeFlowProvider.notifier).setSelectedCoinId(null);
-              ref.read(tradeFlowProvider.notifier).setInputAmount(0);
-              TradingSheet.show(context, child: const TradeBottomSheet());
-            },
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _ActionBtn(
-            iconAsset: 'assets/icons/sell.svg',
-            label: 'Sell',
-            onTap: () {
-              ref.read(tradeFlowProvider.notifier).setType(TradeFlowType.sell);
-              ref
-                  .read(tradeFlowProvider.notifier)
-                  .setStage(TradeFlowStage.input);
-              ref.read(tradeFlowProvider.notifier).setSelectedCoinId(null);
-              ref.read(tradeFlowProvider.notifier).setInputAmount(0);
-              TradingSheet.show(context, child: const TradeBottomSheet());
-            },
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _ActionBtn(
             iconAsset: 'assets/icons/withdraw.svg',
             label: 'Withdraw',
             onTap: () {},
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ActionBtn(
+            iconData: Icons.send_rounded,
+            label: 'Send',
+            onTap: () {
+              // Asset selection will be implemented here
+            },
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ActionBtn(
+            iconData: Icons.qr_code_2_rounded,
+            label: 'Receive',
+            onTap: () {
+               // Asset selection will be implemented here
+            },
           ),
         ),
       ],
@@ -75,15 +63,17 @@ class QuickActionsRow extends ConsumerWidget {
 }
 
 class _ActionBtn extends StatelessWidget {
-  final String iconAsset;
+  final String? iconAsset;
+  final IconData? iconData;
   final String label;
   final VoidCallback onTap;
 
   const _ActionBtn({
-    required this.iconAsset,
+    this.iconAsset,
+    this.iconData,
     required this.label,
     required this.onTap,
-  });
+  }) : assert(iconAsset != null || iconData != null);
 
   @override
   Widget build(BuildContext context) {
@@ -107,15 +97,22 @@ class _ActionBtn extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SvgPicture.asset(
-                iconAsset,
-                colorFilter: ColorFilter.mode(
-                  colorScheme.onSurface,
-                  BlendMode.srcIn,
+              if (iconAsset != null)
+                SvgPicture.asset(
+                  iconAsset!,
+                  colorFilter: ColorFilter.mode(
+                    colorScheme.onSurface,
+                    BlendMode.srcIn,
+                  ),
+                  width: 20,
+                  height: 20,
+                )
+              else if (iconData != null)
+                Icon(
+                  iconData,
+                  color: colorScheme.onSurface,
+                  size: 20,
                 ),
-                width: 20,
-                height: 20,
-              ),
               const SizedBox(height: 8),
               Text(
                 label,
