@@ -70,24 +70,6 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.markets,
                 builder: (context, state) => const MarketsScreen(),
-                routes: [
-                  GoRoute(
-                    path: Routes.coinDetails,
-                    builder: (context, state) {
-                      final coin = state.extra as CoinEntity;
-                      return CoinDetailsScreen(coin: coin);
-                    },
-                    routes: [
-                      GoRoute(
-                        path: Routes.aboutCoin,
-                        builder: (context, state) {
-                          final coin = state.extra as CoinEntity;
-                          return AboutCoinScreen(coin: coin);
-                        },
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ],
           ),
@@ -119,6 +101,22 @@ GoRouter goRouter(Ref ref) {
       ),
 
       // ── Full-screen flows (outside shell, no bottom nav) ───────────────
+      GoRoute(
+        path: Routes.coinDetails,
+        builder: (context, state) {
+          final coin = state.extra as CoinEntity;
+          return CoinDetailsScreen(coin: coin);
+        },
+        routes: [
+          GoRoute(
+            path: Routes.aboutCoin, // wait, aboutCoin is "about", so it will be /coin-details/about
+            builder: (context, state) {
+              final coin = state.extra as CoinEntity;
+              return AboutCoinScreen(coin: coin);
+            },
+          ),
+        ],
+      ),
       GoRoute(
         path: '${Routes.send}/:coinId',
         builder: (context, state) {
