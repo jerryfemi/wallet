@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:wallet/app/router/routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/widgets/coin_price_header.dart';
@@ -103,34 +102,15 @@ class CoinSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
 
-                // Top Right Actions (Send & Receive)
+                // Top Right Action (Favorite maybe? For now empty)
                 Positioned(
                   top: 0,
                   right: 8,
                   height: collapsedHeight - MediaQuery.paddingOf(context).top,
                   child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.send_rounded),
-                          onPressed: () {
-                            context.push(
-                              '${Routes.send}/${coin.id}',
-                              extra: coin,
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.qr_code_2_rounded),
-                          onPressed: () {
-                            context.push(
-                              '${Routes.receive}/${coin.id}',
-                              extra: coin,
-                            );
-                          },
-                        ),
-                      ],
+                    child: IconButton(
+                      icon: const Icon(Icons.favorite_border_rounded),
+                      onPressed: () {},
                     ),
                   ),
                 ),
