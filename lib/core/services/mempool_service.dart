@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 
 class MempoolService {
   final Dio _dio;
@@ -37,9 +38,9 @@ class MempoolService {
       // We subscribe to a specific channel just for our wallet address
       await _pusher.subscribe(channelName: 'transfers-$myWalletAddress');
       await _pusher.connect();
-      print('Connected to Mempool for address: $myWalletAddress');
+      debugPrint('Connected to Mempool for address: $myWalletAddress');
     } catch (e) {
-      print("Mempool connection error: $e");
+      debugPrint("Mempool connection error: $e");
     }
   }
 
@@ -103,7 +104,7 @@ class MempoolService {
 
       return response.statusCode == 200 || response.statusCode == 202;
     } catch (e) {
-      print("Failed to broadcast transaction: $e");
+      debugPrint("Failed to broadcast transaction: $e");
       return false;
     }
   }
