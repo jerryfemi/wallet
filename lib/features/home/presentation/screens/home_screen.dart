@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:wallet/features/home/presentation/widgets/home_header.dart';
@@ -10,14 +9,12 @@ import 'package:wallet/features/home/presentation/widgets/section_header.dart';
 import 'package:wallet/features/wallet/presentation/widgets/asset_balance_tile.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:decimal/decimal.dart';
-import 'package:wallet/core/providers/exchange_rates_provider.dart';
 import 'package:wallet/features/transactions/presentation/widgets/transaction_list_tile.dart';
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final formatFiat = ref.watch(fiatFormatterProvider);
     final assetsAsync = ref.watch(portfolioAssetsProvider);
     final totalValueAsync = ref.watch(portfolioTotalValueProvider);
     final totalChangeAsync = ref.watch(portfolioTotalChange24hProvider);
