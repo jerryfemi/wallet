@@ -57,14 +57,12 @@ MarketRepository marketRepository(Ref ref) {
   final wsDataSource = ref.watch(coinbaseWebSocketDataSourceProvider);
   final localDataSource = ref.watch(marketLocalDataSourceProvider);
   final coinbaseApiService = ref.watch(coinbaseApiServiceProvider);
-  final cryptoCompareApiService = ref.watch(cryptoCompareApiServiceProvider);
   
   return MarketRepository(
     apiService, 
     wsDataSource, 
     localDataSource,
     coinbaseApiService,
-    cryptoCompareApiService,
   );
 }
 
