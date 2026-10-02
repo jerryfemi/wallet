@@ -45,7 +45,7 @@ class MarketStatsSection extends ConsumerWidget {
       children: [
         BouncyTouch(
           onTap: () {
-            context.push('/markets/${Routes.coinDetails}/${Routes.aboutCoin}', extra: coin);
+            context.push('${Routes.coinDetails}/${Routes.aboutCoin}', extra: coin);
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
