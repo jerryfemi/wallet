@@ -1,7 +1,6 @@
 import 'package:wallet/features/markets/data/models/coin_model.dart';
 import 'package:wallet/core/network/dio_client.dart';
 import 'package:wallet/features/markets/domain/entities/news_article_entity.dart';
-import 'package:dio/dio.dart';
 
 class CoinGeckoApiService {
   final DioClient _dioClient;
