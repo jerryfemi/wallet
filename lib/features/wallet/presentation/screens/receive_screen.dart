@@ -62,15 +62,6 @@ class ReceiveScreen extends HookConsumerWidget {
           ],
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner_rounded),
-            onPressed: () {
-              // Placeholder for scanner if we want one here later
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
       body: SafeArea(
         child: Padding(
