@@ -83,7 +83,10 @@ class CoinDetailsScreen extends HookConsumerWidget {
             ],
           ),
           
-          // Sticky Bottom Bar
+          // Sticky Bottom Bar — Positioned.fill so that when expanded,
+          // the pills are inside layout bounds and receive hit tests.
+          // IgnorePointer(ignoring: true) on the fill area when collapsed
+          // so scroll gestures pass through the transparent overlay.
           Positioned(
             bottom: 0,
             left: 0,
