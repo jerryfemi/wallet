@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -39,68 +40,77 @@ class TradeBottomBar extends HookConsumerWidget {
       TradingSheet.show(context, child: const TradeBottomSheet());
     }
 
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.bottomCenter,
-      children: [
-        if (isExpanded.value)
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: toggleMenu,
-              behavior: HitTestBehavior.opaque,
-              child: Container(color: Colors.transparent),
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final barHeight = 80.0 + bottomPadding;
+
+    // The frosted glass bottom bar
+    Widget buildBar() {
+      return ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+          child: Container(
+            width: double.infinity,
+            height: barHeight,
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 16,
+              bottom: 16 + bottomPadding,
             ),
-          ),
-          
-        Container(
-          width: double.infinity,
-          height: 80 + MediaQuery.paddingOf(context).bottom,
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 16,
-            bottom: 16 + MediaQuery.paddingOf(context).bottom,
-          ),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            border: Border(
-              top: BorderSide(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+            decoration: BoxDecoration(
+              color: colorScheme.surface.withValues(alpha: 0.65),
+              border: Border(
+                top: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+                ),
               ),
             ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '\$1B traded today',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '\$1B traded today',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 120), 
-            ],
+                  ],
+                ),
+                AnimatedTradeToggle(
+                  isExpanded: isExpanded.value,
+                  onToggle: toggleMenu,
+                ),
+              ],
+            ),
           ),
         ),
+      );
+    }
 
-        // Stacked Pills (Buy / Sell)
-        Positioned(
-          bottom: 70 + MediaQuery.paddingOf(context).bottom, 
-          right: 24,
+    // When collapsed: just the bar + the toggle button overlaid
+    if (!isExpanded.value) {
+      return buildBar();
+    }
+
+    // When expanded: full-screen column that properly contains everything
+    // inside its layout bounds for correct hit-testing
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // Buy/Sell pills — these are now inside the Column's layout bounds
+        Padding(
+          padding: const EdgeInsets.only(right: 24.0),
           child: SingleMotionBuilder(
             motion: CupertinoMotion.bouncy(),
-            value: isExpanded.value ? 1.0 : 0.0,
+            value: 1.0,
             builder: (context, value, child) {
-              if (value <= 0.01 && !isExpanded.value) return const SizedBox.shrink();
-              
               final sellScale = ((value - 0.2) * (1 / 0.8)).clamp(0.0, 1.2);
               final buyScale = (value * (1 / 0.8)).clamp(0.0, 1.2);
 
@@ -145,15 +155,8 @@ class TradeBottomBar extends HookConsumerWidget {
             },
           ),
         ),
-
-        Positioned(
-          bottom: 16 + MediaQuery.paddingOf(context).bottom,
-          right: 24,
-          child: AnimatedTradeToggle(
-            isExpanded: isExpanded.value,
-            onToggle: toggleMenu,
-          ),
-        ),
+        // The bar itself
+        buildBar(),
       ],
     );
   }
