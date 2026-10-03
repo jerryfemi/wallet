@@ -18,7 +18,7 @@ import 'package:wallet/features/wallet/presentation/widgets/trade_views/buy_trad
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/sell_trade_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_success_view.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_receipt_view.dart';
-import 'package:wallet/features/wallet/presentation/widgets/trade_failed_dialog.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_views/trade_failed_view.dart';
 
 class TradeBottomSheet extends HookConsumerWidget {
   const TradeBottomSheet({super.key});
@@ -58,7 +58,7 @@ class TradeBottomSheet extends HookConsumerWidget {
             target =
                 (flowState.type == TradeFlowType.buy ||
                     flowState.type == TradeFlowType.sell)
-                ? 0.9
+                ? 0.92
                 : 0.85;
             break;
           case TradeFlowStage.review:
@@ -69,7 +69,7 @@ class TradeBottomSheet extends HookConsumerWidget {
             break;
           case TradeFlowStage.failed:
           case TradeFlowStage.success:
-            target = 0.55;
+            target = 0.53;
             break;
           case TradeFlowStage.receipt:
             target = 1.0;
@@ -129,20 +129,12 @@ class TradeBottomSheet extends HookConsumerWidget {
 
           ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
         } catch (e) {
-          if (context.mounted) {
-            Navigator.of(context).pop(); // Close bottom sheet
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => TradeFailedDialog(
-                title: 'Trade Unsuccessful',
-                message: 'Network connection timed out or an error occurred. No funds were deducted.',
-                onDismiss: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            );
-          }
+          ref
+              .read(tradeFlowProvider.notifier)
+              .setStage(
+                TradeFlowStage.failed,
+                errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
+              );
         }
       }
     }
@@ -180,20 +172,12 @@ class TradeBottomSheet extends HookConsumerWidget {
 
           ref.read(tradeFlowProvider.notifier).setStage(TradeFlowStage.success);
         } catch (e) {
-          if (context.mounted) {
-            Navigator.of(context).pop(); // Close bottom sheet
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => TradeFailedDialog(
-                title: 'Trade Unsuccessful',
-                message: 'Network connection timed out or an error occurred. No funds were deducted.',
-                onDismiss: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            );
-          }
+          ref
+              .read(tradeFlowProvider.notifier)
+              .setStage(
+                TradeFlowStage.failed,
+                errorMessage: 'Network connection timed out or an error occurred. No funds were deducted.',
+              );
         }
       }
     }
@@ -314,7 +298,17 @@ class TradeBottomSheet extends HookConsumerWidget {
         return const SizedBox.shrink();
 
       case TradeFlowStage.failed:
-        return const SizedBox.shrink(); // Handled via dialog now
+        return TradeFailedView(
+          key: const ValueKey('failed'),
+          title: 'Trade Unsuccessful',
+          message: flowState.errorMessage ?? 'An error occurred.',
+          onTryAgain: () {
+            ref
+                .read(tradeFlowProvider.notifier)
+                .setStage(TradeFlowStage.review);
+          },
+          onDismiss: () => Navigator.of(context).pop(),
+        );
 
       case TradeFlowStage.receipt:
         if (flowState.type == TradeFlowType.deposit) {
