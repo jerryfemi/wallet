@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:motor/motor.dart';
-import 'package:wallet/shared/widgets/action_pill.dart';
-import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
-import 'package:wallet/shared/providers/trade_flow_provider.dart';
 
 class AnimatedTradeToggle extends StatelessWidget {
   final bool isExpanded;
@@ -24,7 +21,7 @@ class AnimatedTradeToggle extends StatelessWidget {
       value: isExpanded ? 1.0 : 0.0,
       builder: (context, value, child) {
         // Value animates from 0.0 to 1.0 (with bounce overshoot)
-        
+
         // Calculate container padding and color
         final horizontalPadding = 32.0 - (16.0 * value.clamp(0.0, 1.0));
         final bgColor = Color.lerp(
