@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:wallet/shared/widgets/numeric_keypad.dart';
+import 'package:wallet/features/wallet/presentation/widgets/trade_failed_dialog.dart';
 
 class SendScreen extends HookConsumerWidget {
   final CoinEntity coin;
@@ -89,15 +90,31 @@ class SendScreen extends HookConsumerWidget {
           }
         } else {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Failed to send transfer')),
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => TradeFailedDialog(
+                title: 'Transfer Failed',
+                message: 'Failed to broadcast transfer to the network. Please try again.',
+                onDismiss: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             );
           }
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => TradeFailedDialog(
+              title: 'Transfer Error',
+              message: e.toString(),
+              onDismiss: () {
+                Navigator.of(context).pop();
+              },
+            ),
           );
         }
       } finally {
@@ -251,14 +268,32 @@ class SendScreen extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          amountText.value.isEmpty 
-                              ? 'Enter amount in ${coin.symbol.toUpperCase()}'
-                              : '≈ \$0.00 USD', // Placeholder for fiat equivalent
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            if (amountText.value.isEmpty) {
+                              return Text(
+                                'Enter amount in ${coin.symbol.toUpperCase()}',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            }
+                            
+                            final amountDouble = double.tryParse(amountText.value) ?? 0.0;
+                            // Ensure coin.currentPrice is parsed correctly, it might be Decimal or double depending on your entity.
+                            // Assuming coin.currentPrice is Decimal based on top_mover_chip.dart, we need to convert to double.
+                            final priceDouble = coin.currentPrice.toDouble();
+                            final fiatValue = amountDouble * priceDouble;
+                            
+                            return Text(
+                              '≈ \$${fiatValue.toStringAsFixed(2)} USD',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -346,13 +381,25 @@ class _SlideToSendButtonState extends State<_SlideToSendButton> {
                           strokeWidth: 3,
                         ),
                       )
-                    : Text(
-                        'Slide to send',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: widget.isEnabled
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                          fontWeight: FontWeight.bold,
+                    : Opacity(
+                        opacity: (1.0 - (_dragPosition / (maxDrag * 0.4))).clamp(0.0, 1.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Slide to send',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: widget.isEnabled
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (widget.isEnabled) ...[
+                              const SizedBox(width: 8),
+                              const _AnimatedChevrons(),
+                            ],
+                          ],
                         ),
                       ),
               ),
@@ -428,6 +475,62 @@ class _SlideToSendButtonState extends State<_SlideToSendButton> {
                 ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class _AnimatedChevrons extends StatefulWidget {
+  const _AnimatedChevrons();
+
+  @override
+  State<_AnimatedChevrons> createState() => _AnimatedChevronsState();
+}
+
+class _AnimatedChevronsState extends State<_AnimatedChevrons> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (index) {
+            // Stagger the fading
+            final animationValue = (_controller.value - (index * 0.2)) % 1.0;
+            final opacity = animationValue < 0.0 ? 0.0 : (1.0 - animationValue).clamp(0.0, 1.0);
+            
+            return Padding(
+              padding: const EdgeInsets.only(right: 2.0),
+              child: Opacity(
+                opacity: opacity,
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: colorScheme.primary,
+                ),
+              ),
+            );
+          }),
         );
       },
     );
