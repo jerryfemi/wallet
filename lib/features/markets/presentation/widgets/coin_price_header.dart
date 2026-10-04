@@ -6,6 +6,7 @@ import 'package:decimal/decimal.dart';
 import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/coin_chart_state_provider.dart';
 import 'package:wallet/features/markets/presentation/widgets/asset_selection_sheet.dart';
+import 'package:wallet/shared/widgets/trading_sheet.dart';
 
 class CoinPriceHeader extends HookConsumerWidget {
   final CoinEntity coin;
@@ -47,11 +48,9 @@ class CoinPriceHeader extends HookConsumerWidget {
         GestureDetector(
           onTap: () {
             HapticFeedback.lightImpact();
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => AssetSelectionSheet(currentCoin: coin),
+            TradingSheet.show(
+              context,
+              child: AssetSelectionSheet(currentCoin: coin),
             );
           },
           child: Row(
