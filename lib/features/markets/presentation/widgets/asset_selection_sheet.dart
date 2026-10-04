@@ -9,150 +9,238 @@ import 'package:wallet/features/markets/domain/entities/coin_entity.dart';
 import 'package:wallet/features/markets/presentation/providers/markets_provider.dart';
 
 class AssetSelectionSheet extends HookConsumerWidget {
-  final CoinEntity currentCoin;
+  final CoinEntity? currentCoin;
+  final void Function(CoinEntity)? onSelect;
 
-  const AssetSelectionSheet({super.key, required this.currentCoin});
+  const AssetSelectionSheet({super.key, this.currentCoin, this.onSelect});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final marketsAsync = ref.watch(marketsProvider);
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.5,
-      minChildSize: 0.5,
-      maxChildSize: 0.9,
-      expand: false, // ensures it only takes the space it needs when placed in bottom sheet
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+    const headerHeight = 64.0;
+
+    return Stack(
+      children: [
+        // Scrollable grouped list — fills full area, padded at top
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: marketsAsync.when(
+            data: (coins) => _GroupedCoinList(
+              coins: coins,
+              selectedId: currentCoin?.id,
+              topPadding: headerHeight + 12,
+              onTap: (coin) {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+                if (onSelect != null) {
+                  onSelect!(coin);
+                } else {
+                  context.pushReplacement(Routes.coinDetails, extra: coin);
+                }
+              },
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('Error: $e')),
           ),
-          child: Column(
-            children: [
-              // Header (Fixed)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        ),
+
+        // Floating header — sits on top, casts shadow when content scrolls under
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Material(
+            color: colorScheme.surfaceContainer,
+            elevation: 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(
+                height: headerHeight,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // X Button
-                    Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                    _CircleButton(
+                      icon: Icons.close,
+                      color: colorScheme.surfaceContainerLow,
+                      onTap: () => Navigator.of(context).pop(),
                     ),
-                    
-                    // Title
                     Text(
                       'Select Asset',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    // Check Button
-                    Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.8),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.check, color: theme.colorScheme.onPrimary),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                    _CircleButton(
+                      icon: Icons.check,
+                      color: colorScheme.primary.withValues(alpha: 0.8),
+                      iconColor: colorScheme.onPrimary,
+                      onTap: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ),
               ),
-              
-              // Scrollable List
-              Expanded(
-                child: marketsAsync.when(
-                  data: (coins) {
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: coins.length,
-                      itemBuilder: (context, index) {
-                        final coin = coins[index];
-                        final isSelected = coin.id == currentCoin.id;
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            if (!isSelected) {
-                              Navigator.of(context).pop();
-                              // Replace the current details route with the new coin
-                              context.pushReplacement(Routes.coinDetails, extra: coin);
-                            }
-                          },
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            backgroundImage: CachedNetworkImageProvider(coin.imageUrl),
-                          ),
-                          title: Text(
+// --- Private widgets ---
+
+class _CircleButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final Color? iconColor;
+  final VoidCallback onTap;
+
+  const _CircleButton({
+    required this.icon,
+    required this.color,
+    this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        child: Icon(icon, size: 20, color: iconColor),
+      ),
+    );
+  }
+}
+
+class _GroupedCoinList extends StatelessWidget {
+  final List<CoinEntity> coins;
+  final String? selectedId;
+  final double topPadding;
+  final void Function(CoinEntity) onTap;
+
+  const _GroupedCoinList({
+    required this.coins,
+    required this.selectedId,
+    required this.topPadding,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      margin: EdgeInsets.only(top: topPadding),
+      child: ListView.separated(
+        padding: EdgeInsets.zero,
+        itemCount: coins.length,
+        separatorBuilder: (_, _) => Divider(
+          height: 1,
+          thickness: 1,
+          color: theme.dividerColor.withValues(alpha: 0.1),
+          indent: 56,
+          endIndent: 16,
+        ),
+        itemBuilder: (context, index) {
+          final coin = coins[index];
+          final isSelected = coin.id == selectedId;
+
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => onTap(coin),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: CachedNetworkImageProvider(
+                        coin.imageUrl,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
                             coin.symbol.toUpperCase(),
-                            style: theme.textTheme.titleMedium?.copyWith(
+                            style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          subtitle: Text(
+                          const SizedBox(height: 2),
+                          Text(
                             coin.name,
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
-                          trailing: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected 
-                                  ? theme.colorScheme.primary 
-                                  : theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                                width: 2,
-                              ),
-                              color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.2) : Colors.transparent,
-                            ),
-                            child: isSelected 
-                              ? Center(
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(child: Text('Error: $err')),
+                        ],
+                      ),
+                    ),
+                    _RadioDot(isSelected: isSelected),
+                  ],
                 ),
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RadioDot extends StatelessWidget {
+  final bool isSelected;
+  const _RadioDot({required this.isSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final muted = Theme.of(context).colorScheme.onSurface
+        .withValues(alpha: 0.3);
+
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: isSelected ? primary : muted, width: 2),
+        color: isSelected ? primary.withValues(alpha: 0.2) : Colors.transparent,
+      ),
+      child: isSelected
+          ? Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: primary,
+                ),
+              ),
+            )
+          : null,
     );
   }
 }
