@@ -6,6 +6,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wallet/shared/widgets/trading_sheet.dart';
 import 'package:wallet/features/wallet/presentation/widgets/trade_bottom_sheet.dart';
 import 'package:wallet/shared/providers/trade_flow_provider.dart';
+import 'package:wallet/features/markets/presentation/widgets/asset_selection_sheet.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wallet/app/router/routes.dart';
 
 class QuickActionsRow extends ConsumerWidget {
   const QuickActionsRow({super.key});
@@ -43,7 +46,14 @@ class QuickActionsRow extends ConsumerWidget {
             iconData: Icons.send_rounded,
             label: 'Send',
             onTap: () {
-              // Asset selection will be implemented here
+              TradingSheet.show(
+                context,
+                child: AssetSelectionSheet(
+                  onSelect: (coin) {
+                    context.push('${Routes.send}/${coin.id}', extra: coin);
+                  },
+                ),
+              );
             },
           ),
         ),
@@ -53,7 +63,14 @@ class QuickActionsRow extends ConsumerWidget {
             iconData: Icons.qr_code_2_rounded,
             label: 'Receive',
             onTap: () {
-               // Asset selection will be implemented here
+              TradingSheet.show(
+                context,
+                child: AssetSelectionSheet(
+                  onSelect: (coin) {
+                    context.push('${Routes.receive}/${coin.id}', extra: coin);
+                  },
+                ),
+              );
             },
           ),
         ),
@@ -108,11 +125,7 @@ class _ActionBtn extends StatelessWidget {
                   height: 20,
                 )
               else if (iconData != null)
-                Icon(
-                  iconData,
-                  color: colorScheme.onSurface,
-                  size: 20,
-                ),
+                Icon(iconData, color: colorScheme.onSurface, size: 20),
               const SizedBox(height: 8),
               Text(
                 label,
